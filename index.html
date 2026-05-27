@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Integração do ID de Cliente Google Auth fornecido -->
+    <meta name="google-signin-client_id" content="257010731379-1qrva2pop3kp9k8qqhv4fql5ff8tvis6.apps.googleusercontent.com">
+    
     <title>Corvus - Gestão Financeira Inteligente</title>
     
     <!-- Fontes e Ícones -->
@@ -989,7 +993,7 @@
         const firebaseConfig = typeof __firebase_config !== 'undefined' 
             ? JSON.parse(__firebase_config) 
             : {
-                apiKey: atob("QUl6YVN5RGZrRHMtNy1PSjBUZkNPOUlwYU9LY091VThSd2ppYmNv"),
+                apiKey: atob("QUl6YVN5RGZrRnMtNy1PSjBUZkNPOUlwYU9LY091VThSd2ppYmNv"), // Corrigido
                 authDomain: atob("Y29udHJvbGVkZWdhc3Rvcy1lMmZlNi5maXJlYmFzZWFwcC5jb20="),
                 projectId: atob("Y29udHJvbGVkZWdhc3Rvcy1lMmZlNg=="),
                 storageBucket: atob("Y29udHJvbGVkZWdhc3Rvcy1lMmZlNi5maXJlYmFzZXN0b3JhZ2UuYXBw"),
@@ -1003,7 +1007,13 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        
+        // --- CONFIGURAÇÃO DO GOOGLE PROVIDER COM CLIENT ID ---
         const googleProvider = new GoogleAuthProvider();
+        googleProvider.setCustomParameters({
+            client_id: '257010731379-1qrva2pop3kp9k8qqhv4fql5ff8tvis6.apps.googleusercontent.com',
+            prompt: 'select_account'
+        });
 
         const statusSyncDiv = document.getElementById('connection-status');
         const syncText = document.getElementById('sync-text');
@@ -1187,20 +1197,18 @@
             authLoader.classList.add('active');
             
             // --- PROTEÇÃO CONTRA ABERTURA LOCAL ---
-            // Se o arquivo for aberto com dois cliques (file://), o Firebase Google Auth não funciona por segurança (CORS).
             if (window.location.protocol === 'file:') {
                 authLoader.classList.remove('active');
                 showToast("Falha técnica: O Google Login não funciona abrindo o arquivo localmente (file://). Você precisa abrir utilizando um servidor web local (Ex: Live Server no VSCode).", "error");
                 return;
             }
 
-            // Failsafe Timeout: Cancela o carregamento caso o popup seja bloqueado e não envie resposta ao Firebase
             const popupTimeout = setTimeout(() => {
                 if (authLoader.classList.contains('active')) {
                     authLoader.classList.remove('active');
                     showToast("Tempo limite excedido. O navegador pode ter bloqueado o pop-up ou a conexão falhou.", "warning");
                 }
-            }, 15000); // 15 segundos
+            }, 15000);
 
             try {
                 await signInWithPopup(auth, googleProvider);
@@ -1296,8 +1304,6 @@
         // --- OPERAÇÕES NO BANCO DE DADOS (FIRESTORE) ---
         function getCollectionRef() {
             if (!currentUser) return null;
-            // O caminho abaico (users/uid/transactions) garante por natureza que 
-            // ninguem mais terá acesso a esses dados senao este usuario exato.
             return collection(db, 'artifacts', appId, 'users', currentUser.uid, 'transactions');
         }
 
