@@ -74,6 +74,10 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+        @keyframes modalShow {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
 
         /* Navbar/Header Premium */
         .navbar {
@@ -273,6 +277,28 @@
             padding: 2.5rem 1.5rem;
             animation: fadeIn 0.5s ease;
             width: 100%;
+        }
+
+        /* Cabecalho de Saudação Personalizado */
+        .dashboard-header {
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .dashboard-header h2 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+        .dashboard-header h2 span.name-highlight {
+            color: var(--primary);
+        }
+        .dashboard-header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
         }
 
         /* Cards de Resumo */
@@ -642,6 +668,35 @@
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.15);
         }
 
+        /* Modal Perfil Overlay */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 5, 5, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: 1rem;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-overlay.active .modal-content {
+            animation: modalShow 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .modal-content {
+            width: 100%;
+            max-width: 400px;
+            margin: 0;
+            padding: 2rem;
+        }
+
         /* Notificação Personalizada (Toast) */
         #toast-container {
             position: fixed;
@@ -744,6 +799,8 @@
             
             .stat-item { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
             .stat-value { text-align: left; }
+            
+            .dashboard-header h2 { font-size: 1.35rem; }
         }
 
         .toast.show { transform: translateX(0) !important; opacity: 1; }
@@ -762,8 +819,13 @@
         <div class="nav-right">
             <!-- Indicador do Usuário Conectado -->
             <div id="user-display" class="user-badge" style="display: none;">
-                <i class="fa-regular fa-user"></i> <span id="user-email-text">Visitante</span>
-                <button class="action-btn" id="btn-logout" title="Sair do Sistema" style="border:none; background:none; margin-left:8px; cursor:pointer; color:var(--danger); padding: 0.2rem;"><i class="fa-solid fa-right-from-bracket"></i></button>
+                <img id="navbar-avatar" src="" alt="Avatar" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover; display: none;">
+                <span id="user-email-text">Visitante</span>
+                
+                <!-- Novo Botão de Perfil -->
+                <button class="action-btn" id="btn-open-profile" title="Meu Perfil" style="border:none; background:none; margin-left:8px; cursor:pointer; color:var(--primary); padding: 0.2rem;"><i class="fa-solid fa-id-card"></i></button>
+                
+                <button class="action-btn" id="btn-logout" title="Sair do Sistema" style="border:none; background:none; margin-left:4px; cursor:pointer; color:var(--danger); padding: 0.2rem;"><i class="fa-solid fa-right-from-bracket"></i></button>
             </div>
             
             <!-- Indicador do Status de Sincronização -->
@@ -818,6 +880,12 @@
     <!-- Container do App Principal (Ocultado até Autenticar) -->
     <div id="app-section" class="container" style="display: none;">
         
+        <!-- Novo: Cabeçalho Dinâmico de Saudação -->
+        <div class="dashboard-header">
+            <h2><span id="time-greeting">Bem-vindo</span>, <span id="header-user-name" class="name-highlight">Agente</span>!</h2>
+            <p>Aqui está a síntese atualizada da sua operação financeira.</p>
+        </div>
+
         <!-- Dashboard / Cards de Resumo -->
         <div class="summary-grid">
             <div class="summary-card balance">
@@ -903,7 +971,7 @@
 
         </div>
 
-        <!-- NOVOS ELEMENTOS: Grid Secundário de Estatísticas e Metas -->
+        <!-- Grid Secundário de Estatísticas e Metas -->
         <div class="secondary-grid">
             
             <!-- Painel de Meta de Economia -->
@@ -980,13 +1048,42 @@
 
     </div>
 
+    <!-- Novo: Modal de Perfil de Usuário -->
+    <div id="profile-modal" class="modal-overlay">
+        <div class="modal-content panel" style="box-shadow: 0 20px 40px rgba(0,0,0,0.8); border: 1px solid var(--primary);">
+            <div class="panel-header" style="margin-bottom: 1rem;">
+                <span><i class="fa-solid fa-user-astronaut" style="color: var(--primary);"></i> Identidade do Agente</span>
+                <button id="btn-close-profile" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1.2rem; transition: color 0.2s;"><i class="fa-solid fa-times"></i></button>
+            </div>
+            
+            <div style="text-align:center; margin-bottom: 1.5rem;">
+                <img id="modal-avatar" src="" alt="Avatar" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid rgba(79, 70, 229, 0.5); padding: 3px; margin-bottom: 0.8rem; object-fit: cover; background: rgba(0,0,0,0.5);">
+                <h3 id="modal-email" style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500;"></h3>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label>Nome de Operação (Codinome)</label>
+                <input type="text" id="profile-name" placeholder="Ex: Agente Corvus" maxlength="30" style="background: rgba(0,0,0,0.3);">
+            </div>
+            
+            <button id="btn-save-profile" class="btn"><i class="fa-solid fa-floppy-disk"></i> Atualizar Identidade</button>
+
+            <hr style="border:none; border-top: 1px solid rgba(255,255,255,0.05); margin: 1.5rem 0;">
+            <div style="text-align: center;">
+                <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom: 0.5rem;"><i class="fa-solid fa-shield-halved"></i> Chave Única de Segurança (UID):</p>
+                <p id="modal-uid" style="font-family:monospace; font-size:0.7rem; color:rgba(255,255,255,0.5); word-break: break-all; background: rgba(0,0,0,0.3); padding: 0.5rem; border-radius: 6px;"></p>
+            </div>
+        </div>
+    </div>
+
     <!-- Container de Toasts -->
     <div id="toast-container"></div>
 
     <!-- Script de Inicialização e Integração Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        // Importando updateProfile para atualizar os dados do usuário
+        import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Chaves ofuscadas em Base64 para proteção anti-crawlers no GitHub
@@ -1015,6 +1112,7 @@
             prompt: 'select_account'
         });
 
+        // Referências DOM - Geral
         const statusSyncDiv = document.getElementById('connection-status');
         const syncText = document.getElementById('sync-text');
         const form = document.getElementById('transaction-form');
@@ -1026,6 +1124,7 @@
         const tableLoader = document.getElementById('table-loader');
         const btnExportCsv = document.getElementById('btn-export-csv');
         
+        // Referências DOM - Autenticação
         const authSection = document.getElementById('auth-section');
         const appSection = document.getElementById('app-section');
         const authForm = document.getElementById('auth-form');
@@ -1036,10 +1135,25 @@
         const btnAuthSubmit = document.getElementById('btn-auth-submit');
         const btnGoogleLogin = document.getElementById('btn-google-login');
         const authLoader = document.getElementById('auth-loader');
+        
+        // Referências DOM - Topo e Saudação
         const userDisplay = document.getElementById('user-display');
         const userEmailText = document.getElementById('user-email-text');
+        const navbarAvatar = document.getElementById('navbar-avatar');
         const btnLogout = document.getElementById('btn-logout');
         const btnGuestLogin = document.getElementById('btn-guest-login');
+        const timeGreeting = document.getElementById('time-greeting');
+        const headerUserName = document.getElementById('header-user-name');
+        
+        // Referências DOM - Modal de Perfil
+        const btnOpenProfile = document.getElementById('btn-open-profile');
+        const profileModal = document.getElementById('profile-modal');
+        const btnCloseProfile = document.getElementById('btn-close-profile');
+        const modalAvatar = document.getElementById('modal-avatar');
+        const modalEmail = document.getElementById('modal-email');
+        const profileNameInput = document.getElementById('profile-name');
+        const btnSaveProfile = document.getElementById('btn-save-profile');
+        const modalUid = document.getElementById('modal-uid');
 
         dateInput.value = new Date().toISOString().split('T')[0];
 
@@ -1051,7 +1165,6 @@
         let unsubscribeOnSnapshot = null;
         
         let prevValues = { balance: 0, income: 0, expense: 0, future: 0 };
-        // Refatoração para evitar acúmulo de requisições de animação
         let animationFrames = { balance: null, income: null, expense: null, future: null };
 
         // --- SISTEMAS DE SEGURANÇA E HIGIENE DE DADOS ---
@@ -1074,6 +1187,18 @@
             };
         }
 
+        // --- SAUDAÇÃO INTELIGENTE (BOM DIA/TARDE/NOITE) ---
+        function updateTimeGreeting() {
+            const hour = new Date().getHours();
+            if (hour >= 5 && hour < 12) {
+                timeGreeting.innerText = 'Bom dia';
+            } else if (hour >= 12 && hour < 18) {
+                timeGreeting.innerText = 'Boa tarde';
+            } else {
+                timeGreeting.innerText = 'Boa noite';
+            }
+        }
+
         // --- SISTEMA DE TOASTS PERSONALIZADO ---
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
@@ -1088,7 +1213,6 @@
             toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${escapeHTML(message)}</span>`;
             container.appendChild(toast);
 
-            // Timeout robusto para visualização correta
             requestAnimationFrame(() => {
                 setTimeout(() => toast.classList.add('show'), 10);
             });
@@ -1096,7 +1220,7 @@
             setTimeout(() => {
                 toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 400);
-            }, 5000); // Aumentado para dar tempo de ler mensagens maiores
+            }, 5000); 
         }
 
         // --- FORMATADORES ---
@@ -1118,7 +1242,6 @@
             const obj = document.getElementById(id);
             let startTimestamp = null;
             
-            // Cancela animação pendente do mesmo elemento
             if (animationFrames[frameKey]) cancelAnimationFrame(animationFrames[frameKey]);
 
             const step = (timestamp) => {
@@ -1196,10 +1319,9 @@
         btnGoogleLogin.addEventListener('click', async function() {
             authLoader.classList.add('active');
             
-            // --- PROTEÇÃO CONTRA ABERTURA LOCAL ---
             if (window.location.protocol === 'file:') {
                 authLoader.classList.remove('active');
-                showToast("Falha técnica: O Google Login não funciona abrindo o arquivo localmente (file://). Você precisa abrir utilizando um servidor web local (Ex: Live Server no VSCode).", "error");
+                showToast("Falha técnica: O Google Login não funciona abrindo o arquivo localmente (file://). Você precisa abrir utilizando um servidor web local.", "error");
                 return;
             }
 
@@ -1234,9 +1356,11 @@
             } catch (error) {
                 console.warn("Autenticação anônima rejeitada. Ativando Sandbox Local.", error);
                 useLocalStorageFallback = true;
-                currentUser = { uid: "sandbox_local", email: "Modo Sandbox" };
+                currentUser = { uid: "sandbox_local", email: "Modo Sandbox", displayName: "Convidado Local" };
                 
                 showAuthUI(false);
+                updateUserProfileUI(currentUser);
+                
                 statusSyncDiv.className = "status-sync local";
                 syncText.innerText = "Sandbox Local (Offline)";
                 
@@ -1268,12 +1392,54 @@
             }
         });
 
+        // --- ATUALIZAR INFORMAÇÕES VISUAIS DO USUÁRIO ---
+        function updateUserProfileUI(user) {
+            let defaultName = "Agente Anônimo";
+            let displayName = user.displayName || "";
+            let email = user.email || "";
+            let uid = user.uid || "Desconhecido";
+            
+            // Tratamento especial se for anônimo puro
+            if (!email && !displayName && uid !== "sandbox_local") {
+                email = "Sessão Oculta";
+            } else if (uid === "sandbox_local") {
+                email = "Modo Offline (Sandbox)";
+            }
+
+            let nameToDisplay = displayName ? displayName : (email ? email.split('@')[0] : defaultName);
+            
+            // Atualiza Topo e Saudação
+            userEmailText.innerText = escapeHTML(nameToDisplay);
+            headerUserName.innerText = escapeHTML(nameToDisplay);
+            
+            // Lógica do Avatar
+            let avatarUrl = user.photoURL;
+            if (!avatarUrl) {
+                // Gera um avatar com a letra inicial usando ui-avatars
+                let initial = nameToDisplay.charAt(0).toUpperCase();
+                avatarUrl = `https://ui-avatars.com/api/?name=${initial}&background=4f46e5&color=fff&rounded=true&bold=true`;
+            }
+            
+            navbarAvatar.src = avatarUrl;
+            navbarAvatar.style.display = 'block';
+            modalAvatar.src = avatarUrl;
+            
+            // Popula os campos do Modal
+            modalEmail.innerText = escapeHTML(email);
+            profileNameInput.value = escapeHTML(displayName);
+            modalUid.innerText = escapeHTML(uid);
+            
+            updateTimeGreeting();
+        }
+
         // Monitor de Estado de Login Ativo
         onAuthStateChanged(auth, (user) => {
             if (user && !useLocalStorageFallback) {
                 currentUser = user;
                 showAuthUI(false);
-                userEmailText.innerText = user.email ? escapeHTML(user.email) : "Agente Anônimo";
+                
+                updateUserProfileUI(user);
+                
                 statusSyncDiv.className = "status-sync connected";
                 syncText.innerText = 'Criptografado em Nuvem';
                 subscribeToDatabase();
@@ -1286,6 +1452,7 @@
                 }
                 statusSyncDiv.className = "status-sync";
                 syncText.innerText = 'Aguardando Login...';
+                navbarAvatar.style.display = 'none';
             }
         });
 
@@ -1300,6 +1467,52 @@
                 userDisplay.style.display = 'flex';
             }
         }
+
+        // --- LÓGICA DO MODAL DE PERFIL ---
+        btnOpenProfile.addEventListener('click', () => {
+            profileModal.classList.add('active');
+        });
+
+        btnCloseProfile.addEventListener('click', () => {
+            profileModal.classList.remove('active');
+        });
+
+        // Fechar clicando fora
+        profileModal.addEventListener('click', (e) => {
+            if (e.target === profileModal) {
+                profileModal.classList.remove('active');
+            }
+        });
+
+        btnSaveProfile.addEventListener('click', async () => {
+            if (!currentUser || useLocalStorageFallback) {
+                showToast("Edição de perfil não suportada no modo Sandbox/Offline.", "warning");
+                return;
+            }
+
+            const newName = profileNameInput.value.trim();
+            const btnOriginalHtml = btnSaveProfile.innerHTML;
+            btnSaveProfile.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Atualizando...';
+            btnSaveProfile.disabled = true;
+
+            try {
+                await updateProfile(currentUser, {
+                    displayName: newName
+                });
+                
+                // Atualiza a UI imediatamente com os novos dados
+                updateUserProfileUI(auth.currentUser);
+                
+                showToast("Identidade atualizada com sucesso!", "success");
+                setTimeout(() => { profileModal.classList.remove('active'); }, 500);
+            } catch (error) {
+                console.error("Erro ao atualizar perfil:", error);
+                showToast("Falha ao salvar as alterações de perfil.", "error");
+            } finally {
+                btnSaveProfile.innerHTML = btnOriginalHtml;
+                btnSaveProfile.disabled = false;
+            }
+        });
 
         // --- OPERAÇÕES NO BANCO DE DADOS (FIRESTORE) ---
         function getCollectionRef() {
@@ -1561,16 +1774,14 @@
             updateChart(incomes, expenses, futures);
         }
 
-        // --- SISTEMA DE METAS E ESTATÍSTICAS EXTRAS (NOVO) ---
+        // --- SISTEMA DE METAS E ESTATÍSTICAS EXTRAS ---
         function updateStatsAndGoals(balance, income) {
-            // Atualiza Estatísticas Rápidas
             document.getElementById('stat-total-items').innerText = transactions.length;
             
             const expensesArray = transactions.filter(t => t.type === 'expense').map(t => t.amount);
             const maxExpense = expensesArray.length > 0 ? Math.max(...expensesArray) : 0;
             document.getElementById('stat-max-expense').innerText = formatCurrency(maxExpense);
 
-            // Atualiza a Meta de Economia (Ex: 20% das Receitas)
             const goalAmount = income * 0.20;
             let goalPercent = 0;
             
