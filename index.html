@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Corvus - Gestão Financeira Inteligente</title>
+    
+    <!-- Fontes e Ícones -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Biblioteca de Gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Variáveis de Cores - Tema Corvus (Ultra Escuro Premium) */
+        :root {
+            --bg-color: #050505; /* Quase preto */
+            --surface-bg: rgba(18, 18, 20, 0.75); /* Zinc muito escuro translúcido */
+            --surface-solid: #121214;
+            --text-main: #f8fafc;
+            --text-muted: #a1a1aa;
+            --primary: #4f46e5; /* Índigo profundo */
+            --primary-hover: #4338ca;
+            --success: #10b981;
+            --success-light: rgba(16, 185, 129, 0.12);
+            --danger: #ef4444;
+            --danger-light: rgba(239, 68, 68, 0.12);
+            --warning: #f59e0b;
+            --warning-light: rgba(245, 158, 11, 0.12);
+            --border: rgba(39, 39, 42, 0.8); /* Borda sutil */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 15px 30px -5px rgba(0, 0, 0, 0.8);
+            --shadow-glow: 0 0 15px rgba(79, 70, 229, 0.3);
+            --radius: 14px;
+        }
+
+        /* --- Scrollbar Customizado Premium --- */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 10% 40%, rgba(79, 70, 229, 0.05), transparent 35%),
+                              radial-gradient(circle at 90% 20%, rgba(16, 185, 129, 0.03), transparent 30%);
+            color: var(--text-main);
+            padding-bottom: 3rem;
+            min-height: 100vh;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        /* --- Animações --- */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Navbar/Header Premium */
+        .navbar {
+            background-color: rgba(9, 9, 11, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+            width: 100%;
+        }
+
+        .navbar h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            letter-spacing: -0.5px;
+            white-space: nowrap;
+        }
+
+        .navbar h1 span {
+            background: linear-gradient(135deg, #a5b4fc, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .user-badge {
+            font-size: 0.85rem;
+            color: var(--text-main);
+            background: rgba(39, 39, 42, 0.6);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(4px);
+            transition: all 0.3s ease;
+        }
+        .user-badge:hover { border-color: var(--primary); }
+
+        .status-sync {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(39, 39, 42, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .status-sync .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--warning);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .status-sync.connected { background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+        .status-sync.connected .dot { background-color: var(--success); box-shadow: 0 0 12px var(--success); }
+
+        .status-sync.local { background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+        .status-sync.local .dot { background-color: var(--warning); box-shadow: 0 0 12px var(--warning); }
+
+        /* Tela de Autenticação */
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 80px);
+            padding: 1.5rem;
+            width: 100%;
+        }
+
+        .auth-card {
+            background: var(--surface-solid);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 440px;
+            padding: 2.5rem;
+            position: relative;
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .auth-card h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        .auth-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .auth-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .auth-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: linear-gradient(to top, rgba(79, 70, 229, 0.08), transparent);
+        }
+
+        .auth-or {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .auth-or::before, .auth-or::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .auth-or:not(:empty)::before { margin-right: .5em; }
+        .auth-or:not(:empty)::after { margin-left: .5em; }
+
+        /* Botões de Autenticação */
+        .btn-guest {
+            background-color: rgba(255, 255, 255, 0.02);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            width: 100%;
+        }
+        .btn-guest:hover { background-color: rgba(255, 255, 255, 0.06); transform: translateY(-1px); }
+
+        .btn-google {
+            background-color: #fff;
+            color: #000;
+            border: none;
+            width: 100%;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-google:hover {
+            background-color: #f4f4f5;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(255,255,255,0.1);
+        }
+
+        /* Layout Container do Dashboard */
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem;
+            animation: fadeIn 0.5s ease;
+            width: 100%;
+        }
+
+        /* Cards de Resumo */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .summary-card {
+            background: var(--surface-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 1.75rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-card::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 120px; height: 120px;
+            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+        }
+
+        .summary-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .summary-card h3 {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .summary-card p {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            word-break: break-all;
+            letter-spacing: -0.5px;
+        }
+
+        .summary-card.balance p {
+            background: linear-gradient(135deg, #a5b4fc, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .summary-card.income p { color: #34d399; }
+        .summary-card.expense p { color: #f87171; }
+        .summary-card.future p { color: #fbbf24; }
+
+        /* Grids do Sistema */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1.1fr 0.9fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .secondary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .panel {
+            background: var(--surface-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 1.75rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            transition: border-color 0.3s ease;
+            width: 100%;
+        }
+        .panel:hover { border-color: rgba(255, 255, 255, 0.08); }
+
+        .panel-header {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            letter-spacing: -0.3px;
+        }
+
+        /* Formulário de Registro */
+        .form-group { margin-bottom: 1.25rem; width: 100%; }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            background-color: rgba(0, 0, 0, 0.4);
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.9rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn:hover { 
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+        }
+        
+        .btn:active { transform: translateY(0); }
+
+        /* Gráfico */
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+            margin: auto 0;
+            transition: all 0.3s ease;
+        }
+
+        /* Insights/Dicas Inteligentes */
+        .insight-box {
+            background-color: rgba(79, 70, 229, 0.08);
+            border-left: 4px solid var(--primary);
+            padding: 1.25rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #a5b4fc;
+            margin-bottom: auto;
+            transition: all 0.4s ease;
+        }
+
+        /* Elementos Novos (Listas e Barras) */
+        .stat-list {
+            list-style: none; padding: 0; display: flex; flex-direction: column; gap: 1rem; margin-top: 0.5rem;
+        }
+        .stat-item {
+            display: flex; justify-content: space-between; align-items: center; 
+            background: rgba(0,0,0,0.3); padding: 1rem 1.25rem; border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.02);
+            transition: transform 0.2s;
+        }
+        .stat-item:hover { transform: translateX(5px); background: rgba(0,0,0,0.5); }
+        .stat-label { color: var(--text-muted); font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+        .stat-value { color: #fff; font-weight: 700; font-size: 1.1rem; text-align: right; }
+        
+        .progress-wrapper { width: 100%; background-color: rgba(0,0,0,0.5); border-radius: 999px; height: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #818cf8); transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 999px; }
+
+        /* Filtros e Controle da Planilha */
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-input {
+            flex: 1;
+            min-width: 200px; /* Reduzido para caber melhor no mobile */
+        }
+        
+        .btn-export {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            padding: 0.85rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        .btn-export:hover {
+            background-color: #10b981;
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Planilha / Tabela Premium */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(9, 9, 11, 0.5);
+            backdrop-filter: blur(12px);
+            width: 100%;
+            -webkit-overflow-scrolling: touch; /* Rolagem suave no iOS */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            min-width: 600px; /* Garante que scroll horizontal ative no celular */
+        }
+
+        th {
+            background-color: rgba(24, 24, 27, 0.8);
+            padding: 1.25rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 1.15rem 1.25rem;
+            border-bottom: 1px solid rgba(39, 39, 42, 0.5);
+            font-size: 0.95rem;
+            vertical-align: middle;
+            color: #e4e4e7;
+            white-space: nowrap; /* Evita quebra de texto feia no mobile */
+        }
+
+        tbody tr {
+            transition: all 0.2s ease;
+            animation: fadeInUp 0.3s ease forwards;
+            opacity: 0;
+        }
+        
+        tbody tr:nth-child(1) { animation-delay: 0.05s; }
+        tbody tr:nth-child(2) { animation-delay: 0.1s; }
+        tbody tr:nth-child(3) { animation-delay: 0.15s; }
+        tbody tr:nth-child(4) { animation-delay: 0.2s; }
+        tbody tr:nth-child(5) { animation-delay: 0.25s; }
+
+        tbody tr:hover { 
+            background-color: rgba(79, 70, 229, 0.08); 
+        }
+
+        /* Badges de Status Modernos */
+        .badge {
+            padding: 0.4rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            letter-spacing: 0.3px;
+        }
+
+        .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+
+        .badge.income { background-color: rgba(16, 185, 129, 0.12); color: #34d399; }
+        .badge.income::before { background-color: #10b981; box-shadow: 0 0 6px #10b981; }
+
+        .badge.expense { background-color: rgba(239, 68, 68, 0.12); color: #f87171; }
+        .badge.expense::before { background-color: #ef4444; box-shadow: 0 0 6px #ef4444; }
+
+        .badge.future { background-color: rgba(245, 158, 11, 0.12); color: #fbbf24; }
+        .badge.future::before { background-color: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
+
+        .val-income { color: #34d399; font-weight: 600; font-variant-numeric: tabular-nums; }
+        .val-expense { color: #f87171; font-weight: 600; font-variant-numeric: tabular-nums; }
+        .val-future { color: #fbbf24; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+        /* Botões de Ação Dinâmicos */
+        .action-btn {
+            background: rgba(39, 39, 42, 0.6);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            padding: 0.6rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: var(--text-muted);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .action-btn:hover { 
+            background-color: var(--border); 
+            color: #fff; 
+            transform: scale(1.05);
+        }
+        .btn-pay:hover { 
+            color: #34d399; 
+            background-color: var(--success-light);
+            border-color: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+        }
+        .btn-del:hover { 
+            color: #f87171; 
+            background-color: var(--danger-light);
+            border-color: rgba(239, 68, 68, 0.4);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.15);
+        }
+
+        /* Notificação Personalizada (Toast) */
+        #toast-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 90vw;
+        }
+
+        .toast {
+            background-color: var(--surface-solid);
+            color: #fff;
+            padding: 1.1rem 1.75rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border: 1px solid var(--border);
+            transform: translateX(120%);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 0.95rem;
+            font-weight: 500;
+            word-break: break-word;
+        }
+        
+        /* Loader para ações */
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius);
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .loading-overlay.active { opacity: 1; pointer-events: all; }
+        .spinner {
+            width: 45px;
+            height: 45px;
+            border: 4px solid rgba(255,255,255,0.05);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ---- RESPONSIVIDADE APRIMORADA (MOBILE FIRST ADAPTATION) ---- */
+        @media (max-width: 1100px) {
+            .main-grid { grid-template-columns: 1fr 1fr; }
+            .main-grid > .panel:last-child { grid-column: span 2; }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar { padding: 1rem; flex-direction: column; gap: 1rem; align-items: flex-start;}
+            .nav-right { width: 100%; justify-content: space-between; }
+            .container { padding: 1rem; }
+            
+            .summary-grid { grid-template-columns: repeat(auto-fit, minmax(100%, 1fr)); gap: 1rem; margin-bottom: 1.5rem;}
+            .summary-card { padding: 1.25rem; }
+            .summary-card p { font-size: 1.8rem; }
+            
+            .main-grid, .secondary-grid { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+            .main-grid > .panel:last-child { grid-column: span 1; }
+            
+            .panel { padding: 1.25rem; }
+            .form-row { grid-template-columns: 1fr; gap: 0; } /* Empilha inputs no mobile */
+            
+            .filter-bar { flex-direction: column; align-items: stretch; gap: 0.8rem; }
+            .filter-input, select { width: 100%; min-width: 100%; }
+            .btn-export { justify-content: center; width: 100%; }
+
+            th, td { padding: 1rem; font-size: 0.85rem; }
+            .chart-container { height: 220px; }
+            
+            /* Ajuste para o Toast no mobile */
+            #toast-container { right: 5%; left: 5%; bottom: 20px; width: 90%; }
+            .toast { width: 100%; justify-content: flex-start; padding: 1rem; font-size: 0.85rem; flex-wrap: wrap;}
+        }
+        
+        @media (max-width: 480px) {
+            .auth-wrapper { padding: 1rem; }
+            .auth-card { padding: 1.5rem; border-radius: 12px; }
+            .auth-card h2 { font-size: 1.5rem; }
+            .auth-tabs { flex-direction: row; border-bottom: none; gap: 0.5rem; flex-wrap: wrap;}
+            .auth-tab { border: 1px solid var(--border); border-radius: 8px; flex-basis: 100%;}
+            .auth-tab.active { border-color: var(--primary); }
+
+            .navbar h1 { font-size: 1.2rem; }
+            .user-badge { padding: 0.4rem 0.8rem; font-size: 0.8rem;}
+            
+            .stat-item { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+            .stat-value { text-align: left; }
+        }
+
+        .toast.show { transform: translateX(0) !important; opacity: 1; }
+        .toast.success { border-left: 5px solid var(--success); }
+        .toast.error { border-left: 5px solid var(--danger); }
+        .toast.info { border-left: 5px solid var(--primary); }
+        .toast.warning { border-left: 5px solid var(--warning); }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar Superior -->
+    <nav class="navbar">
+        <h1><i class="fa-solid fa-gem" style="color: var(--primary); text-shadow: 0 0 10px rgba(79, 70, 229, 0.5);"></i> <span>Corvus</span></h1>
+        
+        <div class="nav-right">
+            <!-- Indicador do Usuário Conectado -->
+            <div id="user-display" class="user-badge" style="display: none;">
+                <i class="fa-regular fa-user"></i> <span id="user-email-text">Visitante</span>
+                <button class="action-btn" id="btn-logout" title="Sair do Sistema" style="border:none; background:none; margin-left:8px; cursor:pointer; color:var(--danger); padding: 0.2rem;"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+            
+            <!-- Indicador do Status de Sincronização -->
+            <div id="connection-status" class="status-sync">
+                <span class="dot"></span> <span id="sync-text">Conectando...</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Tela de Autenticação (Login / Cadastro) -->
+    <div id="auth-section" class="auth-wrapper">
+        <div class="auth-card">
+            <div id="auth-loader" class="loading-overlay">
+                <div class="spinner"></div>
+            </div>
+            <h2 id="auth-title">Acesso Seguro</h2>
+            <p id="auth-subtitle">Entre na sua gestão criptografada em nuvem.</p>
+            
+            <div class="auth-tabs">
+                <div id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')">Entrar</div>
+                <div id="tab-register" class="auth-tab" onclick="switchAuthTab('register')">Criar Conta</div>
+            </div>
+
+            <form id="auth-form">
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" id="auth-email" placeholder="seu@email.com" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label>Palavra-passe (Senha)</label>
+                    <input type="password" id="auth-password" placeholder="Sua senha secreta" minlength="6" required autocomplete="current-password">
+                </div>
+                
+                <button type="submit" id="btn-auth-submit" class="btn" style="margin-top: 1rem;"><i class="fa-solid fa-shield-check"></i> Acessar Painel</button>
+            </form>
+
+            <div class="auth-or">ou continuar com</div>
+            
+            <button type="button" id="btn-google-login" class="btn btn-google">
+                <svg style="width:18px;height:18px;margin-right:8px;" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Google
+            </button>
+            <button id="btn-guest-login" class="btn btn-guest"><i class="fa-regular fa-user"></i> Modo Offline</button>
+        </div>
+    </div>
+
+    <!-- Container do App Principal (Ocultado até Autenticar) -->
+    <div id="app-section" class="container" style="display: none;">
+        
+        <!-- Dashboard / Cards de Resumo -->
+        <div class="summary-grid">
+            <div class="summary-card balance">
+                <h3><i class="fa-solid fa-wallet"></i> Saldo Atual</h3>
+                <p id="total-balance">R$ 0,00</p>
+            </div>
+            <div class="summary-card income">
+                <h3><i class="fa-solid fa-arrow-trend-up"></i> Receitas</h3>
+                <p id="total-income">R$ 0,00</p>
+            </div>
+            <div class="summary-card expense">
+                <h3><i class="fa-solid fa-arrow-trend-down"></i> Gastos Pagos</h3>
+                <p id="total-expense">R$ 0,00</p>
+            </div>
+            <div class="summary-card future">
+                <h3><i class="fa-regular fa-clock"></i> Faturas Futuras</h3>
+                <p id="total-future">R$ 0,00</p>
+            </div>
+        </div>
+
+        <!-- Painéis Principais -->
+        <div class="main-grid">
+            
+            <!-- Formulário -->
+            <div class="panel" style="position: relative;">
+                <div id="form-loader" class="loading-overlay">
+                    <div class="spinner"></div>
+                </div>
+                <div class="panel-header"><i class="fa-solid fa-plus-circle" style="color: var(--primary);"></i> Novo Lançamento</div>
+                <form id="transaction-form">
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <input type="text" id="desc" placeholder="Ex: Equipamentos, Salário..." required maxlength="60">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Valor Total (R$)</label>
+                            <input type="number" id="amount" placeholder="0.00" step="0.01" min="0.01" max="9999999" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Parcelas</label>
+                            <input type="number" id="installments" value="1" min="1" max="72" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Categoria / Tipo</label>
+                        <select id="type" required>
+                            <option value="income">Entrada / Receita (+)</option>
+                            <option value="expense">Despesa Paga (-)</option>
+                            <option value="future">Despesa Futura (A Pagar)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Data Inicial</label>
+                        <input type="date" id="date" required>
+                    </div>
+
+                    <button type="submit" class="btn"><i class="fa-solid fa-cloud-arrow-up"></i> Registrar Seguro</button>
+                </form>
+            </div>
+
+            <!-- Gráfico de Alocação -->
+            <div class="panel">
+                <div class="panel-header"><i class="fa-solid fa-chart-pie" style="color: var(--success);"></i> Visão Geral</div>
+                <div class="chart-container">
+                    <canvas id="financeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Sugestões da IA Simples -->
+            <div class="panel">
+                <div class="panel-header"><i class="fa-solid fa-shield-halved" style="color: var(--warning);"></i> Integridade</div>
+                <div id="insight-box" class="insight-box">
+                    Aguardando análise de dados...
+                </div>
+                <div style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;">
+                    <strong style="color: #fff;"><i class="fa-solid fa-lock" style="color: var(--primary);"></i> Corvus Security:</strong> Cofre de dados isolado por UID de usuário ativo (Apenas você enxerga).
+                </div>
+            </div>
+
+        </div>
+
+        <!-- NOVOS ELEMENTOS: Grid Secundário de Estatísticas e Metas -->
+        <div class="secondary-grid">
+            
+            <!-- Painel de Meta de Economia -->
+            <div class="panel">
+                <div class="panel-header"><i class="fa-solid fa-bullseye" style="color: #818cf8;"></i> Meta de Economia (Corvus AI)</div>
+                <div style="margin-top: auto; margin-bottom: auto;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem; font-size: 0.95rem;">
+                        <span style="color: var(--text-muted);">Progresso do Fundo de Reserva</span>
+                        <strong id="goal-percentage" style="color: #fff;">0.0%</strong>
+                    </div>
+                    <div class="progress-wrapper">
+                        <div id="goal-progress-bar" class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 1.25rem; line-height: 1.5;">
+                        <i class="fa-solid fa-circle-info" style="margin-right: 5px;"></i> O sistema sugere reservar <strong>20% das receitas totais</strong> baseando-se no saldo livre atual.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Painel de Métricas Avançadas -->
+            <div class="panel">
+                <div class="panel-header"><i class="fa-solid fa-chart-simple" style="color: var(--success);"></i> Métricas do Sistema</div>
+                <ul class="stat-list">
+                    <li class="stat-item">
+                        <span class="stat-label"><i class="fa-solid fa-hashtag" style="color: var(--primary);"></i> Registros Salvos</span>
+                        <span id="stat-total-items" class="stat-value">0</span>
+                    </li>
+                    <li class="stat-item">
+                        <span class="stat-label"><i class="fa-solid fa-arrow-down-wide-short" style="color: var(--danger);"></i> Maior Gasto</span>
+                        <span id="stat-max-expense" class="stat-value" style="color: #fca5a5;">R$ 0,00</span>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Planilha de Dados Principal -->
+        <div class="panel" style="position: relative;">
+            <div id="table-loader" class="loading-overlay">
+                <div class="spinner"></div>
+            </div>
+            <div class="panel-header">
+                <span><i class="fa-solid fa-server" style="color: var(--primary);"></i> Histórico Criptografado</span>
+            </div>
+            
+            <div class="filter-bar">
+                <input type="text" id="search-input" class="filter-input" placeholder="🔍 Pesquisar por descrição..." maxlength="50">
+                <select id="filter-type" style="width: auto; min-width: 150px;">
+                    <option value="all">Todos os Status</option>
+                    <option value="income">Entradas</option>
+                    <option value="expense">Gastos Pagos</option>
+                    <option value="future">A Pagar</option>
+                </select>
+                <button id="btn-export-csv" class="btn-export" title="Exportar para Excel/CSV"><i class="fa-solid fa-file-csv"></i> Exportar</button>
+            </div>
+
+            <div class="table-container">
+                <table id="data-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Descrição</th>
+                            <th>Status</th>
+                            <th>Valor</th>
+                            <th style="text-align: right; width: 130px;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transaction-tbody">
+                        <tr><td colspan="5" style="text-align:center; padding: 2rem; color: var(--text-muted);">A carregar registros...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Container de Toasts -->
+    <div id="toast-container"></div>
+
+    <!-- Script de Inicialização e Integração Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Chaves ofuscadas em Base64 para proteção anti-crawlers no GitHub
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : {
+                apiKey: atob("QUl6YVN5RGZrRHMtNy1PSjBUZkNPOUlwYU9LY091VThSd2ppYmNv"),
+                authDomain: atob("Y29udHJvbGVkZWdhc3Rvcy1lMmZlNi5maXJlYmFzZWFwcC5jb20="),
+                projectId: atob("Y29udHJvbGVkZWdhc3Rvcy1lMmZlNg=="),
+                storageBucket: atob("Y29udHJvbGVkZWdhc3Rvcy1lMmZlNi5maXJlYmFzZXN0b3JhZ2UuYXBw"),
+                messagingSenderId: atob("MjU3MDEwNzMxMzc5"),
+                appId: atob("MToyNTcwMTA3MzEzNzk6d2ViOjk4MDI4NzNhZDNlZjZhNDU4N2RkMDY="),
+                measurementId: atob("Ry1YVDA5MTk1V1ZY")
+            };
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'corvus-system';
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        const statusSyncDiv = document.getElementById('connection-status');
+        const syncText = document.getElementById('sync-text');
+        const form = document.getElementById('transaction-form');
+        const tbody = document.getElementById('transaction-tbody');
+        const dateInput = document.getElementById('date');
+        const searchInput = document.getElementById('search-input');
+        const filterTypeSelect = document.getElementById('filter-type');
+        const formLoader = document.getElementById('form-loader');
+        const tableLoader = document.getElementById('table-loader');
+        const btnExportCsv = document.getElementById('btn-export-csv');
+        
+        const authSection = document.getElementById('auth-section');
+        const appSection = document.getElementById('app-section');
+        const authForm = document.getElementById('auth-form');
+        const authEmail = document.getElementById('auth-email');
+        const authPassword = document.getElementById('auth-password');
+        const authTitle = document.getElementById('auth-title');
+        const authSubtitle = document.getElementById('auth-subtitle');
+        const btnAuthSubmit = document.getElementById('btn-auth-submit');
+        const btnGoogleLogin = document.getElementById('btn-google-login');
+        const authLoader = document.getElementById('auth-loader');
+        const userDisplay = document.getElementById('user-display');
+        const userEmailText = document.getElementById('user-email-text');
+        const btnLogout = document.getElementById('btn-logout');
+        const btnGuestLogin = document.getElementById('btn-guest-login');
+
+        dateInput.value = new Date().toISOString().split('T')[0];
+
+        let transactions = [];
+        let chartInstance = null;
+        let currentUser = null;
+        let useLocalStorageFallback = false;
+        let currentAuthMode = 'login'; 
+        let unsubscribeOnSnapshot = null;
+        
+        let prevValues = { balance: 0, income: 0, expense: 0, future: 0 };
+        // Refatoração para evitar acúmulo de requisições de animação
+        let animationFrames = { balance: null, income: null, expense: null, future: null };
+
+        // --- SISTEMAS DE SEGURANÇA E HIGIENE DE DADOS ---
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return '';
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+            return str.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        // --- SISTEMA DE DEBOUNCE (OTIMIZAÇÃO DE PERFORMANCE) ---
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // --- SISTEMA DE TOASTS PERSONALIZADO ---
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let icon = 'fa-info-circle';
+            if (type === 'success') icon = 'fa-check-circle';
+            if (type === 'error') icon = 'fa-shield-halved';
+            if (type === 'warning') icon = 'fa-bell';
+
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${escapeHTML(message)}</span>`;
+            container.appendChild(toast);
+
+            // Timeout robusto para visualização correta
+            requestAnimationFrame(() => {
+                setTimeout(() => toast.classList.add('show'), 10);
+            });
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 5000); // Aumentado para dar tempo de ler mensagens maiores
+        }
+
+        // --- FORMATADORES ---
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+        }
+
+        function formatDate(dateString) {
+            const [year, month, day] = dateString.split('-');
+            return `${day}/${month}/${year}`;
+        }
+
+        // --- ANIMADOR DE NÚMEROS (OTIMIZADO) ---
+        function animateValue(id, start, end, duration, frameKey) {
+            if (start === end) {
+                document.getElementById(id).innerText = formatCurrency(end);
+                return;
+            }
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            
+            // Cancela animação pendente do mesmo elemento
+            if (animationFrames[frameKey]) cancelAnimationFrame(animationFrames[frameKey]);
+
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const easeOut = 1 - Math.pow(1 - progress, 5);
+                const current = (end - start) * easeOut + start;
+                
+                obj.innerText = formatCurrency(current);
+                
+                if (progress < 1) {
+                    animationFrames[frameKey] = window.requestAnimationFrame(step);
+                } else {
+                    obj.innerText = formatCurrency(end);
+                    animationFrames[frameKey] = null;
+                }
+            };
+            animationFrames[frameKey] = window.requestAnimationFrame(step);
+        }
+
+        // --- NAVEGAÇÃO DE TOPO DE AUTENTICAÇÃO ---
+        window.switchAuthTab = function(mode) {
+            currentAuthMode = mode;
+            const tabLogin = document.getElementById('tab-login');
+            const tabRegister = document.getElementById('tab-register');
+            
+            if (mode === 'login') {
+                tabLogin.classList.add('active');
+                tabRegister.classList.remove('active');
+                authTitle.innerText = "Acesso Seguro";
+                authSubtitle.innerText = "Entre na sua gestão criptografada em nuvem.";
+                btnAuthSubmit.innerHTML = `<i class="fa-solid fa-shield-check"></i> Acessar Painel`;
+            } else {
+                tabLogin.classList.remove('active');
+                tabRegister.classList.add('active');
+                authTitle.innerText = "Registrar Identidade";
+                authSubtitle.innerText = "Crie sua credencial segura e comece a controlar.";
+                btnAuthSubmit.innerHTML = `<i class="fa-solid fa-user-shield"></i> Criar e Proteger`;
+            }
+        };
+
+        // --- AUTENTICAÇÃO (E-mail/Senha) ---
+        authForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            authLoader.classList.add('active');
+
+            const email = authEmail.value.trim();
+            const password = authPassword.value;
+
+            try {
+                if (currentAuthMode === 'login') {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    showToast("Identidade confirmada!", "success");
+                } else {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                    showToast("Credenciais geradas e protegidas!", "success");
+                }
+            } catch (error) {
+                console.error("Erro na autenticação:", error);
+                let customErrorMessage = "Erro de validação. Verifique suas credenciais.";
+                if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                    customErrorMessage = "Credenciais incorretas ou não encontradas.";
+                } else if (error.code === 'auth/email-already-in-use') {
+                    customErrorMessage = "Aviso: E-mail já registrado no sistema Corvus.";
+                } else if (error.code === 'auth/weak-password') {
+                    customErrorMessage = "A senha deve conter no mínimo 6 caracteres para segurança.";
+                }
+                showToast(customErrorMessage, "error");
+            } finally {
+                authLoader.classList.remove('active');
+            }
+        });
+
+        // --- AUTENTICAÇÃO (GOOGLE - COM PROTEÇÃO ANTI-TRAVAMENTO) ---
+        btnGoogleLogin.addEventListener('click', async function() {
+            authLoader.classList.add('active');
+            
+            // --- PROTEÇÃO CONTRA ABERTURA LOCAL ---
+            // Se o arquivo for aberto com dois cliques (file://), o Firebase Google Auth não funciona por segurança (CORS).
+            if (window.location.protocol === 'file:') {
+                authLoader.classList.remove('active');
+                showToast("Falha técnica: O Google Login não funciona abrindo o arquivo localmente (file://). Você precisa abrir utilizando um servidor web local (Ex: Live Server no VSCode).", "error");
+                return;
+            }
+
+            // Failsafe Timeout: Cancela o carregamento caso o popup seja bloqueado e não envie resposta ao Firebase
+            const popupTimeout = setTimeout(() => {
+                if (authLoader.classList.contains('active')) {
+                    authLoader.classList.remove('active');
+                    showToast("Tempo limite excedido. O navegador pode ter bloqueado o pop-up ou a conexão falhou.", "warning");
+                }
+            }, 15000); // 15 segundos
+
+            try {
+                await signInWithPopup(auth, googleProvider);
+                clearTimeout(popupTimeout);
+                showToast("Sessão iniciada via Google com sucesso!", "success");
+            } catch (error) {
+                clearTimeout(popupTimeout);
+                console.error("Erro login Google:", error);
+                if(error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
+                    showToast("Falha na comunicação com o provedor Google. Verifique sua conexão.", "error");
+                }
+            } finally {
+                authLoader.classList.remove('active');
+            }
+        });
+
+        // --- AUTENTICAÇÃO CONVIDADO (OFFLINE) ---
+        btnGuestLogin.addEventListener('click', async function() {
+            authLoader.classList.add('active');
+            try {
+                await signInAnonymously(auth);
+                showToast("Modo fantasma (convidado) ativado.", "info");
+            } catch (error) {
+                console.warn("Autenticação anônima rejeitada. Ativando Sandbox Local.", error);
+                useLocalStorageFallback = true;
+                currentUser = { uid: "sandbox_local", email: "Modo Sandbox" };
+                
+                showAuthUI(false);
+                statusSyncDiv.className = "status-sync local";
+                syncText.innerText = "Sandbox Local (Offline)";
+                
+                loadFromLocalStorage();
+                updateUI();
+                showToast("Sandbox local ativado. Seus dados não sairão deste dispositivo.", "warning");
+            } finally {
+                authLoader.classList.remove('active');
+            }
+        });
+
+        // --- LOGOUT ---
+        btnLogout.addEventListener('click', async function() {
+            try {
+                if (useLocalStorageFallback) {
+                    useLocalStorageFallback = false;
+                    currentUser = null;
+                    showAuthUI(true);
+                    statusSyncDiv.className = "status-sync";
+                    syncText.innerText = "Desconectado";
+                    showToast("Sessão sandbox terminada.", "info");
+                } else {
+                    await signOut(auth);
+                    showToast("Sessão encerrada com segurança.", "info");
+                }
+            } catch (error) {
+                console.error("Erro ao sair:", error);
+                showToast("Falha ao encerrar a sessão.", "error");
+            }
+        });
+
+        // Monitor de Estado de Login Ativo
+        onAuthStateChanged(auth, (user) => {
+            if (user && !useLocalStorageFallback) {
+                currentUser = user;
+                showAuthUI(false);
+                userEmailText.innerText = user.email ? escapeHTML(user.email) : "Agente Anônimo";
+                statusSyncDiv.className = "status-sync connected";
+                syncText.innerText = 'Criptografado em Nuvem';
+                subscribeToDatabase();
+            } else if (!useLocalStorageFallback) {
+                currentUser = null;
+                showAuthUI(true);
+                if (unsubscribeOnSnapshot) {
+                    unsubscribeOnSnapshot();
+                    unsubscribeOnSnapshot = null;
+                }
+                statusSyncDiv.className = "status-sync";
+                syncText.innerText = 'Aguardando Login...';
+            }
+        });
+
+        function showAuthUI(showLoginScreen) {
+            if (showLoginScreen) {
+                authSection.style.display = 'flex';
+                appSection.style.display = 'none';
+                userDisplay.style.display = 'none';
+            } else {
+                authSection.style.display = 'none';
+                appSection.style.display = 'block';
+                userDisplay.style.display = 'flex';
+            }
+        }
+
+        // --- OPERAÇÕES NO BANCO DE DADOS (FIRESTORE) ---
+        function getCollectionRef() {
+            if (!currentUser) return null;
+            // O caminho abaico (users/uid/transactions) garante por natureza que 
+            // ninguem mais terá acesso a esses dados senao este usuario exato.
+            return collection(db, 'artifacts', appId, 'users', currentUser.uid, 'transactions');
+        }
+
+        function subscribeToDatabase() {
+            const colRef = getCollectionRef();
+            if (!colRef) return;
+
+            tableLoader.classList.add('active');
+            if (unsubscribeOnSnapshot) unsubscribeOnSnapshot();
+
+            unsubscribeOnSnapshot = onSnapshot(colRef, (snapshot) => {
+                transactions = [];
+                snapshot.forEach((doc) => {
+                    transactions.push({ id: doc.id, ...doc.data() });
+                });
+                updateUI();
+                tableLoader.classList.remove('active');
+            }, (error) => {
+                console.error("Erro na sincronização:", error);
+                tableLoader.classList.remove('active');
+                
+                useLocalStorageFallback = true;
+                statusSyncDiv.className = "status-sync local";
+                syncText.innerText = 'Sandbox Local (Offline)';
+                loadFromLocalStorage();
+                updateUI();
+                showToast("Conexão segura falhou. Sandbox local de contingência ativado.", "warning");
+            });
+        }
+
+        // --- OPERAÇÕES LOCAL STORAGE (FALLBACK) ---
+        function loadFromLocalStorage() {
+            transactions = JSON.parse(localStorage.getItem('corvus_local_data')) || [];
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('corvus_local_data', JSON.stringify(transactions));
+        }
+
+        // --- EXPORTAR PARA CSV ---
+        btnExportCsv.addEventListener('click', () => {
+            if (transactions.length === 0) {
+                showToast("Não há dados para exportar.", "warning");
+                return;
+            }
+            
+            let csvContent = "data:text/csv;charset=utf-8,Data,Descrição,Categoria,Valor (R$)\n";
+            const sortedForExport = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sortedForExport.forEach(t => {
+                let tipoFormatado = t.type === 'income' ? 'Entrada' : (t.type === 'expense' ? 'Pago' : 'A Pagar');
+                let safeDesc = t.desc.replace(/"/g, '""');
+                if (/^[=+\-@]/.test(safeDesc)) safeDesc = "'" + safeDesc; 
+                
+                csvContent += `${formatDate(t.date)},"${safeDesc}",${tipoFormatado},${t.amount.toFixed(2)}\n`;
+            });
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Corvus_Export_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            
+            showToast("Dados extraídos com segurança!", "success");
+        });
+
+        // --- ADICIONAR NOVO LANÇAMENTO ---
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const rawDesc = document.getElementById('desc').value.trim();
+            const desc = escapeHTML(rawDesc).substring(0, 100); 
+            const totalAmount = parseFloat(document.getElementById('amount').value);
+            const installments = parseInt(document.getElementById('installments').value);
+            const type = document.getElementById('type').value;
+            const startDate = document.getElementById('date').value;
+
+            if (!desc || isNaN(totalAmount) || isNaN(installments) || totalAmount <= 0 || installments < 1 || installments > 72) {
+                showToast("Entrada rejeitada: Dados corrompidos ou inválidos.", "error");
+                return;
+            }
+
+            formLoader.classList.add('active');
+
+            const amountPerInstallment = totalAmount / installments;
+            const newItems = [];
+
+            for (let i = 0; i < installments; i++) {
+                let dateObj = new Date(startDate);
+                dateObj.setMonth(dateObj.getMonth() + i);
+                let formattedDate = dateObj.toISOString().split('T')[0];
+
+                let finalDesc = installments > 1 ? `${desc} (${i + 1}/${installments})` : desc;
+                let finalType = type;
+                if (installments > 1 && type === 'expense' && i > 0) {
+                    finalType = 'future'; 
+                }
+
+                newItems.push({
+                    desc: finalDesc,
+                    amount: amountPerInstallment,
+                    type: escapeHTML(finalType),
+                    date: escapeHTML(formattedDate),
+                    createdAt: new Date().toISOString()
+                });
+            }
+
+            try {
+                if (useLocalStorageFallback) {
+                    newItems.forEach(item => {
+                        item.id = 'local_' + Math.random().toString(36).substr(2, 9);
+                        transactions.push(item);
+                    });
+                    saveToLocalStorage();
+                    updateUI();
+                    showToast(`Registrado no Sandbox! Parcela (${installments}x)`, "success");
+                } else {
+                    const colRef = getCollectionRef();
+                    if (!colRef) throw new Error("Não conectado.");
+
+                    for (const item of newItems) {
+                        await addDoc(colRef, item);
+                    }
+                    showToast(`Sincronizado na nuvem Corvus! Parcela (${installments}x)`, "success");
+                }
+
+                form.reset();
+                dateInput.value = new Date().toISOString().split('T')[0];
+                document.getElementById('installments').value = "1";
+            } catch (error) {
+                console.error("Erro ao salvar:", error);
+                showToast("Violação de regra ao gravar dados.", "error");
+            } finally {
+                formLoader.classList.remove('active');
+            }
+        });
+
+        // Marcar uma Despesa Futura como Paga
+        window.markAsPaid = async function(id) {
+            try {
+                if (useLocalStorageFallback) {
+                    const index = transactions.findIndex(t => t.id === id);
+                    if (index !== -1) {
+                        transactions[index].type = 'expense';
+                        saveToLocalStorage();
+                        updateUI();
+                        showToast("Marcado como pago no Sandbox!", "success");
+                    }
+                } else {
+                    const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'transactions', id);
+                    await updateDoc(docRef, {
+                        type: 'expense',
+                        paidAt: new Date().toISOString()
+                    });
+                    showToast("Atualização sincronizada!", "success");
+                }
+            } catch (error) {
+                console.error("Erro ao atualizar status:", error);
+                showToast("Erro de permissão ao atualizar status.", "error");
+            }
+        };
+
+        // Excluir Lançamento
+        window.removeTransaction = async function(id) {
+            try {
+                if (useLocalStorageFallback) {
+                    transactions = transactions.filter(t => t.id !== id);
+                    saveToLocalStorage();
+                    updateUI();
+                    showToast("Registro expurgado localmente!", "success");
+                } else {
+                    const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'transactions', id);
+                    await deleteDoc(docRef);
+                    showToast("Registro expurgado da nuvem!", "success");
+                }
+            } catch (error) {
+                console.error("Erro ao excluir do banco:", error);
+                showToast("Erro ao expurgar registro (permissão negada).", "error");
+            }
+        };
+
+        // Filtros e pesquisa dinâmica com Debounce aplicado
+        searchInput.addEventListener('input', debounce(updateUI, 300));
+        filterTypeSelect.addEventListener('change', updateUI);
+
+        // --- ATUALIZAÇÃO DA INTERFACE & DASHBOARD (OTIMIZADO COM DOCUMENT FRAGMENT) ---
+        function updateUI() {
+            tbody.innerHTML = '';
+            const fragment = document.createDocumentFragment();
+            
+            const searchValue = escapeHTML(searchInput.value.toLowerCase().trim());
+            const filterValue = escapeHTML(filterTypeSelect.value);
+
+            let filtered = transactions.filter(t => {
+                const matchesSearch = t.desc.toLowerCase().includes(searchValue);
+                const matchesFilter = filterValue === 'all' || t.type === filterValue;
+                return matchesSearch && matchesFilter;
+            });
+
+            filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            if (filtered.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="5" style="text-align:center; padding: 3rem; color: var(--text-muted);"><i class="fa-solid fa-server" style="display:block; font-size: 2rem; margin-bottom: 1rem; color: rgba(255,255,255,0.05);"></i> Repositório Vazio.</td>`;
+                fragment.appendChild(tr);
+            } else {
+                filtered.forEach(t => {
+                    const tr = document.createElement('tr');
+                    
+                    let badgeClass, statusText, valClass, prefix;
+                    let btnPay = '';
+
+                    if (t.type === 'income') {
+                        badgeClass = 'income'; statusText = 'Entrada'; valClass = 'val-income'; prefix = '+';
+                    } else if (t.type === 'expense') {
+                        badgeClass = 'expense'; statusText = 'Pago'; valClass = 'val-expense'; prefix = '-';
+                    } else {
+                        badgeClass = 'future'; statusText = 'A Pagar'; valClass = 'val-future'; prefix = '';
+                        btnPay = `<button class="action-btn btn-pay" onclick="markAsPaid('${escapeHTML(t.id)}')" title="Marcar como Pago"><i class="fa-solid fa-check"></i></button>`;
+                    }
+
+                    tr.innerHTML = `
+                        <td>${formatDate(t.date)}</td>
+                        <td style="font-weight: 500; color: #fff;">${escapeHTML(t.desc)}</td>
+                        <td><span class="badge ${badgeClass}">${statusText}</span></td>
+                        <td class="${valClass}">${prefix} ${formatCurrency(t.amount)}</td>
+                        <td style="text-align: right; display: flex; justify-content: flex-end; gap: 0.5rem;">
+                            ${btnPay}
+                            <button class="action-btn btn-del" onclick="removeTransaction('${escapeHTML(t.id)}')" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
+                        </td>
+                    `;
+                    fragment.appendChild(tr);
+                });
+            }
+            
+            // Injeção de dados em lote no DOM (Extrema performance)
+            tbody.appendChild(fragment);
+
+            const incomes = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
+            const expenses = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
+            const futures = transactions.filter(t => t.type === 'future').reduce((acc, t) => acc + t.amount, 0);
+            const balance = incomes - expenses;
+
+            animateValue('total-balance', prevValues.balance, balance, 800, 'balance');
+            animateValue('total-income', prevValues.income, incomes, 800, 'income');
+            animateValue('total-expense', prevValues.expense, expenses, 800, 'expense');
+            animateValue('total-future', prevValues.future, futures, 800, 'future');
+            
+            prevValues = { balance, income: incomes, expense: expenses, future: futures };
+
+            updateInsights(balance, incomes, expenses, futures);
+            updateStatsAndGoals(balance, incomes);
+            updateChart(incomes, expenses, futures);
+        }
+
+        // --- SISTEMA DE METAS E ESTATÍSTICAS EXTRAS (NOVO) ---
+        function updateStatsAndGoals(balance, income) {
+            // Atualiza Estatísticas Rápidas
+            document.getElementById('stat-total-items').innerText = transactions.length;
+            
+            const expensesArray = transactions.filter(t => t.type === 'expense').map(t => t.amount);
+            const maxExpense = expensesArray.length > 0 ? Math.max(...expensesArray) : 0;
+            document.getElementById('stat-max-expense').innerText = formatCurrency(maxExpense);
+
+            // Atualiza a Meta de Economia (Ex: 20% das Receitas)
+            const goalAmount = income * 0.20;
+            let goalPercent = 0;
+            
+            if (goalAmount > 0 && balance > 0) {
+                goalPercent = Math.min((balance / goalAmount) * 100, 100);
+            } else if (balance <= 0) {
+                goalPercent = 0;
+            }
+
+            const progressBar = document.getElementById('goal-progress-bar');
+            const progressText = document.getElementById('goal-percentage');
+            
+            progressBar.style.width = `${goalPercent}%`;
+            progressText.innerText = `${goalPercent.toFixed(1)}%`;
+            
+            if(goalPercent >= 100) {
+                progressBar.style.background = "linear-gradient(90deg, var(--success), #34d399)";
+                progressText.style.color = "var(--success)";
+            } else if (goalPercent > 50) {
+                progressBar.style.background = "linear-gradient(90deg, var(--primary), #818cf8)";
+                progressText.style.color = "#fff";
+            } else {
+                progressBar.style.background = "linear-gradient(90deg, var(--warning), #fcd34d)";
+                progressText.style.color = "#fff";
+            }
+        }
+
+        // --- SISTEMA DE INSIGHTS ---
+        function updateInsights(balance, income, expense, future) {
+            const box = document.getElementById('insight-box');
+            
+            if (transactions.length === 0) {
+                box.innerHTML = "<strong>Módulo analítico offline.</strong> Injete seus primeiros registros para ativar o sistema heurístico financeiro Corvus.";
+                box.style.borderLeftColor = "var(--primary)";
+                return;
+            }
+
+            if (balance < 0) {
+                box.innerHTML = "<strong>Fenda Detectada!</strong> Saídas ultrapassam as entradas resultando em balanço crítico <strong>(negativo)</strong>. Estanque gastos imediatamente.";
+                box.style.borderLeftColor = "var(--danger)";
+                box.style.backgroundColor = "rgba(239, 68, 68, 0.08)";
+                box.style.color = "#fca5a5";
+            } else if (future > income && income > 0) {
+                box.innerHTML = "<strong>Aviso de Passivo Perigoso!</strong> As dívidas futuras mapeadas são maiores que o total já injetado no sistema. Evite novos bloqueios de crédito.";
+                box.style.borderLeftColor = "var(--warning)";
+                box.style.backgroundColor = "rgba(245, 158, 11, 0.08)";
+                box.style.color = "#fcd34d";
+            } else if (balance > 0 && expense > 0) {
+                let savingRate = ((balance / income) * 100).toFixed(0);
+                box.innerHTML = `<strong>Performance Tática Excelente.</strong> Estrutura de orçamento robusta com poupança aproximada de <strong>${savingRate}%</strong> do capital injetado.`;
+                box.style.borderLeftColor = "var(--success)";
+                box.style.backgroundColor = "rgba(16, 185, 129, 0.08)";
+                box.style.color = "#6ee7b7";
+            } else {
+                box.innerHTML = "Sistemas ativos. Dados sendo monitorados. Mantenha os lançamentos consistentes para relatórios precisos do algoritmo.";
+                box.style.borderLeftColor = "var(--primary)";
+                box.style.backgroundColor = "rgba(79, 70, 229, 0.08)";
+                box.style.color = "#a5b4fc";
+            }
+        }
+
+        // --- ATUALIZAÇÃO DO GRÁFICO (Chart.js Premium) ---
+        function updateChart(income, expense, future) {
+            const ctx = document.getElementById('financeChart').getContext('2d');
+            
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            if (income === 0 && expense === 0 && future === 0) {
+                chartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Aguardando'],
+                        datasets: [{ data: [100], backgroundColor: ['rgba(39, 39, 42, 0.5)'], borderWidth: 0 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+                });
+                return;
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Receitas', 'Despesas Pagas', 'Contas Futuras'],
+                    datasets: [{
+                        data: [income, expense, future],
+                        backgroundColor: ['#10b981', '#ef4444', '#f59e0b'],
+                        borderWidth: 0,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { animateScale: true, animateRotate: true },
+                    plugins: {
+                        legend: { 
+                            position: 'right', 
+                            labels: { 
+                                boxWidth: 12, 
+                                usePointStyle: true,
+                                color: '#a1a1aa',
+                                padding: 15,
+                                font: { family: 'Inter', size: 12, weight: '500' } 
+                            } 
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(9, 9, 11, 0.95)',
+                            titleFont: { family: 'Inter', size: 13 },
+                            bodyFont: { family: 'Inter', size: 14, weight: 'bold' },
+                            padding: 12,
+                            cornerRadius: 8,
+                            boxPadding: 6,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed !== null) {
+                                        label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '75%'
+                }
+            });
+        }
+    </script>
+</body>
+</html>
