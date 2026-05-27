@@ -113,6 +113,17 @@
             -webkit-text-fill-color: transparent;
         }
 
+        /* Menu Mobile Toggle */
+        #btn-mobile-menu {
+            display: none;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-right: 1rem;
+        }
+
         .nav-right {
             display: flex;
             align-items: center;
@@ -164,6 +175,37 @@
 
         .status-sync.local { background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.2); color: #fcd34d; }
         .status-sync.local .dot { background-color: var(--warning); box-shadow: 0 0 12px var(--warning); }
+
+        /* Ícones de Navegação Topo (SaaS) */
+        .btn-icon-only {
+            background: rgba(39, 39, 42, 0.6);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .btn-icon-only:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .notification-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 10px;
+            height: 10px;
+            background: var(--danger);
+            border-radius: 50%;
+            border: 2px solid var(--surface-solid);
+        }
 
         /* Tela de Autenticação */
         .auth-wrapper {
@@ -270,13 +312,89 @@
             box-shadow: 0 4px 15px rgba(255,255,255,0.1);
         }
 
-        /* Layout Container do Dashboard */
+        /* Layout Container Geral do Dashboard */
         .container {
-            max-width: 1300px;
+            max-width: 1500px;
             margin: 0 auto;
-            padding: 2.5rem 1.5rem;
+            padding: 2rem 1.5rem;
             animation: fadeIn 0.5s ease;
             width: 100%;
+        }
+
+        /* HIERARQUIA SaaS: Layout Principal com Sidebar */
+        .saas-layout {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        .saas-sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            background: var(--surface-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            position: sticky;
+            top: 100px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .saas-main-content {
+            flex: 1;
+            min-width: 0; /* Previne quebra de grid */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Estilos do Menu Lateral */
+        .saas-plan-badge {
+            background: linear-gradient(135deg, #4f46e5, #a855f7);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.3rem 0.7rem;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .sidebar-nav li {
+            padding: 0.9rem 1rem;
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.95rem;
+        }
+        .sidebar-nav li:hover, .sidebar-nav li.active {
+            background: rgba(79, 70, 229, 0.15);
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+        }
+
+        .sidebar-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.05);
+            margin: 0.5rem 0;
         }
 
         /* Cabecalho de Saudação Personalizado */
@@ -286,25 +404,30 @@
             display: flex;
             flex-direction: column;
             gap: 0.3rem;
+            padding: 0.5rem;
+            background: rgba(79, 70, 229, 0.05);
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
         }
         .dashboard-header h2 {
-            font-size: 1.7rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: #fff;
             letter-spacing: -0.5px;
         }
         .dashboard-header h2 span.name-highlight {
-            color: var(--primary);
+            color: #a5b4fc;
         }
         .dashboard-header p {
             color: var(--text-muted);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         /* Cards de Resumo */
         .summary-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2.5rem;
         }
@@ -375,6 +498,7 @@
             grid-template-columns: 1.2fr 1.1fr 0.9fr;
             gap: 1.5rem;
             margin-bottom: 1.5rem;
+            align-items: stretch; /* Garante alinhamento vertical consistente */
         }
         
         .secondary-grid {
@@ -382,6 +506,7 @@
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2.5rem;
+            align-items: stretch; /* Garante alinhamento vertical consistente */
         }
 
         .panel {
@@ -396,6 +521,7 @@
             flex-direction: column;
             transition: border-color 0.3s ease;
             width: 100%;
+            flex: 1; /* Preenche altura no grid */
         }
         .panel:hover { border-color: rgba(255, 255, 255, 0.08); }
 
@@ -684,7 +810,7 @@
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.15);
         }
 
-        /* Modal Perfil Overlay e Danger Zone */
+        /* Modais (Perfil, Settings, etc) */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -781,14 +907,22 @@
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* ---- RESPONSIVIDADE APRIMORADA (MOBILE FIRST ADAPTATION) ---- */
-        @media (max-width: 1100px) {
+        @media (max-width: 1200px) {
             .main-grid { grid-template-columns: 1fr 1fr; }
             .main-grid > .panel:last-child { grid-column: span 2; }
         }
         
+        @media (max-width: 900px) {
+            .saas-layout { flex-direction: column; gap: 1rem; }
+            .saas-sidebar { display: none; width: 100%; position: static; margin-bottom: 1rem;}
+            .saas-sidebar.active { display: flex; animation: fadeIn 0.3s ease; }
+            #btn-mobile-menu { display: block; }
+            .navbar h1 { margin-left: 0; }
+        }
+
         @media (max-width: 768px) {
-            .navbar { padding: 1rem; flex-direction: column; gap: 1rem; align-items: flex-start;}
-            .nav-right { width: 100%; justify-content: space-between; }
+            .navbar { padding: 1rem; }
+            .nav-right { width: auto; justify-content: flex-end; }
             .container { padding: 1rem; }
             
             .summary-grid { grid-template-columns: repeat(auto-fit, minmax(100%, 1fr)); gap: 1rem; margin-bottom: 1.5rem;}
@@ -823,6 +957,7 @@
 
             .navbar h1 { font-size: 1.2rem; }
             .user-badge { padding: 0.4rem 0.8rem; font-size: 0.8rem;}
+            .user-badge span { display: none; } /* Oculta o email no mobile p/ caber icones */
             
             .stat-item { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
             .stat-value { text-align: left; }
@@ -841,24 +976,34 @@
 
     <!-- Navbar Superior -->
     <nav class="navbar">
-        <h1><i class="fa-solid fa-gem" style="color: var(--primary); text-shadow: 0 0 10px rgba(79, 70, 229, 0.5);"></i> <span>Corvus</span></h1>
+        <h1>
+            <!-- Botão Menu Mobile (Novo SaaS) -->
+            <button id="btn-mobile-menu"><i class="fa-solid fa-bars"></i></button>
+            <i class="fa-solid fa-gem" style="color: var(--primary); text-shadow: 0 0 10px rgba(79, 70, 229, 0.5);"></i> <span>Corvus</span>
+        </h1>
         
         <div class="nav-right">
+            <!-- Icone de Notificação SaaS (Novo) -->
+            <button class="btn-icon-only" id="btn-notifications" title="Notificações">
+                <i class="fa-solid fa-bell"></i>
+                <span class="notification-dot"></span>
+            </button>
+            
+            <!-- Botão Configurações SaaS (Novo) -->
+            <button class="btn-icon-only" id="btn-settings" title="Configurações de Assinatura">
+                <i class="fa-solid fa-gear"></i>
+            </button>
+
             <!-- Indicador do Usuário Conectado -->
-            <div id="user-display" class="user-badge" style="display: none;">
+            <div id="user-display" class="user-badge" style="display: none; cursor: pointer;" title="Abrir Perfil">
                 <img id="navbar-avatar" src="" alt="Avatar" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover; display: none;">
                 <span id="user-email-text">Visitante</span>
-                
-                <!-- Botão de Perfil -->
-                <button class="action-btn" id="btn-open-profile" title="Meu Perfil" style="border:none; background:none; margin-left:8px; cursor:pointer; color:var(--primary); padding: 0.2rem;"><i class="fa-solid fa-id-card"></i></button>
-                
-                <button class="action-btn" id="btn-logout" title="Sair do Sistema" style="border:none; background:none; margin-left:4px; cursor:pointer; color:var(--danger); padding: 0.2rem;"><i class="fa-solid fa-right-from-bracket"></i></button>
             </div>
             
-            <!-- Indicador do Status de Sincronização -->
-            <div id="connection-status" class="status-sync">
-                <span class="dot"></span> <span id="sync-text">Conectando...</span>
-            </div>
+            <button class="btn-icon-only" id="btn-logout" title="Sair do Sistema" style="color:var(--danger); border-color: rgba(239, 68, 68, 0.3);">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+
         </div>
     </nav>
 
@@ -907,196 +1052,229 @@
     <!-- Container do App Principal (Ocultado até Autenticar) -->
     <div id="app-section" class="container" style="display: none;">
         
-        <!-- Cabeçalho Dinâmico de Saudação -->
-        <div class="dashboard-header">
-            <h2><span id="time-greeting">Bem-vindo</span>, <span id="header-user-name" class="name-highlight">Agente</span>!</h2>
-            <p>Aqui está a síntese atualizada da sua operação financeira.</p>
-        </div>
-
-        <!-- Dashboard / Cards de Resumo -->
-        <div class="summary-grid">
-            <div class="summary-card balance">
-                <h3><i class="fa-solid fa-wallet"></i> Saldo Atual</h3>
-                <p id="total-balance">R$ 0,00</p>
-            </div>
-            <div class="summary-card income">
-                <h3><i class="fa-solid fa-arrow-trend-up"></i> Receitas</h3>
-                <p id="total-income">R$ 0,00</p>
-            </div>
-            <div class="summary-card expense">
-                <h3><i class="fa-solid fa-arrow-trend-down"></i> Gastos Pagos</h3>
-                <p id="total-expense">R$ 0,00</p>
-            </div>
-            <div class="summary-card future">
-                <h3><i class="fa-regular fa-clock"></i> Faturas Futuras</h3>
-                <p id="total-future">R$ 0,00</p>
-            </div>
-        </div>
-
-        <!-- Painéis Principais -->
-        <div class="main-grid">
+        <!-- HIERARQUIA: NOVO SAAS LAYOUT (SIDEBAR + CONTEÚDO) -->
+        <div class="saas-layout">
             
-            <!-- Formulário -->
-            <div class="panel" style="position: relative;">
-                <div id="form-loader" class="loading-overlay">
-                    <div class="spinner"></div>
+            <!-- Sidebar SaaS -->
+            <aside class="saas-sidebar" id="main-sidebar">
+                <div style="margin-bottom: 0.5rem;">
+                    <span class="saas-plan-badge">Plano Corvus PRO</span>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 5px;">Licença Ativa</p>
                 </div>
-                <div class="panel-header"><i class="fa-solid fa-plus-circle" style="color: var(--primary);"></i> Novo Lançamento</div>
-                <form id="transaction-form">
-                    <div class="form-group">
-                        <label>Descrição</label>
-                        <input type="text" id="desc" placeholder="Ex: Equipamentos, Salário..." required maxlength="60">
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Categoria / Tag</label>
-                            <select id="category" required>
-                                <option value="Geral">Geral (Sem Categoria)</option>
-                                <option value="Alimentação">Alimentação</option>
-                                <option value="Moradia">Moradia (Aluguel/Contas)</option>
-                                <option value="Transporte">Transporte / Combustível</option>
-                                <option value="Saúde">Saúde / Bem-estar</option>
-                                <option value="Educação">Educação</option>
-                                <option value="Lazer">Lazer / Assinaturas</option>
-                                <option value="Salário/Renda">Salário / Rendimentos</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Tipo de Lançamento</label>
-                            <select id="type" required>
-                                <option value="income">Entrada / Receita (+)</option>
-                                <option value="expense">Despesa Paga (-)</option>
-                                <option value="future">Despesa Futura (A Pagar)</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Valor Total (R$)</label>
-                            <input type="number" id="amount" placeholder="0.00" step="0.01" min="0.01" max="9999999" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Parcelas</label>
-                            <input type="number" id="installments" value="1" min="1" max="72" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Data Inicial</label>
-                        <input type="date" id="date" required>
-                    </div>
-
-                    <button type="submit" class="btn"><i class="fa-solid fa-cloud-arrow-up"></i> Registrar Seguro</button>
-                </form>
-            </div>
-
-            <!-- Gráfico de Alocação -->
-            <div class="panel">
-                <div class="panel-header"><i class="fa-solid fa-chart-pie" style="color: var(--success);"></i> Visão Geral</div>
-                <div class="chart-container">
-                    <canvas id="financeChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Sugestões da IA Simples -->
-            <div class="panel">
-                <div class="panel-header"><i class="fa-solid fa-shield-halved" style="color: var(--warning);"></i> Integridade</div>
-                <div id="insight-box" class="insight-box">
-                    Aguardando análise de dados...
-                </div>
-                <div style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;">
-                    <strong style="color: #fff;"><i class="fa-solid fa-lock" style="color: var(--primary);"></i> Corvus Security:</strong> Cofre de dados isolado por UID de usuário ativo (Apenas você enxerga).
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Grid Secundário de Estatísticas e Metas -->
-        <div class="secondary-grid">
-            
-            <!-- Painel de Meta de Economia -->
-            <div class="panel">
-                <div class="panel-header"><i class="fa-solid fa-bullseye" style="color: #818cf8;"></i> Meta de Economia (Corvus AI)</div>
-                <div style="margin-top: auto; margin-bottom: auto;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem; font-size: 0.95rem;">
-                        <span style="color: var(--text-muted);">Progresso do Fundo de Reserva</span>
-                        <strong id="goal-percentage" style="color: #fff;">0.0%</strong>
-                    </div>
-                    <div class="progress-wrapper">
-                        <div id="goal-progress-bar" class="progress-fill" style="width: 0%;"></div>
-                    </div>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 1.25rem; line-height: 1.5;">
-                        <i class="fa-solid fa-circle-info" style="margin-right: 5px;"></i> O sistema sugere reservar <strong>20% das receitas totais</strong> baseando-se no saldo livre atual.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Painel de Métricas Avançadas (Expandido) -->
-            <div class="panel">
-                <div class="panel-header"><i class="fa-solid fa-chart-simple" style="color: var(--success);"></i> Métricas do Sistema</div>
-                <ul class="stat-list">
-                    <li class="stat-item" style="padding: 0.8rem 1.25rem;">
-                        <span class="stat-label"><i class="fa-solid fa-arrow-down-wide-short" style="color: var(--danger);"></i> Maior Gasto Único</span>
-                        <span id="stat-max-expense" class="stat-value" style="color: #fca5a5;">R$ 0,00</span>
-                    </li>
-                    <li class="stat-item" style="padding: 0.8rem 1.25rem;">
-                        <span class="stat-label"><i class="fa-solid fa-arrow-up-wide-short" style="color: var(--success);"></i> Maior Receita Única</span>
-                        <span id="stat-max-income" class="stat-value" style="color: #6ee7b7;">R$ 0,00</span>
-                    </li>
-                    <li class="stat-item" style="padding: 0.8rem 1.25rem;">
-                        <span class="stat-label"><i class="fa-solid fa-calculator" style="color: var(--warning);"></i> Média de Gasto/Registro</span>
-                        <span id="stat-avg-expense" class="stat-value" style="color: #fcd34d;">R$ 0,00</span>
-                    </li>
-                    <li class="stat-item" style="padding: 0.8rem 1.25rem;">
-                        <span class="stat-label"><i class="fa-solid fa-hashtag" style="color: var(--primary);"></i> Total de Registos Salvos</span>
-                        <span id="stat-total-items" class="stat-value" style="color: #a5b4fc;">0</span>
-                    </li>
+                
+                <div class="sidebar-divider"></div>
+                
+                <ul class="sidebar-nav">
+                    <li class="active" onclick="showToast('Você já está no Dashboard.', 'info')"><i class="fa-solid fa-chart-line" style="width: 20px;"></i> Dashboard</li>
+                    <li onclick="showToast('Módulo de Relatórios Avançados em breve!', 'warning')"><i class="fa-solid fa-file-export" style="width: 20px;"></i> Relatórios PDF</li>
+                    <li onclick="showToast('Módulo de Metas Anuais em breve!', 'warning')"><i class="fa-solid fa-bullseye" style="width: 20px;"></i> Metas de Longo Prazo</li>
+                    <li onclick="document.getElementById('btn-settings').click()"><i class="fa-solid fa-gear" style="width: 20px;"></i> Preferências</li>
                 </ul>
-            </div>
+                
+                <div style="margin-top: auto; padding-top: 1rem;">
+                    <div class="sidebar-divider" style="margin-bottom: 1rem;"></div>
+                    <!-- Indicador do Status de Sincronização Movido para Sidebar -->
+                    <div id="connection-status" class="status-sync" style="background: transparent; border: none; padding: 0;">
+                        <span class="dot"></span> <span id="sync-text">Conectando...</span>
+                    </div>
+                </div>
+            </aside>
 
-        </div>
+            <!-- Main Content Area -->
+            <div class="saas-main-content">
+                
+                <!-- Cabeçalho Dinâmico de Saudação -->
+                <div class="dashboard-header">
+                    <h2><span id="time-greeting">Bem-vindo</span>, <span id="header-user-name" class="name-highlight">Agente</span>!</h2>
+                    <p>Aqui está a síntese atualizada da sua operação financeira.</p>
+                </div>
 
-        <!-- Planilha de Dados Principal -->
-        <div class="panel" style="position: relative;">
-            <div id="table-loader" class="loading-overlay">
-                <div class="spinner"></div>
-            </div>
-            <div class="panel-header">
-                <span><i class="fa-solid fa-server" style="color: var(--primary);"></i> Histórico Criptografado</span>
-            </div>
-            
-            <div class="filter-bar">
-                <input type="text" id="search-input" class="filter-input" placeholder="🔍 Pesquisar por descrição..." maxlength="50">
-                <select id="filter-type" style="width: auto; min-width: 150px;">
-                    <option value="all">Todos os Status</option>
-                    <option value="income">Entradas</option>
-                    <option value="expense">Gastos Pagos</option>
-                    <option value="future">A Pagar</option>
-                </select>
-                <button id="btn-export-csv" class="btn-export" title="Exportar para Excel/CSV"><i class="fa-solid fa-file-csv"></i> Exportar CSV</button>
-            </div>
+                <!-- Dashboard / Cards de Resumo -->
+                <div class="summary-grid">
+                    <div class="summary-card balance">
+                        <h3><i class="fa-solid fa-wallet"></i> Saldo Atual</h3>
+                        <p id="total-balance">R$ 0,00</p>
+                    </div>
+                    <div class="summary-card income">
+                        <h3><i class="fa-solid fa-arrow-trend-up"></i> Receitas</h3>
+                        <p id="total-income">R$ 0,00</p>
+                    </div>
+                    <div class="summary-card expense">
+                        <h3><i class="fa-solid fa-arrow-trend-down"></i> Gastos Pagos</h3>
+                        <p id="total-expense">R$ 0,00</p>
+                    </div>
+                    <div class="summary-card future">
+                        <h3><i class="fa-regular fa-clock"></i> Faturas Futuras</h3>
+                        <p id="total-future">R$ 0,00</p>
+                    </div>
+                </div>
 
-            <div class="table-container">
-                <table id="data-table">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Descrição</th>
-                            <th>Categoria</th>
-                            <th>Status</th>
-                            <th>Valor</th>
-                            <th style="text-align: right; width: 130px;">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="transaction-tbody">
-                        <tr><td colspan="6" style="text-align:center; padding: 2rem; color: var(--text-muted);">A carregar registros...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                <!-- Painéis Principais -->
+                <div class="main-grid">
+                    
+                    <!-- Formulário -->
+                    <div class="panel" style="position: relative;">
+                        <div id="form-loader" class="loading-overlay">
+                            <div class="spinner"></div>
+                        </div>
+                        <div class="panel-header"><i class="fa-solid fa-plus-circle" style="color: var(--primary);"></i> Novo Lançamento</div>
+                        <form id="transaction-form" style="display: flex; flex-direction: column; flex: 1;">
+                            <div class="form-group">
+                                <label>Descrição</label>
+                                <input type="text" id="desc" placeholder="Ex: Equipamentos, Salário..." required maxlength="60">
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Categoria / Tag</label>
+                                    <select id="category" required>
+                                        <option value="Geral">Geral (Sem Categoria)</option>
+                                        <option value="Alimentação">Alimentação</option>
+                                        <option value="Moradia">Moradia (Aluguel/Contas)</option>
+                                        <option value="Transporte">Transporte / Combustível</option>
+                                        <option value="Saúde">Saúde / Bem-estar</option>
+                                        <option value="Educação">Educação</option>
+                                        <option value="Lazer">Lazer / Assinaturas</option>
+                                        <option value="Salário/Renda">Salário / Rendimentos</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Tipo de Lançamento</label>
+                                    <select id="type" required>
+                                        <option value="income">Entrada / Receita (+)</option>
+                                        <option value="expense">Despesa Paga (-)</option>
+                                        <option value="future">Despesa Futura (A Pagar)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Valor Total (R$)</label>
+                                    <input type="number" id="amount" placeholder="0.00" step="0.01" min="0.01" max="9999999" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Parcelas</label>
+                                    <input type="number" id="installments" value="1" min="1" max="72" required>
+                                </div>
+                            </div>
 
+                            <div class="form-group">
+                                <label>Data Inicial</label>
+                                <input type="date" id="date" required>
+                            </div>
+
+                            <button type="submit" class="btn" style="margin-top: auto;"><i class="fa-solid fa-cloud-arrow-up"></i> Registrar Seguro</button>
+                        </form>
+                    </div>
+
+                    <!-- Gráfico de Alocação -->
+                    <div class="panel">
+                        <div class="panel-header"><i class="fa-solid fa-chart-pie" style="color: var(--success);"></i> Visão Geral</div>
+                        <div class="chart-container" style="flex: 1; display: flex; align-items: center; justify-content: center;">
+                            <canvas id="financeChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Sugestões da IA Simples -->
+                    <div class="panel">
+                        <div class="panel-header"><i class="fa-solid fa-shield-halved" style="color: var(--warning);"></i> Integridade e IA</div>
+                        <div id="insight-box" class="insight-box" style="flex: 1;">
+                            Aguardando análise de dados...
+                        </div>
+                        <div style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;">
+                            <strong style="color: #fff;"><i class="fa-solid fa-lock" style="color: var(--primary);"></i> Corvus Security:</strong> Cofre de dados isolado por UID de usuário ativo (Apenas você enxerga).
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Grid Secundário de Estatísticas e Metas -->
+                <div class="secondary-grid">
+                    
+                    <!-- Painel de Meta de Economia -->
+                    <div class="panel">
+                        <div class="panel-header"><i class="fa-solid fa-bullseye" style="color: #818cf8;"></i> Meta de Economia (Corvus AI)</div>
+                        <div style="margin-top: auto; margin-bottom: auto;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem; font-size: 0.95rem;">
+                                <span style="color: var(--text-muted);">Progresso do Fundo de Reserva</span>
+                                <strong id="goal-percentage" style="color: #fff;">0.0%</strong>
+                            </div>
+                            <div class="progress-wrapper">
+                                <div id="goal-progress-bar" class="progress-fill" style="width: 0%;"></div>
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 1.25rem; line-height: 1.5;">
+                                <i class="fa-solid fa-circle-info" style="margin-right: 5px;"></i> O sistema sugere reservar <strong>20% das receitas totais</strong> baseando-se no saldo livre atual.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Painel de Métricas Avançadas (Expandido) -->
+                    <div class="panel">
+                        <div class="panel-header"><i class="fa-solid fa-chart-simple" style="color: var(--success);"></i> Métricas do Sistema</div>
+                        <ul class="stat-list">
+                            <li class="stat-item" style="padding: 0.8rem 1.25rem;">
+                                <span class="stat-label"><i class="fa-solid fa-arrow-down-wide-short" style="color: var(--danger);"></i> Maior Gasto Único</span>
+                                <span id="stat-max-expense" class="stat-value" style="color: #fca5a5;">R$ 0,00</span>
+                            </li>
+                            <li class="stat-item" style="padding: 0.8rem 1.25rem;">
+                                <span class="stat-label"><i class="fa-solid fa-arrow-up-wide-short" style="color: var(--success);"></i> Maior Receita Única</span>
+                                <span id="stat-max-income" class="stat-value" style="color: #6ee7b7;">R$ 0,00</span>
+                            </li>
+                            <li class="stat-item" style="padding: 0.8rem 1.25rem;">
+                                <span class="stat-label"><i class="fa-solid fa-calculator" style="color: var(--warning);"></i> Média de Gasto/Registro</span>
+                                <span id="stat-avg-expense" class="stat-value" style="color: #fcd34d;">R$ 0,00</span>
+                            </li>
+                            <li class="stat-item" style="padding: 0.8rem 1.25rem;">
+                                <span class="stat-label"><i class="fa-solid fa-hashtag" style="color: var(--primary);"></i> Total de Registos Salvos</span>
+                                <span id="stat-total-items" class="stat-value" style="color: #a5b4fc;">0</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <!-- Planilha de Dados Principal -->
+                <div class="panel" style="position: relative;">
+                    <div id="table-loader" class="loading-overlay">
+                        <div class="spinner"></div>
+                    </div>
+                    <div class="panel-header">
+                        <span><i class="fa-solid fa-server" style="color: var(--primary);"></i> Histórico Criptografado</span>
+                    </div>
+                    
+                    <div class="filter-bar">
+                        <input type="text" id="search-input" class="filter-input" placeholder="🔍 Pesquisar por descrição..." maxlength="50">
+                        <select id="filter-type" style="width: auto; min-width: 150px;">
+                            <option value="all">Todos os Status</option>
+                            <option value="income">Entradas</option>
+                            <option value="expense">Gastos Pagos</option>
+                            <option value="future">A Pagar</option>
+                        </select>
+                        <button id="btn-export-csv" class="btn-export" title="Exportar para Excel/CSV"><i class="fa-solid fa-file-csv"></i> Exportar CSV</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Descrição</th>
+                                    <th>Categoria</th>
+                                    <th>Status</th>
+                                    <th>Valor</th>
+                                    <th style="text-align: right; width: 130px;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transaction-tbody">
+                                <tr><td colspan="6" style="text-align:center; padding: 2rem; color: var(--text-muted);">A carregar registros...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div> <!-- Fim saas-main-content -->
+        </div> <!-- Fim saas-layout -->
     </div>
 
     <!-- Modal de Perfil de Usuário & Danger Zone -->
@@ -1134,13 +1312,49 @@
         </div>
     </div>
 
+    <!-- NOVO: Modal de Configurações SaaS -->
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-content panel" style="box-shadow: 0 20px 40px rgba(0,0,0,0.8);">
+            <div class="panel-header" style="margin-bottom: 1rem;">
+                <span><i class="fa-solid fa-gear" style="color: var(--primary);"></i> Preferências SaaS</span>
+                <button id="btn-close-settings" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1.2rem; transition: color 0.2s;"><i class="fa-solid fa-times"></i></button>
+            </div>
+            
+            <div class="form-group">
+                <label>Moeda Base (Exibição)</label>
+                <select id="settings-currency" style="background: rgba(0,0,0,0.3);">
+                    <option value="BRL">Real Brasileiro (R$)</option>
+                    <option value="USD">Dólar Americano ($)</option>
+                    <option value="EUR">Euro (€)</option>
+                </select>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Apenas altera a visualização. Valores no banco permanecem brutos.</p>
+            </div>
+
+            <div class="form-group">
+                <label>Fuso Horário (Relatórios)</label>
+                <select id="settings-timezone" style="background: rgba(0,0,0,0.3);">
+                    <option value="America/Sao_Paulo">Brasília (GMT-3)</option>
+                    <option value="UTC">UTC Universal</option>
+                </select>
+            </div>
+
+            <hr style="border:none; border-top: 1px solid rgba(255,255,255,0.05); margin: 1.5rem 0;">
+
+            <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); padding: 1rem; border-radius: 8px; text-align: center;">
+                <p style="color: #6ee7b7; font-weight: 600; font-size: 0.85rem; margin-bottom: 0.5rem;">Assinatura Corvus PRO Ativa</p>
+                <p style="color: var(--text-muted); font-size: 0.75rem;">Faturamento via Google Play. Renovação automática em 30 dias.</p>
+            </div>
+
+            <button id="btn-save-settings" class="btn" style="margin-top: 1.5rem;"><i class="fa-solid fa-check"></i> Salvar Preferências</button>
+        </div>
+    </div>
+
     <!-- Container de Toasts -->
     <div id="toast-container"></div>
 
     <!-- Script de Inicialização e Integração Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        // Importando updateProfile para atualizar os dados do usuário
         import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
@@ -1148,7 +1362,7 @@
         const firebaseConfig = typeof __firebase_config !== 'undefined' 
             ? JSON.parse(__firebase_config) 
             : {
-                apiKey: atob("QUl6YVN5RGZrRnMtNy1PSjBUZkNPOUlwYU9LY091VThSd2ppYmNv"), // Corrigido
+                apiKey: atob("QUl6YVN5RGZrRnMtNy1PSjBUZkNPOUlwYU9LY091VThSd2ppYmNv"),
                 authDomain: atob("Y29udHJvbGVkZWdhc3Rvcy1lMmZlNi5maXJlYmFzZWFwcC5jb20="),
                 projectId: atob("Y29udHJvbGVkZWdhc3Rvcy1lMmZlNg=="),
                 storageBucket: atob("Y29udHJvbGVkZWdhc3Rvcy1lMmZlNi5maXJlYmFzZXN0b3JhZ2UuYXBw"),
@@ -1181,7 +1395,7 @@
         const formLoader = document.getElementById('form-loader');
         const tableLoader = document.getElementById('table-loader');
         const btnExportCsv = document.getElementById('btn-export-csv');
-        const categoryInput = document.getElementById('category'); // Nova referência
+        const categoryInput = document.getElementById('category'); 
         
         // Referências DOM - Autenticação
         const authSection = document.getElementById('auth-section');
@@ -1204,8 +1418,8 @@
         const timeGreeting = document.getElementById('time-greeting');
         const headerUserName = document.getElementById('header-user-name');
         
-        // Referências DOM - Modal de Perfil e Danger Zone
-        const btnOpenProfile = document.getElementById('btn-open-profile');
+        // Referências DOM - Modais e UI SaaS
+        const btnOpenProfile = document.getElementById('user-display'); // Torna o badge de usuario clicavel tbm
         const profileModal = document.getElementById('profile-modal');
         const btnCloseProfile = document.getElementById('btn-close-profile');
         const modalAvatar = document.getElementById('modal-avatar');
@@ -1214,6 +1428,14 @@
         const btnSaveProfile = document.getElementById('btn-save-profile');
         const modalUid = document.getElementById('modal-uid');
         const btnWipeData = document.getElementById('btn-wipe-data');
+        
+        const btnNotifications = document.getElementById('btn-notifications');
+        const btnSettings = document.getElementById('btn-settings');
+        const settingsModal = document.getElementById('settings-modal');
+        const btnCloseSettings = document.getElementById('btn-close-settings');
+        const btnSaveSettings = document.getElementById('btn-save-settings');
+        const btnMobileMenu = document.getElementById('btn-mobile-menu');
+        const mainSidebar = document.getElementById('main-sidebar');
 
         dateInput.value = new Date().toISOString().split('T')[0];
 
@@ -1234,7 +1456,6 @@
             return str.replace(/[&<>"']/g, function(m) { return map[m]; });
         }
 
-        // --- SISTEMA DE DEBOUNCE (OTIMIZAÇÃO DE PERFORMANCE) ---
         function debounce(func, wait) {
             let timeout;
             return function(...args) {
@@ -1258,6 +1479,34 @@
                 timeGreeting.innerText = 'Boa noite';
             }
         }
+
+        // --- LÓGICA DE UI SAAS (MODAIS E MENUS) ---
+        btnNotifications.addEventListener('click', () => {
+            showToast("Você não possui novos alertas de segurança ou faturamento.", "info");
+        });
+
+        btnMobileMenu.addEventListener('click', () => {
+            mainSidebar.classList.toggle('active');
+        });
+
+        btnSettings.addEventListener('click', () => {
+            settingsModal.classList.add('active');
+        });
+        
+        btnCloseSettings.addEventListener('click', () => {
+            settingsModal.classList.remove('active');
+        });
+        
+        btnSaveSettings.addEventListener('click', () => {
+            showToast("Preferências salvas com sucesso! Aplicando...", "success");
+            setTimeout(() => { settingsModal.classList.remove('active'); }, 500);
+        });
+
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) {
+                settingsModal.classList.remove('active');
+            }
+        });
 
         // --- SISTEMA DE TOASTS PERSONALIZADO ---
         function showToast(message, type = 'info') {
@@ -1527,6 +1776,10 @@
         btnOpenProfile.addEventListener('click', () => {
             profileModal.classList.add('active');
         });
+        
+        document.getElementById('btn-open-profile-navbar')?.addEventListener('click', () => {
+             profileModal.classList.add('active');
+        });
 
         btnCloseProfile.addEventListener('click', () => {
             profileModal.classList.remove('active');
@@ -1586,7 +1839,6 @@
                     const colRef = getCollectionRef();
                     if (!colRef) throw new Error("Não conectado.");
                     
-                    // Firestore não possui "delete all", precisamos deletar doc por doc
                     const querySnapshot = await getDocs(colRef);
                     const deletePromises = [];
                     querySnapshot.forEach((document) => {
@@ -1655,7 +1907,6 @@
                 return;
             }
             
-            // Adicionado Categoria na exportação
             let csvContent = "data:text/csv;charset=utf-8,Data,Descrição,Categoria,Status,Valor (R$)\n";
             const sortedForExport = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
             
@@ -1688,7 +1939,7 @@
             const totalAmount = parseFloat(document.getElementById('amount').value);
             const installments = parseInt(document.getElementById('installments').value);
             const type = document.getElementById('type').value;
-            const category = document.getElementById('category').value; // Captura Categoria
+            const category = document.getElementById('category').value; 
             const startDate = document.getElementById('date').value;
 
             if (!desc || isNaN(totalAmount) || isNaN(installments) || totalAmount <= 0 || installments < 1 || installments > 72) {
@@ -1714,7 +1965,7 @@
 
                 newItems.push({
                     desc: finalDesc,
-                    category: escapeHTML(category), // Salva a categoria
+                    category: escapeHTML(category), 
                     amount: amountPerInstallment,
                     type: escapeHTML(finalType),
                     date: escapeHTML(formattedDate),
