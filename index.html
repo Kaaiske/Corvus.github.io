@@ -3,28 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <!-- Integração do ID de Cliente Google Auth fornecido -->
     <meta name="google-signin-client_id" content="257010731379-1qrva2pop3kp9k8qqhv4fql5ff8tvis6.apps.googleusercontent.com">
-    
     <title>Corvus - Gestão Financeira Inteligente</title>
-    
-    <!-- Fontes e Ícones -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Biblioteca de Gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        /* Variáveis de Cores - Tema Corvus (Ultra Escuro Premium) */
+        /* ============================================================
+           VARIÁVEIS DE CORES - TEMA CORVUS
+           ============================================================ */
         :root {
-            --bg-color: #050505; /* Quase preto */
-            --surface-bg: rgba(18, 18, 20, 0.75); /* Zinc muito escuro translúcido */
+            --bg-color: #050505;
+            --surface-bg: rgba(18, 18, 20, 0.75);
             --surface-solid: #121214;
             --text-main: #f8fafc;
             --text-muted: #a1a1aa;
-            --primary: #4f46e5; /* Índigo profundo */
+            --primary: #4f46e5;
             --primary-hover: #4338ca;
             --success: #10b981;
             --success-light: rgba(16, 185, 129, 0.12);
@@ -32,24 +27,22 @@
             --danger-light: rgba(239, 68, 68, 0.12);
             --warning: #f59e0b;
             --warning-light: rgba(245, 158, 11, 0.12);
-            --border: rgba(39, 39, 42, 0.8); /* Borda sutil */
+            --border: rgba(39, 39, 42, 0.8);
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
             --shadow-lg: 0 15px 30px -5px rgba(0, 0, 0, 0.8);
-            --shadow-glow: 0 0 15px rgba(79, 70, 229, 0.3);
             --radius: 14px;
         }
 
-        /* --- Scrollbar Customizado Premium --- */
+        /* ============================================================
+           SCROLLBAR CUSTOMIZADO
+           ============================================================ */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-color); }
         ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
 
-        /* --- OTIMIZAÇÃO DE PERFORMANCE (SCROLL TRAVANDO FIX) --- */
-        html {
-            scroll-behavior: smooth; /* Movido para o HTML apenas para não forçar em todos os elementos */
-        }
+        html { scroll-behavior: smooth; }
 
         * {
             margin: 0;
@@ -60,42 +53,46 @@
 
         body {
             background-color: var(--bg-color);
-            background-image: radial-gradient(circle at 10% 40%, rgba(79, 70, 229, 0.05), transparent 35%),
-                              radial-gradient(circle at 90% 20%, rgba(16, 185, 129, 0.03), transparent 30%);
+            background-image:
+                radial-gradient(circle at 10% 40%, rgba(79, 70, 229, 0.05), transparent 35%),
+                radial-gradient(circle at 90% 20%, rgba(16, 185, 129, 0.03), transparent 30%);
             color: var(--text-main);
             padding-bottom: 3rem;
             min-height: 100vh;
             overflow-x: hidden;
             width: 100%;
-            -webkit-font-smoothing: antialiased; /* Suavização de fonte */
+            -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Aceleração de Hardware para elementos com Blur (Fim das travadas) */
-        .panel, .summary-card, .saas-sidebar, .navbar, .auth-card {
-            transform: translateZ(0); /* Força a renderização via GPU */
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            will-change: transform, opacity;
-        }
+        /* ============================================================
+           FIX PERFORMANCE #1 — REMOVIDO will-change ESTÁTICO
+           Aplicado apenas via JS no hover (panel-hover-init)
+           ============================================================ */
 
-        /* --- Animações --- */
+        /* ============================================================
+           ANIMAÇÕES
+           ============================================================ */
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+            to   { opacity: 1; transform: translateY(0); }
         }
         @keyframes fadeIn {
             from { opacity: 0; }
-            to { opacity: 1; }
+            to   { opacity: 1; }
         }
         @keyframes modalShow {
             from { opacity: 0; transform: scale(0.95) translateY(10px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Navbar/Header Premium */
+        /* ============================================================
+           NAVBAR
+           ============================================================ */
         .navbar {
             background-color: rgba(9, 9, 11, 0.9);
+            /* FIX PERFORMANCE #2 — blur só na navbar, removido dos painéis */
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
@@ -108,6 +105,7 @@
             z-index: 100;
             box-shadow: var(--shadow-md);
             width: 100%;
+            transform: translateZ(0);
         }
 
         .navbar h1 {
@@ -127,7 +125,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* Menu Mobile Toggle */
         #btn-mobile-menu {
             display: none;
             background: none;
@@ -156,8 +153,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            backdrop-filter: blur(4px);
-            transition: all 0.3s ease;
+            transition: border-color 0.3s ease;
         }
         .user-badge:hover { border-color: var(--primary); }
 
@@ -174,29 +170,23 @@
             transition: all 0.3s ease;
             white-space: nowrap;
         }
-
         .status-sync .dot {
-            width: 8px;
-            height: 8px;
+            width: 8px; height: 8px;
             border-radius: 50%;
             background-color: var(--warning);
             transition: all 0.3s ease;
             flex-shrink: 0;
         }
-
         .status-sync.connected { background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
         .status-sync.connected .dot { background-color: var(--success); box-shadow: 0 0 12px var(--success); }
-
         .status-sync.local { background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.2); color: #fcd34d; }
         .status-sync.local .dot { background-color: var(--warning); box-shadow: 0 0 12px var(--warning); }
 
-        /* Ícones de Navegação Topo (SaaS) */
         .btn-icon-only {
             background: rgba(39, 39, 42, 0.6);
             border: 1px solid var(--border);
             color: var(--text-muted);
-            width: 36px;
-            height: 36px;
+            width: 36px; height: 36px;
             border-radius: 50%;
             display: inline-flex;
             align-items: center;
@@ -205,23 +195,20 @@
             transition: all 0.2s ease;
             position: relative;
         }
-        .btn-icon-only:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
+        .btn-icon-only:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
         .notification-dot {
             position: absolute;
-            top: -2px;
-            right: -2px;
-            width: 10px;
-            height: 10px;
+            top: -2px; right: -2px;
+            width: 10px; height: 10px;
             background: var(--danger);
             border-radius: 50%;
             border: 2px solid var(--surface-solid);
         }
 
-        /* Tela de Autenticação */
+        /* ============================================================
+           AUTENTICAÇÃO
+           ============================================================ */
         .auth-wrapper {
             display: flex;
             justify-content: center;
@@ -244,19 +231,12 @@
         }
 
         .auth-card h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 0.5rem;
-            text-align: center;
-            letter-spacing: -0.5px;
+            font-size: 1.8rem; font-weight: 700; color: #fff;
+            margin-bottom: 0.5rem; text-align: center; letter-spacing: -0.5px;
         }
-
         .auth-card p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 2rem;
-            text-align: center;
+            color: var(--text-muted); font-size: 0.95rem;
+            margin-bottom: 2rem; text-align: center;
         }
 
         .auth-tabs {
@@ -264,44 +244,25 @@
             border-bottom: 1px solid var(--border);
             margin-bottom: 1.5rem;
         }
-
         .auth-tab {
-            flex: 1;
-            text-align: center;
-            padding: 0.75rem;
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
+            flex: 1; text-align: center; padding: 0.75rem;
+            color: var(--text-muted); font-weight: 600; font-size: 0.95rem;
+            cursor: pointer; border-bottom: 2px solid transparent;
             transition: all 0.3s ease;
         }
-
         .auth-tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
+            color: var(--primary); border-bottom-color: var(--primary);
             background: linear-gradient(to top, rgba(79, 70, 229, 0.08), transparent);
         }
 
         .auth-or {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            margin: 1.5rem 0;
-            color: var(--text-muted);
-            font-size: 0.85rem;
+            display: flex; align-items: center; text-align: center;
+            margin: 1.5rem 0; color: var(--text-muted); font-size: 0.85rem;
         }
-
-        .auth-or::before, .auth-or::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid var(--border);
-        }
-
+        .auth-or::before, .auth-or::after { content: ''; flex: 1; border-bottom: 1px solid var(--border); }
         .auth-or:not(:empty)::before { margin-right: .5em; }
-        .auth-or:not(:empty)::after { margin-left: .5em; }
+        .auth-or:not(:empty)::after  { margin-left: .5em; }
 
-        /* Botões de Autenticação */
         .btn-guest {
             background-color: rgba(255, 255, 255, 0.02);
             color: var(--text-main);
@@ -311,22 +272,15 @@
         .btn-guest:hover { background-color: rgba(255, 255, 255, 0.06); transform: translateY(-1px); }
 
         .btn-google {
-            background-color: #fff;
-            color: #000;
-            border: none;
-            width: 100%;
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background-color: #fff; color: #000; border: none;
+            width: 100%; margin-bottom: 0.75rem;
+            display: flex; align-items: center; justify-content: center;
         }
-        .btn-google:hover {
-            background-color: #f4f4f5;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(255,255,255,0.1);
-        }
+        .btn-google:hover { background-color: #f4f4f5; transform: translateY(-1px); box-shadow: 0 4px 15px rgba(255,255,255,0.1); }
 
-        /* Layout Container Geral do Dashboard */
+        /* ============================================================
+           LAYOUT PRINCIPAL
+           ============================================================ */
         .container {
             max-width: 1500px;
             margin: 0 auto;
@@ -335,19 +289,17 @@
             width: 100%;
         }
 
-        /* HIERARQUIA SaaS: Layout Principal com Sidebar */
         .saas-layout {
             display: flex;
             gap: 2rem;
             align-items: flex-start;
         }
 
+        /* FIX PERFORMANCE #2 — sidebar mantém blur pois é sticky e único */
         .saas-sidebar {
             width: 260px;
             flex-shrink: 0;
-            background: var(--surface-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: #121214;  /* sólido em vez de translúcido */
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 1.5rem;
@@ -357,67 +309,46 @@
             flex-direction: column;
             gap: 1.5rem;
             box-shadow: var(--shadow-sm);
+            transform: translateZ(0);
         }
 
         .saas-main-content {
             flex: 1;
-            min-width: 0; /* Previne quebra de grid */
+            min-width: 0;
             display: flex;
             flex-direction: column;
         }
 
-        /* Estilos do Menu Lateral */
         .saas-plan-badge {
             background: linear-gradient(135deg, #4f46e5, #a855f7);
-            color: white;
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 0.3rem 0.7rem;
-            border-radius: 999px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: inline-block;
-            margin-bottom: 1rem;
+            color: white; font-size: 0.7rem; font-weight: 700;
+            padding: 0.3rem 0.7rem; border-radius: 999px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            display: inline-block; margin-bottom: 1rem;
             box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
         }
 
-        .sidebar-nav {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
+        .sidebar-nav { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
         .sidebar-nav li {
-            padding: 0.9rem 1rem;
-            border-radius: 8px;
-            color: var(--text-muted);
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            font-size: 0.95rem;
+            padding: 0.9rem 1rem; border-radius: 8px;
+            color: var(--text-muted); font-weight: 500;
+            cursor: pointer; transition: all 0.2s ease;
+            display: flex; align-items: center; gap: 0.8rem; font-size: 0.95rem;
         }
         .sidebar-nav li:hover, .sidebar-nav li.active {
             background: rgba(79, 70, 229, 0.15);
             color: var(--primary);
             border-left: 3px solid var(--primary);
         }
+        .sidebar-divider { height: 1px; background: rgba(255,255,255,0.05); margin: 0.5rem 0; }
 
-        .sidebar-divider {
-            height: 1px;
-            background: rgba(255,255,255,0.05);
-            margin: 0.5rem 0;
-        }
-
-        /* Cabecalho de Saudação Personalizado */
+        /* ============================================================
+           DASHBOARD HEADER
+           ============================================================ */
         .dashboard-header {
             margin-bottom: 1.5rem;
             animation: fadeInUp 0.5s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 0.3rem;
+            display: flex; flex-direction: column; gap: 0.3rem;
             padding: 0.5rem;
             background: rgba(79, 70, 229, 0.05);
             border-radius: 12px;
@@ -425,20 +356,15 @@
             padding-left: 1.5rem;
         }
         .dashboard-header h2 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #fff;
-            letter-spacing: -0.5px;
+            font-size: 1.6rem; font-weight: 700; color: #fff; letter-spacing: -0.5px;
         }
-        .dashboard-header h2 span.name-highlight {
-            color: #a5b4fc;
-        }
-        .dashboard-header p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
+        .dashboard-header h2 span.name-highlight { color: #a5b4fc; }
+        .dashboard-header p { color: var(--text-muted); font-size: 0.9rem; }
 
-        /* Cards de Resumo */
+        /* ============================================================
+           CARDS DE RESUMO
+           FIX PERFORMANCE #2 — backdrop-filter removido dos cards
+           ============================================================ */
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -447,86 +373,70 @@
         }
 
         .summary-card {
-            background: var(--surface-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: #121214;  /* sólido — removido backdrop-filter */
             padding: 1.75rem;
             border-radius: var(--radius);
             box-shadow: var(--shadow-sm);
             border: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
             position: relative;
             overflow: hidden;
         }
-
         .summary-card::after {
             content: '';
-            position: absolute;
-            top: 0; right: 0;
+            position: absolute; top: 0; right: 0;
             width: 120px; height: 120px;
             background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
             border-radius: 50%;
             transform: translate(30%, -30%);
         }
-
         .summary-card:hover {
             transform: translateY(-4px);
             box-shadow: var(--shadow-lg);
             border-color: rgba(255, 255, 255, 0.08);
         }
-
         .summary-card h3 {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-size: 0.85rem; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 1px;
             margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 600;
+            display: flex; align-items: center; gap: 0.5rem; font-weight: 600;
         }
-
         .summary-card p {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #fff;
-            word-break: break-all;
-            letter-spacing: -0.5px;
+            font-size: 2rem; font-weight: 700; color: #fff;
+            word-break: break-all; letter-spacing: -0.5px;
         }
-
         .summary-card.balance p {
             background: linear-gradient(135deg, #a5b4fc, #6366f1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .summary-card.income p { color: #34d399; }
+        .summary-card.income p  { color: #34d399; }
         .summary-card.expense p { color: #f87171; }
-        .summary-card.future p { color: #fbbf24; }
+        .summary-card.future p  { color: #fbbf24; }
 
-        /* Grids do Sistema */
+        /* ============================================================
+           GRIDS DO SISTEMA
+           ============================================================ */
         .main-grid {
             display: grid;
             grid-template-columns: 1.2fr 1.1fr 0.9fr;
             gap: 1.5rem;
             margin-bottom: 1.5rem;
-            align-items: stretch; /* Garante alinhamento vertical consistente */
+            align-items: stretch;
         }
-        
         .secondary-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Permitir mais flexibilidade */
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2.5rem;
-            align-items: stretch; /* Garante alinhamento vertical consistente */
+            align-items: stretch;
         }
 
+        /* FIX PERFORMANCE #2 — backdrop-filter removido dos painéis */
         .panel {
-            background: var(--surface-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: #121214;
             padding: 1.75rem;
             border-radius: var(--radius);
             box-shadow: var(--shadow-sm);
@@ -535,27 +445,23 @@
             flex-direction: column;
             transition: border-color 0.3s ease;
             width: 100%;
-            flex: 1; /* Preenche altura no grid */
+            flex: 1;
         }
         .panel:hover { border-color: rgba(255, 255, 255, 0.08); }
 
         .panel-header {
-            font-size: 1.15rem;
-            font-weight: 600;
-            color: #fff;
+            font-size: 1.15rem; font-weight: 600; color: #fff;
             margin-bottom: 1.5rem;
             padding-bottom: 1rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.5rem;
-            letter-spacing: -0.3px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 0.5rem; letter-spacing: -0.3px;
         }
 
-        /* Formulário de Registro */
+        /* ============================================================
+           FORMULÁRIO
+           ============================================================ */
         .form-group { margin-bottom: 1.25rem; width: 100%; }
-        
         .form-row {
             display: grid;
             grid-template-columns: 1.5fr 1fr;
@@ -564,13 +470,9 @@
         }
 
         label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            display: block; font-size: 0.8rem; font-weight: 600;
+            margin-bottom: 0.5rem; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
 
         input, select {
@@ -583,7 +485,6 @@
             color: #fff;
             transition: all 0.3s ease;
         }
-
         input:focus, select:focus {
             outline: none;
             border-color: var(--primary);
@@ -595,57 +496,42 @@
             width: 100%;
             padding: 0.9rem;
             background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 1rem;
+            color: white; border: none;
+            border-radius: 10px; font-weight: 600; font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             margin-top: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            box-shadow: var(--shadow-glow);
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+            box-shadow: 0 0 15px rgba(79, 70, 229, 0.3);
         }
-
-        .btn:hover { 
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
-        }
-        
+        .btn:hover { background-color: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4); }
         .btn:active { transform: translateY(0); }
 
-        /* Gráfico */
+        /* ============================================================
+           GRÁFICO
+           ============================================================ */
         .chart-container {
-            position: relative;
-            height: 250px;
-            width: 100%;
-            margin: auto 0;
-            transition: all 0.3s ease;
+            position: relative; height: 250px; width: 100%;
+            margin: auto 0; transition: all 0.3s ease;
         }
 
-        /* Insights/Dicas Inteligentes */
+        /* ============================================================
+           INSIGHT BOX
+           ============================================================ */
         .insight-box {
             background-color: rgba(79, 70, 229, 0.08);
             border-left: 4px solid var(--primary);
-            padding: 1.25rem;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            color: #a5b4fc;
-            margin-bottom: auto;
-            transition: all 0.4s ease;
+            padding: 1.25rem; border-radius: 8px;
+            font-size: 0.95rem; line-height: 1.6; color: #a5b4fc;
+            margin-bottom: auto; transition: all 0.4s ease;
         }
 
-        /* Elementos Novos (Listas e Barras) */
-        .stat-list {
-            list-style: none; padding: 0; display: flex; flex-direction: column; gap: 1rem; margin-top: 0.5rem;
-        }
+        /* ============================================================
+           LISTAS E BARRAS
+           ============================================================ */
+        .stat-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 1rem; margin-top: 0.5rem; }
         .stat-item {
-            display: flex; justify-content: space-between; align-items: center; 
+            display: flex; justify-content: space-between; align-items: center;
             background: rgba(0,0,0,0.3); padding: 1rem 1.25rem; border-radius: 10px;
             border: 1px solid rgba(255,255,255,0.02);
             transition: transform 0.2s;
@@ -653,337 +539,295 @@
         .stat-item:hover { transform: translateX(5px); background: rgba(0,0,0,0.5); }
         .stat-label { color: var(--text-muted); font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
         .stat-value { color: #fff; font-weight: 700; font-size: 1.1rem; text-align: right; }
-        
-        .progress-wrapper { width: 100%; background-color: rgba(0,0,0,0.5); border-radius: 999px; height: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #818cf8); transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 999px; }
 
-        /* Filtros e Controle da Planilha */
+        .progress-wrapper {
+            width: 100%; background-color: rgba(0,0,0,0.5);
+            border-radius: 999px; height: 14px; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #818cf8);
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 999px;
+        }
+
+        /* ============================================================
+           FILTROS E CONTROLES DA PLANILHA
+           ============================================================ */
         .filter-bar {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.25rem;
-            flex-wrap: wrap;
-            align-items: center;
+            display: flex; gap: 1rem; margin-bottom: 1.25rem;
+            flex-wrap: wrap; align-items: center;
         }
+        .filter-input { flex: 1; min-width: 200px; }
 
-        .filter-input {
-            flex: 1;
-            min-width: 200px; /* Reduzido para caber melhor no mobile */
-        }
-        
         .btn-export {
             background-color: rgba(16, 185, 129, 0.1);
             color: #34d399;
             border: 1px solid rgba(16, 185, 129, 0.25);
-            padding: 0.85rem 1.25rem;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            white-space: nowrap;
+            padding: 0.85rem 1.25rem; border-radius: 10px;
+            font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; gap: 0.5rem;
+            transition: all 0.3s ease; white-space: nowrap;
         }
         .btn-export:hover {
-            background-color: #10b981;
-            color: white;
+            background-color: #10b981; color: white;
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
             transform: translateY(-2px);
         }
 
-        /* Planilha / Tabela Premium */
+        /* ============================================================
+           PLANILHA / TABELA
+           ============================================================ */
         .table-container {
-            overflow-x: auto;
-            border-radius: 12px;
+            overflow-x: auto; border-radius: 12px;
             border: 1px solid var(--border);
             background: rgba(9, 9, 11, 0.5);
-            backdrop-filter: blur(12px);
             width: 100%;
-            -webkit-overflow-scrolling: touch; /* Rolagem suave no iOS */
+            -webkit-overflow-scrolling: touch;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            min-width: 700px; /* Ajustado para nova coluna */
-        }
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 700px; }
 
         th {
             background-color: rgba(24, 24, 27, 0.8);
-            padding: 1.25rem;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 0.5px;
+            padding: 1.25rem; font-size: 0.75rem; color: var(--text-muted);
+            text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;
             border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            position: sticky; top: 0; z-index: 10;
         }
 
         td {
             padding: 1.15rem 1.25rem;
             border-bottom: 1px solid rgba(39, 39, 42, 0.5);
-            font-size: 0.95rem;
-            vertical-align: middle;
-            color: #e4e4e7;
-            white-space: nowrap; /* Evita quebra de texto feia no mobile */
+            font-size: 0.95rem; vertical-align: middle;
+            color: #e4e4e7; white-space: nowrap;
         }
 
-        tbody tr {
+        tbody tr { transition: background-color 0.15s ease; }
+        tbody tr:hover { background-color: rgba(79, 70, 229, 0.08); }
+
+        /* ============================================================
+           PAGINAÇÃO (NOVO)
+           ============================================================ */
+        .pagination {
+            display: flex; align-items: center; justify-content: center;
+            gap: 0.5rem; margin-top: 1.25rem; flex-wrap: wrap;
+        }
+        .page-btn {
+            background: rgba(39, 39, 42, 0.6);
+            border: 1px solid var(--border); color: var(--text-muted);
+            padding: 0.5rem 0.9rem; border-radius: 8px;
+            cursor: pointer; font-size: 0.85rem; font-weight: 600;
             transition: all 0.2s ease;
-            animation: fadeInUp 0.3s ease forwards;
-            opacity: 0;
         }
-        
-        tbody tr:nth-child(1) { animation-delay: 0.05s; }
-        tbody tr:nth-child(2) { animation-delay: 0.1s; }
-        tbody tr:nth-child(3) { animation-delay: 0.15s; }
-        tbody tr:nth-child(4) { animation-delay: 0.2s; }
-        tbody tr:nth-child(5) { animation-delay: 0.25s; }
+        .page-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+        .page-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .page-info { font-size: 0.8rem; color: var(--text-muted); padding: 0.5rem 0.5rem; }
 
-        tbody tr:hover { 
-            background-color: rgba(79, 70, 229, 0.08); 
+        /* ============================================================
+           FILTRO DE PERÍODO (NOVO)
+           ============================================================ */
+        .period-bar {
+            display: flex; gap: 0.75rem; margin-bottom: 1rem;
+            flex-wrap: wrap; align-items: center;
+        }
+        .period-bar label { margin-bottom: 0; }
+        .period-select {
+            width: auto; min-width: 130px;
+            padding: 0.6rem 0.85rem; font-size: 0.85rem;
         }
 
-        /* Badges de Status e Categorias Modernos */
+        /* ============================================================
+           ATALHOS DE TECLADO — BADGE (NOVO)
+           ============================================================ */
+        .kbd {
+            display: inline-block;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 4px; padding: 1px 5px;
+            font-size: 0.7rem; color: var(--text-muted);
+            font-family: monospace; vertical-align: middle;
+            margin-left: 4px;
+        }
+
+        /* ============================================================
+           BADGES
+           ============================================================ */
         .badge {
-            padding: 0.4rem 0.85rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
+            padding: 0.4rem 0.85rem; border-radius: 9999px;
+            font-size: 0.75rem; font-weight: 600;
+            display: inline-flex; align-items: center; gap: 0.4rem;
             letter-spacing: 0.3px;
         }
-
         .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
-
-        .badge.income { background-color: rgba(16, 185, 129, 0.12); color: #34d399; }
-        .badge.income::before { background-color: #10b981; box-shadow: 0 0 6px #10b981; }
-
+        .badge.income  { background-color: rgba(16, 185, 129, 0.12); color: #34d399; }
+        .badge.income::before  { background-color: #10b981; box-shadow: 0 0 6px #10b981; }
         .badge.expense { background-color: rgba(239, 68, 68, 0.12); color: #f87171; }
         .badge.expense::before { background-color: #ef4444; box-shadow: 0 0 6px #ef4444; }
+        .badge.future  { background-color: rgba(245, 158, 11, 0.12); color: #fbbf24; }
+        .badge.future::before  { background-color: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
 
-        .badge.future { background-color: rgba(245, 158, 11, 0.12); color: #fbbf24; }
-        .badge.future::before { background-color: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
-
-        /* Badge Categoria Especial (Sem pontinho) */
         .badge-category {
-            padding: 0.35rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            font-weight: 500;
-            background-color: rgba(255, 255, 255, 0.05);
-            color: #a1a1aa;
+            padding: 0.35rem 0.75rem; border-radius: 6px;
+            font-size: 0.7rem; font-weight: 500;
+            background-color: rgba(255, 255, 255, 0.05); color: #a1a1aa;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            display: inline-flex; align-items: center; gap: 0.3rem;
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
 
         .val-income { color: #34d399; font-weight: 600; font-variant-numeric: tabular-nums; }
         .val-expense { color: #f87171; font-weight: 600; font-variant-numeric: tabular-nums; }
-        .val-future { color: #fbbf24; font-weight: 600; font-variant-numeric: tabular-nums; }
+        .val-future  { color: #fbbf24; font-weight: 600; font-variant-numeric: tabular-nums; }
 
-        /* Botões de Ação Dinâmicos */
+        /* ============================================================
+           BOTÕES DE AÇÃO
+           ============================================================ */
         .action-btn {
-            background: rgba(39, 39, 42, 0.6);
-            border: 1px solid var(--border);
-            cursor: pointer;
-            padding: 0.6rem;
-            border-radius: 8px;
-            font-size: 1rem;
-            color: var(--text-muted);
+            background: rgba(39, 39, 42, 0.6); border: 1px solid var(--border);
+            cursor: pointer; padding: 0.6rem; border-radius: 8px;
+            font-size: 1rem; color: var(--text-muted);
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            display: inline-flex; align-items: center; justify-content: center;
         }
-        .action-btn:hover { 
-            background-color: var(--border); 
-            color: #fff; 
-            transform: scale(1.05);
-        }
-        .btn-pay:hover { 
-            color: #34d399; 
-            background-color: var(--success-light);
-            border-color: rgba(16, 185, 129, 0.4);
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
-        }
-        .btn-del:hover { 
-            color: #f87171; 
-            background-color: var(--danger-light);
-            border-color: rgba(239, 68, 68, 0.4);
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.15);
-        }
+        .action-btn:hover { background-color: var(--border); color: #fff; transform: scale(1.05); }
+        .btn-pay:hover { color: #34d399; background-color: var(--success-light); border-color: rgba(16, 185, 129, 0.4); box-shadow: 0 0 10px rgba(16, 185, 129, 0.15); }
+        .btn-del:hover { color: #f87171; background-color: var(--danger-light); border-color: rgba(239, 68, 68, 0.4); box-shadow: 0 0 10px rgba(239, 68, 68, 0.15); }
 
-        /* Modais (Perfil, Settings, etc) */
+        /* ============================================================
+           MODAIS
+           ============================================================ */
         .modal-overlay {
-            position: fixed;
-            inset: 0;
+            position: fixed; inset: 0;
             background: rgba(5, 5, 5, 0.85);
             backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            padding: 1rem;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; opacity: 0; visibility: hidden;
+            transition: all 0.3s ease; padding: 1rem;
         }
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        .modal-overlay.active .modal-content {
-            animation: modalShow 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-overlay.active .modal-content { animation: modalShow 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
         .modal-content {
-            width: 100%;
-            max-width: 400px;
-            margin: 0;
-            padding: 2rem;
-            max-height: 90vh;
-            overflow-y: auto;
+            width: 100%; max-width: 400px;
+            margin: 0; padding: 2rem;
+            max-height: 90vh; overflow-y: auto;
         }
 
         .danger-zone {
-            margin-top: 1.5rem;
-            padding: 1rem;
+            margin-top: 1.5rem; padding: 1rem;
             border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 8px;
-            background: rgba(239, 68, 68, 0.05);
+            border-radius: 8px; background: rgba(239, 68, 68, 0.05);
             text-align: center;
         }
 
-        /* Notificação Personalizada (Toast) */
+        /* ============================================================
+           TOASTS
+           ============================================================ */
         #toast-container {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            max-width: 90vw;
+            position: fixed; bottom: 30px; right: 30px;
+            z-index: 9999; display: flex; flex-direction: column;
+            gap: 12px; max-width: 90vw;
         }
-
         .toast {
-            background-color: var(--surface-solid);
-            color: #fff;
-            padding: 1.1rem 1.75rem;
-            border-radius: 10px;
+            background-color: var(--surface-solid); color: #fff;
+            padding: 1.1rem 1.75rem; border-radius: 10px;
             box-shadow: var(--shadow-lg);
-            display: flex;
-            align-items: center;
-            gap: 14px;
+            display: flex; align-items: center; gap: 14px;
             border: 1px solid var(--border);
-            transform: translateX(120%);
-            opacity: 0;
+            transform: translateX(120%); opacity: 0;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            font-size: 0.95rem;
-            font-weight: 500;
-            word-break: break-word;
+            font-size: 0.95rem; font-weight: 500; word-break: break-word;
         }
-        
-        /* Loader para ações */
+        .toast.show { transform: translateX(0) !important; opacity: 1; }
+        .toast.success { border-left: 5px solid var(--success); }
+        .toast.error   { border-left: 5px solid var(--danger); }
+        .toast.info    { border-left: 5px solid var(--primary); }
+        .toast.warning { border-left: 5px solid var(--warning); }
+
+        /* ============================================================
+           LOADING OVERLAY
+           ============================================================ */
         .loading-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(5, 5, 5, 0.8);
-            backdrop-filter: blur(5px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: var(--radius);
-            z-index: 10;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
+            position: absolute; inset: 0;
+            background: rgba(5, 5, 5, 0.8); backdrop-filter: blur(5px);
+            display: flex; align-items: center; justify-content: center;
+            border-radius: var(--radius); z-index: 10;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
         }
         .loading-overlay.active { opacity: 1; pointer-events: all; }
         .spinner {
-            width: 45px;
-            height: 45px;
+            width: 45px; height: 45px;
             border: 4px solid rgba(255,255,255,0.05);
             border-left-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            border-radius: 50%; animation: spin 0.8s linear infinite;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ---- RESPONSIVIDADE APRIMORADA (MOBILE FIRST ADAPTATION) ---- */
+        /* ============================================================
+           PAINEL GRÁFICO — TOGGLE ENTRE DONUT E LINHA (NOVO)
+           ============================================================ */
+        .chart-toggle {
+            display: flex; gap: 0.5rem;
+        }
+        .chart-toggle-btn {
+            background: rgba(39, 39, 42, 0.5);
+            border: 1px solid var(--border); color: var(--text-muted);
+            padding: 0.3rem 0.75rem; border-radius: 6px;
+            font-size: 0.75rem; font-weight: 600; cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .chart-toggle-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* ============================================================
+           RESPONSIVIDADE
+           ============================================================ */
         @media (max-width: 1200px) {
             .main-grid { grid-template-columns: 1fr 1fr; }
             .main-grid > .panel:last-child { grid-column: span 2; }
         }
-        
         @media (max-width: 900px) {
             .saas-layout { flex-direction: column; gap: 1rem; }
-            .saas-sidebar { display: none; width: 100%; position: static; margin-bottom: 1rem;}
+            .saas-sidebar { display: none; width: 100%; position: static; margin-bottom: 1rem; }
             .saas-sidebar.active { display: flex; animation: fadeIn 0.3s ease; }
             #btn-mobile-menu { display: block; }
-            .navbar h1 { margin-left: 0; }
         }
-
         @media (max-width: 768px) {
             .navbar { padding: 1rem; }
             .nav-right { width: auto; justify-content: flex-end; }
             .container { padding: 1rem; }
-            
-            .summary-grid { grid-template-columns: repeat(auto-fit, minmax(100%, 1fr)); gap: 1rem; margin-bottom: 1.5rem;}
+            .summary-grid { grid-template-columns: repeat(auto-fit, minmax(100%, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
             .summary-card { padding: 1.25rem; }
             .summary-card p { font-size: 1.8rem; }
-            
             .main-grid, .secondary-grid { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem; }
             .main-grid > .panel:last-child { grid-column: span 1; }
-            
             .panel { padding: 1.25rem; }
-            .form-row { grid-template-columns: 1fr; gap: 0; } /* Empilha inputs no mobile */
-            
+            .form-row { grid-template-columns: 1fr; gap: 0; }
             .filter-bar { flex-direction: column; align-items: stretch; gap: 0.8rem; }
             .filter-input, select { width: 100%; min-width: 100%; }
             .btn-export { justify-content: center; width: 100%; }
-
             th, td { padding: 1rem; font-size: 0.85rem; }
             .chart-container { height: 220px; }
-            
-            /* Ajuste para o Toast no mobile */
             #toast-container { right: 5%; left: 5%; bottom: 20px; width: 90%; }
-            .toast { width: 100%; justify-content: flex-start; padding: 1rem; font-size: 0.85rem; flex-wrap: wrap;}
+            .toast { width: 100%; justify-content: flex-start; padding: 1rem; font-size: 0.85rem; flex-wrap: wrap; }
+            .period-bar { flex-direction: column; }
+            .period-select { width: 100%; }
         }
-        
         @media (max-width: 480px) {
             .auth-wrapper { padding: 1rem; }
             .auth-card { padding: 1.5rem; border-radius: 12px; }
             .auth-card h2 { font-size: 1.5rem; }
-            .auth-tabs { flex-direction: row; border-bottom: none; gap: 0.5rem; flex-wrap: wrap;}
-            .auth-tab { border: 1px solid var(--border); border-radius: 8px; flex-basis: 100%;}
+            .auth-tabs { flex-direction: row; border-bottom: none; gap: 0.5rem; flex-wrap: wrap; }
+            .auth-tab { border: 1px solid var(--border); border-radius: 8px; flex-basis: 100%; }
             .auth-tab.active { border-color: var(--primary); }
-
             .navbar h1 { font-size: 1.2rem; }
-            .user-badge { padding: 0.4rem 0.8rem; font-size: 0.8rem;}
-            .user-badge span { display: none; } /* Oculta o email no mobile p/ caber icones */
-            
+            .user-badge { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+            .user-badge span { display: none; }
             .stat-item { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
             .stat-value { text-align: left; }
-            
             .dashboard-header h2 { font-size: 1.35rem; }
         }
-
-        .toast.show { transform: translateX(0) !important; opacity: 1; }
-        .toast.success { border-left: 5px solid var(--success); }
-        .toast.error { border-left: 5px solid var(--danger); }
-        .toast.info { border-left: 5px solid var(--primary); }
-        .toast.warning { border-left: 5px solid var(--warning); }
     </style>
 </head>
 <body>
@@ -991,50 +835,38 @@
     <!-- Navbar Superior -->
     <nav class="navbar">
         <h1>
-            <!-- Botão Menu Mobile (Novo SaaS) -->
             <button id="btn-mobile-menu"><i class="fa-solid fa-bars"></i></button>
-            <i class="fa-solid fa-gem" style="color: var(--primary); text-shadow: 0 0 10px rgba(79, 70, 229, 0.5);"></i> <span>Corvus</span>
+            <i class="fa-solid fa-gem" style="color: var(--primary); text-shadow: 0 0 10px rgba(79, 70, 229, 0.5);"></i>
+            <span>Corvus</span>
         </h1>
-        
         <div class="nav-right">
-            <!-- Icone de Notificação SaaS (Novo) -->
-            <button class="btn-icon-only" id="btn-notifications" title="Notificações">
+            <button class="btn-icon-only" id="btn-notifications" title="Notificações (N)">
                 <i class="fa-solid fa-bell"></i>
                 <span class="notification-dot"></span>
             </button>
-            
-            <!-- Botão Configurações SaaS (Novo) -->
-            <button class="btn-icon-only" id="btn-settings" title="Configurações de Assinatura">
+            <button class="btn-icon-only" id="btn-settings" title="Configurações (S)">
                 <i class="fa-solid fa-gear"></i>
             </button>
-
-            <!-- Indicador do Usuário Conectado -->
             <div id="user-display" class="user-badge" style="display: none; cursor: pointer;" title="Abrir Perfil">
                 <img id="navbar-avatar" src="" alt="Avatar" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover; display: none;">
                 <span id="user-email-text">Visitante</span>
             </div>
-            
-            <button class="btn-icon-only" id="btn-logout" title="Sair do Sistema" style="color:var(--danger); border-color: rgba(239, 68, 68, 0.3);">
+            <button class="btn-icon-only" id="btn-logout" title="Sair (Q)" style="color:var(--danger); border-color: rgba(239, 68, 68, 0.3);">
                 <i class="fa-solid fa-right-from-bracket"></i>
             </button>
-
         </div>
     </nav>
 
-    <!-- Tela de Autenticação (Login / Cadastro) -->
+    <!-- Tela de Autenticação -->
     <div id="auth-section" class="auth-wrapper">
         <div class="auth-card">
-            <div id="auth-loader" class="loading-overlay">
-                <div class="spinner"></div>
-            </div>
+            <div id="auth-loader" class="loading-overlay"><div class="spinner"></div></div>
             <h2 id="auth-title">Acesso Seguro</h2>
             <p id="auth-subtitle">Entre na sua gestão criptografada em nuvem.</p>
-            
             <div class="auth-tabs">
-                <div id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')">Entrar</div>
-                <div id="tab-register" class="auth-tab" onclick="switchAuthTab('register')">Criar Conta</div>
+                <div id="tab-login"    class="auth-tab active" onclick="switchAuthTab('login')">Entrar</div>
+                <div id="tab-register" class="auth-tab"        onclick="switchAuthTab('register')">Criar Conta</div>
             </div>
-
             <form id="auth-form">
                 <div class="form-group">
                     <label>E-mail</label>
@@ -1044,12 +876,11 @@
                     <label>Palavra-passe (Senha)</label>
                     <input type="password" id="auth-password" placeholder="Sua senha secreta" minlength="6" required autocomplete="current-password">
                 </div>
-                
-                <button type="submit" id="btn-auth-submit" class="btn" style="margin-top: 1rem;"><i class="fa-solid fa-shield-check"></i> Acessar Painel</button>
+                <button type="submit" id="btn-auth-submit" class="btn" style="margin-top: 1rem;">
+                    <i class="fa-solid fa-shield-check"></i> Acessar Painel
+                </button>
             </form>
-
             <div class="auth-or">ou continuar com</div>
-            
             <button type="button" id="btn-google-login" class="btn btn-google">
                 <svg style="width:18px;height:18px;margin-right:8px;" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -1063,48 +894,48 @@
         </div>
     </div>
 
-    <!-- Container do App Principal (Ocultado até Autenticar) -->
+    <!-- App Principal -->
     <div id="app-section" class="container" style="display: none;">
-        
-        <!-- HIERARQUIA: NOVO SAAS LAYOUT (SIDEBAR + CONTEÚDO) -->
         <div class="saas-layout">
-            
-            <!-- Sidebar SaaS -->
+
+            <!-- Sidebar -->
             <aside class="saas-sidebar" id="main-sidebar">
                 <div style="margin-bottom: 0.5rem;">
                     <span class="saas-plan-badge">Plano Corvus PRO</span>
                     <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 5px;">Licença Ativa</p>
                 </div>
-                
                 <div class="sidebar-divider"></div>
-                
                 <ul class="sidebar-nav">
-                    <li class="active" onclick="showToast('Você já está no Dashboard.', 'info')"><i class="fa-solid fa-chart-line" style="width: 20px;"></i> Dashboard</li>
-                    <li onclick="showToast('Em breve: Conexão direta com bancos via Open Finance.', 'info')"><i class="fa-solid fa-building-columns" style="width: 20px;"></i> Integrações (BETA)</li>
-                    <li onclick="showToast('Módulo de Relatórios Avançados em breve!', 'warning')"><i class="fa-solid fa-file-export" style="width: 20px;"></i> Relatórios PDF</li>
-                    <li onclick="showToast('Módulo de Metas Anuais em breve!', 'warning')"><i class="fa-solid fa-bullseye" style="width: 20px;"></i> Metas de Longo Prazo</li>
-                    <li onclick="document.getElementById('btn-settings').click()"><i class="fa-solid fa-gear" style="width: 20px;"></i> Preferências</li>
+                    <li class="active"  onclick="showToast('Você já está no Dashboard.', 'info')"><i class="fa-solid fa-chart-line" style="width:20px;"></i> Dashboard</li>
+                    <li onclick="showToast('Em breve: Conexão com bancos via Open Finance.', 'info')"><i class="fa-solid fa-building-columns" style="width:20px;"></i> Integrações (BETA)</li>
+                    <li onclick="showToast('Módulo de Relatórios Avançados em breve!', 'warning')"><i class="fa-solid fa-file-export" style="width:20px;"></i> Relatórios PDF</li>
+                    <li onclick="showToast('Módulo de Metas Anuais em breve!', 'warning')"><i class="fa-solid fa-bullseye" style="width:20px;"></i> Metas de Longo Prazo</li>
+                    <li onclick="document.getElementById('btn-settings').click()"><i class="fa-solid fa-gear" style="width:20px;"></i> Preferências</li>
                 </ul>
-                
                 <div style="margin-top: auto; padding-top: 1rem;">
                     <div class="sidebar-divider" style="margin-bottom: 1rem;"></div>
-                    <!-- Indicador do Status de Sincronização Movido para Sidebar -->
                     <div id="connection-status" class="status-sync" style="background: transparent; border: none; padding: 0;">
                         <span class="dot"></span> <span id="sync-text">Conectando...</span>
+                    </div>
+                    <!-- Atalhos de teclado -->
+                    <div style="margin-top: 1rem; font-size: 0.75rem; color: var(--text-muted); line-height: 2;">
+                        <span class="kbd">N</span> Novo lançamento &nbsp;
+                        <span class="kbd">Ctrl+E</span> Exportar &nbsp;
+                        <span class="kbd">Esc</span> Fechar modal
                     </div>
                 </div>
             </aside>
 
-            <!-- Main Content Area -->
+            <!-- Conteúdo Principal -->
             <div class="saas-main-content">
-                
-                <!-- Cabeçalho Dinâmico de Saudação -->
+
+                <!-- Cabeçalho -->
                 <div class="dashboard-header">
                     <h2><span id="time-greeting">Bem-vindo</span>, <span id="header-user-name" class="name-highlight">Agente</span>!</h2>
                     <p>Aqui está a síntese atualizada da sua operação financeira.</p>
                 </div>
 
-                <!-- Dashboard / Cards de Resumo -->
+                <!-- Cards de Resumo -->
                 <div class="summary-grid">
                     <div class="summary-card balance">
                         <h3><i class="fa-solid fa-wallet"></i> Saldo Atual</h3>
@@ -1126,19 +957,16 @@
 
                 <!-- Painéis Principais -->
                 <div class="main-grid">
-                    
+
                     <!-- Formulário -->
                     <div class="panel" style="position: relative;">
-                        <div id="form-loader" class="loading-overlay">
-                            <div class="spinner"></div>
-                        </div>
+                        <div id="form-loader" class="loading-overlay"><div class="spinner"></div></div>
                         <div class="panel-header"><i class="fa-solid fa-plus-circle" style="color: var(--primary);"></i> Novo Lançamento</div>
                         <form id="transaction-form" style="display: flex; flex-direction: column; flex: 1;">
                             <div class="form-group">
                                 <label>Descrição</label>
                                 <input type="text" id="desc" placeholder="Ex: Equipamentos, Salário..." required maxlength="60">
                             </div>
-                            
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Categoria / Tag</label>
@@ -1162,7 +990,6 @@
                                     </select>
                                 </div>
                             </div>
-                            
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Valor Total (R$)</label>
@@ -1173,47 +1000,49 @@
                                     <input type="number" id="installments" value="1" min="1" max="72" required>
                                 </div>
                             </div>
-
                             <div class="form-group">
                                 <label>Data Inicial</label>
                                 <input type="date" id="date" required>
                             </div>
-
-                            <button type="submit" class="btn" style="margin-top: auto;"><i class="fa-solid fa-cloud-arrow-up"></i> Registrar Seguro</button>
+                            <button type="submit" class="btn" style="margin-top: auto;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Registrar Seguro
+                            </button>
                         </form>
                     </div>
 
-                    <!-- Gráfico de Alocação -->
+                    <!-- Gráfico — com toggle donut/linha (NOVO) -->
                     <div class="panel">
-                        <div class="panel-header"><i class="fa-solid fa-chart-pie" style="color: var(--success);"></i> Visão Geral</div>
+                        <div class="panel-header">
+                            <span><i class="fa-solid fa-chart-pie" style="color: var(--success);"></i> Visão Geral</span>
+                            <div class="chart-toggle">
+                                <button class="chart-toggle-btn active" id="btn-chart-donut" onclick="switchChart('donut')">Donut</button>
+                                <button class="chart-toggle-btn" id="btn-chart-line" onclick="switchChart('line')">Histórico</button>
+                            </div>
+                        </div>
                         <div class="chart-container" style="flex: 1; display: flex; align-items: center; justify-content: center;">
                             <canvas id="financeChart"></canvas>
                         </div>
                     </div>
 
-                    <!-- Sugestões da IA Simples e Score -->
+                    <!-- IA e Score -->
                     <div class="panel">
                         <div class="panel-header"><i class="fa-solid fa-shield-halved" style="color: var(--warning);"></i> Integridade e IA</div>
-                        
                         <div class="score-display" style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
                             <div style="font-size: 2.5rem; font-weight: 700; color: var(--success);" id="health-score-val">100</div>
                             <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.2;">Score de<br>Saúde<br>Financeira</div>
                         </div>
-
-                        <div id="insight-box" class="insight-box" style="flex: 1;">
-                            Aguardando análise de dados...
-                        </div>
+                        <div id="insight-box" class="insight-box" style="flex: 1;">Aguardando análise de dados...</div>
                         <div style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;">
-                            <strong style="color: #fff;"><i class="fa-solid fa-lock" style="color: var(--primary);"></i> Corvus Security:</strong> Cofre de dados isolado por UID de usuário ativo (Apenas você enxerga).
+                            <strong style="color: #fff;"><i class="fa-solid fa-lock" style="color: var(--primary);"></i> Corvus Security:</strong> Cofre de dados isolado por UID de usuário ativo.
                         </div>
                     </div>
 
                 </div>
 
-                <!-- Grid Secundário de Estatísticas e Metas -->
+                <!-- Grid Secundário -->
                 <div class="secondary-grid">
-                    
-                    <!-- Painel de Limites da Conta SaaS -->
+
+                    <!-- Uso do Sistema -->
                     <div class="panel">
                         <div class="panel-header"><i class="fa-solid fa-server" style="color: var(--primary);"></i> Uso do Sistema</div>
                         <div style="margin-top: auto; margin-bottom: auto;">
@@ -1227,13 +1056,16 @@
                             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem; line-height: 1.5;">
                                 O plano PRO permite até 1000 registros mensais de alta criptografia.
                             </p>
-                            <button class="btn" style="background: rgba(255,255,255,0.05); color: #fff; margin-top: 1rem; border: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem;" onclick="showToast('Sua conta já possui privilégios máximos!', 'success')"><i class="fa-solid fa-arrow-up-right-dots"></i> Fazer Upgrade</button>
+                            <button class="btn" style="background: rgba(255,255,255,0.05); color: #fff; margin-top: 1rem; border: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem;"
+                                onclick="showToast('Sua conta já possui privilégios máximos!', 'success')">
+                                <i class="fa-solid fa-arrow-up-right-dots"></i> Fazer Upgrade
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Painel de Meta de Economia -->
+                    <!-- Meta de Economia -->
                     <div class="panel">
-                        <div class="panel-header"><i class="fa-solid fa-bullseye" style="color: #818cf8;"></i> Meta de Economia (Corvus AI)</div>
+                        <div class="panel-header"><i class="fa-solid fa-bullseye" style="color: #818cf8;"></i> Meta de Economia</div>
                         <div style="margin-top: auto; margin-bottom: auto;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem; font-size: 0.95rem;">
                                 <span style="color: var(--text-muted);">Progresso do Fundo de Reserva</span>
@@ -1243,12 +1075,13 @@
                                 <div id="goal-progress-bar" class="progress-fill" style="width: 0%;"></div>
                             </div>
                             <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 1.25rem; line-height: 1.5;">
-                                <i class="fa-solid fa-circle-info" style="margin-right: 5px;"></i> O sistema sugere reservar <strong>20% das receitas totais</strong> baseando-se no saldo livre atual.
+                                <i class="fa-solid fa-circle-info" style="margin-right: 5px;"></i>
+                                O sistema sugere reservar <strong>20% das receitas totais</strong> baseando-se no saldo livre atual.
                             </p>
                         </div>
                     </div>
 
-                    <!-- Painel de Métricas Avançadas (Expandido) -->
+                    <!-- Métricas -->
                     <div class="panel">
                         <div class="panel-header"><i class="fa-solid fa-chart-simple" style="color: var(--success);"></i> Métricas do Sistema</div>
                         <ul class="stat-list">
@@ -1269,15 +1102,29 @@
 
                 </div>
 
-                <!-- Planilha de Dados Principal -->
+                <!-- Planilha de Dados -->
                 <div class="panel" style="position: relative;">
-                    <div id="table-loader" class="loading-overlay">
-                        <div class="spinner"></div>
-                    </div>
+                    <div id="table-loader" class="loading-overlay"><div class="spinner"></div></div>
                     <div class="panel-header">
                         <span><i class="fa-solid fa-server" style="color: var(--primary);"></i> Histórico Criptografado</span>
                     </div>
-                    
+
+                    <!-- NOVO: Filtro de período -->
+                    <div class="period-bar">
+                        <select id="filter-month" class="period-select">
+                            <option value="all">Todos os Meses</option>
+                            <option value="01">Janeiro</option><option value="02">Fevereiro</option>
+                            <option value="03">Março</option><option value="04">Abril</option>
+                            <option value="05">Maio</option><option value="06">Junho</option>
+                            <option value="07">Julho</option><option value="08">Agosto</option>
+                            <option value="09">Setembro</option><option value="10">Outubro</option>
+                            <option value="11">Novembro</option><option value="12">Dezembro</option>
+                        </select>
+                        <select id="filter-year" class="period-select">
+                            <option value="all">Todos os Anos</option>
+                        </select>
+                    </div>
+
                     <div class="filter-bar">
                         <input type="text" id="search-input" class="filter-input" placeholder="🔍 Pesquisar por descrição..." maxlength="50">
                         <select id="filter-type" style="width: auto; min-width: 150px;">
@@ -1286,7 +1133,9 @@
                             <option value="expense">Gastos Pagos</option>
                             <option value="future">A Pagar</option>
                         </select>
-                        <button id="btn-export-csv" class="btn-export" title="Exportar para Excel/CSV"><i class="fa-solid fa-file-csv"></i> Exportar CSV</button>
+                        <button id="btn-export-csv" class="btn-export" title="Exportar CSV (Ctrl+E)">
+                            <i class="fa-solid fa-file-csv"></i> Exportar CSV
+                        </button>
                     </div>
 
                     <div class="table-container">
@@ -1306,55 +1155,53 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- NOVO: Paginação -->
+                    <div id="pagination-container" class="pagination"></div>
                 </div>
 
-            </div> <!-- Fim saas-main-content -->
-        </div> <!-- Fim saas-layout -->
+            </div><!-- fim saas-main-content -->
+        </div><!-- fim saas-layout -->
     </div>
 
-    <!-- Modal de Perfil de Usuário & Danger Zone -->
+    <!-- Modal de Perfil -->
     <div id="profile-modal" class="modal-overlay">
         <div class="modal-content panel" style="box-shadow: 0 20px 40px rgba(0,0,0,0.8); border: 1px solid var(--primary);">
             <div class="panel-header" style="margin-bottom: 1rem;">
                 <span><i class="fa-solid fa-user-astronaut" style="color: var(--primary);"></i> Identidade do Agente</span>
-                <button id="btn-close-profile" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1.2rem; transition: color 0.2s;"><i class="fa-solid fa-times"></i></button>
+                <button id="btn-close-profile" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1.2rem;"><i class="fa-solid fa-times"></i></button>
             </div>
-            
             <div style="text-align:center; margin-bottom: 1.5rem;">
                 <img id="modal-avatar" src="" alt="Avatar" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid rgba(79, 70, 229, 0.5); padding: 3px; margin-bottom: 0.8rem; object-fit: cover; background: rgba(0,0,0,0.5);">
                 <h3 id="modal-email" style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500;"></h3>
             </div>
-            
             <div class="form-group" style="margin-bottom: 1.5rem;">
                 <label>Nome de Operação (Codinome)</label>
                 <input type="text" id="profile-name" placeholder="Ex: Agente Corvus" maxlength="30" style="background: rgba(0,0,0,0.3);">
             </div>
-            
             <button id="btn-save-profile" class="btn"><i class="fa-solid fa-floppy-disk"></i> Atualizar Identidade</button>
-
             <hr style="border:none; border-top: 1px solid rgba(255,255,255,0.05); margin: 1.5rem 0;">
             <div style="text-align: center;">
                 <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom: 0.5rem;"><i class="fa-solid fa-shield-halved"></i> Chave Única de Segurança (UID):</p>
                 <p id="modal-uid" style="font-family:monospace; font-size:0.7rem; color:rgba(255,255,255,0.5); word-break: break-all; background: rgba(0,0,0,0.3); padding: 0.5rem; border-radius: 6px;"></p>
             </div>
-
-            <!-- Danger Zone -->
             <div class="danger-zone">
                 <p style="font-size: 0.8rem; color: var(--danger); font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase;">Zona de Risco</p>
-                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1rem;">Cuidado! Esta ação apaga permanentemente todos os registos do seu cofre.</p>
-                <button id="btn-wipe-data" class="btn" style="background: transparent; border: 1px solid rgba(239, 68, 68, 0.5); color: #fca5a5; padding: 0.7rem;"><i class="fa-solid fa-skull"></i> Expurgar Todos os Dados</button>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1rem;">Cuidado! Esta ação apaga permanentemente todos os registros do seu cofre.</p>
+                <button id="btn-wipe-data" class="btn" style="background: transparent; border: 1px solid rgba(239, 68, 68, 0.5); color: #fca5a5; padding: 0.7rem;">
+                    <i class="fa-solid fa-skull"></i> Expurgar Todos os Dados
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Modal de Configurações SaaS -->
+    <!-- Modal de Configurações -->
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-content panel" style="box-shadow: 0 20px 40px rgba(0,0,0,0.8);">
             <div class="panel-header" style="margin-bottom: 1rem;">
                 <span><i class="fa-solid fa-gear" style="color: var(--primary);"></i> Preferências SaaS</span>
-                <button id="btn-close-settings" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1.2rem; transition: color 0.2s;"><i class="fa-solid fa-times"></i></button>
+                <button id="btn-close-settings" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1.2rem;"><i class="fa-solid fa-times"></i></button>
             </div>
-            
             <div class="form-group">
                 <label>Moeda Base (Exibição)</label>
                 <select id="settings-currency" style="background: rgba(0,0,0,0.3);">
@@ -1362,9 +1209,8 @@
                     <option value="USD">Dólar Americano ($)</option>
                     <option value="EUR">Euro (€)</option>
                 </select>
-                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Apenas altera a visualização. Valores no banco permanecem brutos.</p>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Apenas altera a visualização.</p>
             </div>
-
             <div class="form-group">
                 <label>Fuso Horário (Relatórios)</label>
                 <select id="settings-timezone" style="background: rgba(0,0,0,0.3);">
@@ -1372,352 +1218,367 @@
                     <option value="UTC">UTC Universal</option>
                 </select>
             </div>
-
             <hr style="border:none; border-top: 1px solid rgba(255,255,255,0.05); margin: 1.5rem 0;">
-
             <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); padding: 1rem; border-radius: 8px; text-align: center;">
                 <p style="color: #6ee7b7; font-weight: 600; font-size: 0.85rem; margin-bottom: 0.5rem;">Assinatura Corvus PRO Ativa</p>
                 <p style="color: var(--text-muted); font-size: 0.75rem;">Faturamento via Google Play. Renovação automática em 30 dias.</p>
             </div>
-
             <button id="btn-save-settings" class="btn" style="margin-top: 1.5rem;"><i class="fa-solid fa-check"></i> Salvar Preferências</button>
         </div>
     </div>
 
-    <!-- Container de Toasts -->
     <div id="toast-container"></div>
 
-    <!-- Script de Inicialização e Integração Firebase -->
+    <!-- ================================================================
+         SCRIPT PRINCIPAL
+         ================================================================ -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp }                           from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword,
+                 signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup,
+                 updateProfile }                           from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot,
+                 getDocs }                                 from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Chaves ofuscadas em Base64 para proteção anti-crawlers no GitHub
-        const firebaseConfig = typeof __firebase_config !== 'undefined' 
-            ? JSON.parse(__firebase_config) 
+        /* ----------------------------------------------------------
+           CONFIG FIREBASE
+        ---------------------------------------------------------- */
+        const firebaseConfig = typeof __firebase_config !== 'undefined'
+            ? JSON.parse(__firebase_config)
             : {
-                apiKey: atob("QUl6YVN5RGZrRnMtNy1PSjBUZkNPOUlwYU9LY091VThSd2ppYmNv"),
-                authDomain: atob("Y29udHJvbGVkZWdhc3Rvcy1lMmZlNi5maXJlYmFzZWFwcC5jb20="),
-                projectId: atob("Y29udHJvbGVkZWdhc3Rvcy1lMmZlNg=="),
-                storageBucket: atob("Y29udHJvbGVkZWdhc3Rvcy1lMmZlNi5maXJlYmFzZXN0b3JhZ2UuYXBw"),
+                apiKey:            atob("QUl6YVN5RGZrRnMtNy1PSjBUZkNPOUlwYU9LY091VThSd2ppYmNv"),
+                authDomain:        atob("Y29udHJvbGVkZWdhc3Rvcy1lMmZlNi5maXJlYmFzZWFwcC5jb20="),
+                projectId:         atob("Y29udHJvbGVkZWdhc3Rvcy1lMmZlNg=="),
+                storageBucket:     atob("Y29udHJvbGVkZWdhc3Rvcy1lMmZlNi5maXJlYmFzZXN0b3JhZ2UuYXBw"),
                 messagingSenderId: atob("MjU3MDEwNzMxMzc5"),
-                appId: atob("MToyNTcwMTA3MzEzNzk6d2ViOjk4MDI4NzNhZDNlZjZhNDU4N2RkMDY="),
-                measurementId: atob("Ry1YVDA5MTk1V1ZY")
+                appId:             atob("MToyNTcwMTA3MzEzNzk6d2ViOjk4MDI4NzNhZDNlZjZhNDU4N2RkMDY="),
+                measurementId:     atob("Ry1YVDA5MTk1V1ZY")
             };
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'corvus-system';
+        const app   = initializeApp(firebaseConfig);
+        const auth  = getAuth(app);
+        const db    = getFirestore(app);
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        
-        // --- CONFIGURAÇÃO DO GOOGLE PROVIDER COM CLIENT ID ---
         const googleProvider = new GoogleAuthProvider();
         googleProvider.setCustomParameters({
             client_id: '257010731379-1qrva2pop3kp9k8qqhv4fql5ff8tvis6.apps.googleusercontent.com',
             prompt: 'select_account'
         });
 
-        // Referências DOM - Geral
-        const statusSyncDiv = document.getElementById('connection-status');
-        const syncText = document.getElementById('sync-text');
-        const form = document.getElementById('transaction-form');
-        const tbody = document.getElementById('transaction-tbody');
-        const dateInput = document.getElementById('date');
-        const searchInput = document.getElementById('search-input');
-        const filterTypeSelect = document.getElementById('filter-type');
-        const formLoader = document.getElementById('form-loader');
-        const tableLoader = document.getElementById('table-loader');
-        const btnExportCsv = document.getElementById('btn-export-csv');
-        const categoryInput = document.getElementById('category'); 
-        
-        // Referências DOM - Autenticação
-        const authSection = document.getElementById('auth-section');
-        const appSection = document.getElementById('app-section');
-        const authForm = document.getElementById('auth-form');
-        const authEmail = document.getElementById('auth-email');
-        const authPassword = document.getElementById('auth-password');
-        const authTitle = document.getElementById('auth-title');
-        const authSubtitle = document.getElementById('auth-subtitle');
-        const btnAuthSubmit = document.getElementById('btn-auth-submit');
-        const btnGoogleLogin = document.getElementById('btn-google-login');
-        const authLoader = document.getElementById('auth-loader');
-        
-        // Referências DOM - Topo e Saudação
-        const userDisplay = document.getElementById('user-display');
-        const userEmailText = document.getElementById('user-email-text');
-        const navbarAvatar = document.getElementById('navbar-avatar');
-        const btnLogout = document.getElementById('btn-logout');
-        const btnGuestLogin = document.getElementById('btn-guest-login');
-        const timeGreeting = document.getElementById('time-greeting');
-        const headerUserName = document.getElementById('header-user-name');
-        
-        // Referências DOM - Modais e UI SaaS
-        const btnOpenProfile = document.getElementById('user-display'); 
-        const profileModal = document.getElementById('profile-modal');
-        const btnCloseProfile = document.getElementById('btn-close-profile');
-        const modalAvatar = document.getElementById('modal-avatar');
-        const modalEmail = document.getElementById('modal-email');
-        const profileNameInput = document.getElementById('profile-name');
-        const btnSaveProfile = document.getElementById('btn-save-profile');
-        const modalUid = document.getElementById('modal-uid');
-        const btnWipeData = document.getElementById('btn-wipe-data');
-        
-        const btnNotifications = document.getElementById('btn-notifications');
-        const btnSettings = document.getElementById('btn-settings');
-        const settingsModal = document.getElementById('settings-modal');
-        const btnCloseSettings = document.getElementById('btn-close-settings');
-        const btnSaveSettings = document.getElementById('btn-save-settings');
-        const btnMobileMenu = document.getElementById('btn-mobile-menu');
-        const mainSidebar = document.getElementById('main-sidebar');
+        /* ----------------------------------------------------------
+           REFERÊNCIAS DOM
+        ---------------------------------------------------------- */
+        const statusSyncDiv     = document.getElementById('connection-status');
+        const syncText          = document.getElementById('sync-text');
+        const form              = document.getElementById('transaction-form');
+        const tbody             = document.getElementById('transaction-tbody');
+        const dateInput         = document.getElementById('date');
+        const searchInput       = document.getElementById('search-input');
+        const filterTypeSelect  = document.getElementById('filter-type');
+        const filterMonthSelect = document.getElementById('filter-month');
+        const filterYearSelect  = document.getElementById('filter-year');
+        const formLoader        = document.getElementById('form-loader');
+        const tableLoader       = document.getElementById('table-loader');
+        const btnExportCsv      = document.getElementById('btn-export-csv');
+        const paginationEl      = document.getElementById('pagination-container');
+
+        const authSection       = document.getElementById('auth-section');
+        const appSection        = document.getElementById('app-section');
+        const authForm          = document.getElementById('auth-form');
+        const authEmail         = document.getElementById('auth-email');
+        const authPassword      = document.getElementById('auth-password');
+        const authTitle         = document.getElementById('auth-title');
+        const authSubtitle      = document.getElementById('auth-subtitle');
+        const btnAuthSubmit     = document.getElementById('btn-auth-submit');
+        const btnGoogleLogin    = document.getElementById('btn-google-login');
+        const authLoader        = document.getElementById('auth-loader');
+
+        const userDisplay       = document.getElementById('user-display');
+        const userEmailText     = document.getElementById('user-email-text');
+        const navbarAvatar      = document.getElementById('navbar-avatar');
+        const btnLogout         = document.getElementById('btn-logout');
+        const btnGuestLogin     = document.getElementById('btn-guest-login');
+        const timeGreeting      = document.getElementById('time-greeting');
+        const headerUserName    = document.getElementById('header-user-name');
+
+        const profileModal      = document.getElementById('profile-modal');
+        const btnCloseProfile   = document.getElementById('btn-close-profile');
+        const modalAvatar       = document.getElementById('modal-avatar');
+        const modalEmail        = document.getElementById('modal-email');
+        const profileNameInput  = document.getElementById('profile-name');
+        const btnSaveProfile    = document.getElementById('btn-save-profile');
+        const modalUid          = document.getElementById('modal-uid');
+        const btnWipeData       = document.getElementById('btn-wipe-data');
+
+        const btnNotifications  = document.getElementById('btn-notifications');
+        const btnSettings       = document.getElementById('btn-settings');
+        const settingsModal     = document.getElementById('settings-modal');
+        const btnCloseSettings  = document.getElementById('btn-close-settings');
+        const btnSaveSettings   = document.getElementById('btn-save-settings');
+        const btnMobileMenu     = document.getElementById('btn-mobile-menu');
+        const mainSidebar       = document.getElementById('main-sidebar');
 
         dateInput.value = new Date().toISOString().split('T')[0];
 
-        let transactions = [];
-        let chartInstance = null;
-        let currentUser = null;
+        /* ----------------------------------------------------------
+           ESTADO GLOBAL
+        ---------------------------------------------------------- */
+        let transactions         = [];
+        let chartInstance        = null;
+        let currentChartType     = 'donut';   // 'donut' | 'line'
+        let currentUser          = null;
         let useLocalStorageFallback = false;
-        let currentAuthMode = 'login'; 
+        let currentAuthMode      = 'login';
         let unsubscribeOnSnapshot = null;
-        
-        let prevValues = { balance: 0, income: 0, expense: 0, future: 0, score: 100 };
-        let animationFrames = { balance: null, income: null, expense: null, future: null, score: null };
+        let currentPage          = 1;
+        const ROWS_PER_PAGE      = 30;
 
-        // --- SISTEMAS DE SEGURANÇA E HIGIENE DE DADOS ---
+        // FIX #4 — animação unificada em um único objeto
+        const animated = {
+            balance: { el: null, current: 0, target: 0 },
+            income:  { el: null, current: 0, target: 0 },
+            expense: { el: null, current: 0, target: 0 },
+            future:  { el: null, current: 0, target: 0 },
+            score:   { el: null, current: 0, target: 0, isInt: true }
+        };
+        let rafId = null;
+
+        /* ----------------------------------------------------------
+           INICIALIZAR REFERÊNCIAS DE ANIMAÇÃO
+        ---------------------------------------------------------- */
+        function initAnimated() {
+            animated.balance.el = document.getElementById('total-balance');
+            animated.income.el  = document.getElementById('total-income');
+            animated.expense.el = document.getElementById('total-expense');
+            animated.future.el  = document.getElementById('total-future');
+            animated.score.el   = document.getElementById('health-score-val');
+        }
+
+        /* ----------------------------------------------------------
+           FIX #4 — LOOP DE ANIMAÇÃO UNIFICADO (1 rAF para tudo)
+        ---------------------------------------------------------- */
+        function startAnimationLoop() {
+            if (rafId) return;
+            const duration = 700;
+            let start = null;
+
+            function loop(ts) {
+                if (!start) start = ts;
+                const progress = Math.min((ts - start) / duration, 1);
+                const ease = 1 - Math.pow(1 - progress, 4);
+                let allDone = true;
+
+                for (const key in animated) {
+                    const a = animated[key];
+                    if (!a.el) continue;
+                    const val = a.current + (a.target - a.current) * ease;
+                    if (Math.abs(val - a.target) > 0.01) allDone = false;
+
+                    if (a.isInt) {
+                        a.el.innerText = Math.round(val);
+                    } else {
+                        a.el.innerText = formatCurrency(val);
+                    }
+                }
+
+                if (!allDone && progress < 1) {
+                    rafId = requestAnimationFrame(loop);
+                } else {
+                    // Garante valores finais exatos
+                    for (const key in animated) {
+                        const a = animated[key];
+                        if (!a.el) continue;
+                        if (a.isInt) a.el.innerText = Math.round(a.target);
+                        else a.el.innerText = formatCurrency(a.target);
+                        a.current = a.target;
+                    }
+                    rafId = null;
+                }
+            }
+            rafId = requestAnimationFrame(loop);
+        }
+
+        function setAnimTarget(key, value) {
+            animated[key].current = animated[key].target; // começa do valor atual exibido
+            animated[key].target  = value;
+        }
+
+        /* ----------------------------------------------------------
+           UTILITÁRIOS
+        ---------------------------------------------------------- */
         function escapeHTML(str) {
             if (typeof str !== 'string') return '';
-            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-            return str.replace(/[&<>"']/g, function(m) { return map[m]; });
+            return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
         }
 
-        function debounce(func, wait) {
-            let timeout;
-            return function(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
+        function debounce(fn, ms) {
+            let t;
+            return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
         }
 
-        // --- SAUDAÇÃO INTELIGENTE (BOM DIA/TARDE/NOITE) ---
+        function formatCurrency(v) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
+        }
+
+        function formatDate(d) {
+            const [y, m, day] = d.split('-');
+            return `${day}/${m}/${y}`;
+        }
+
         function updateTimeGreeting() {
-            const hour = new Date().getHours();
-            if (hour >= 5 && hour < 12) {
-                timeGreeting.innerText = 'Bom dia';
-            } else if (hour >= 12 && hour < 18) {
-                timeGreeting.innerText = 'Boa tarde';
-            } else {
-                timeGreeting.innerText = 'Boa noite';
-            }
+            const h = new Date().getHours();
+            timeGreeting.innerText = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
         }
 
-        // --- LÓGICA DE UI SAAS (MODAIS E MENUS) ---
-        btnNotifications.addEventListener('click', () => {
-            showToast("Você não possui novos alertas de segurança ou faturamento.", "info");
-        });
-
-        btnMobileMenu.addEventListener('click', () => {
-            mainSidebar.classList.toggle('active');
-        });
-
-        btnSettings.addEventListener('click', () => {
-            settingsModal.classList.add('active');
-        });
-        
-        btnCloseSettings.addEventListener('click', () => {
-            settingsModal.classList.remove('active');
-        });
-        
-        btnSaveSettings.addEventListener('click', () => {
-            showToast("Preferências salvas com sucesso! Aplicando...", "success");
-            setTimeout(() => { settingsModal.classList.remove('active'); }, 500);
-        });
-
-        settingsModal.addEventListener('click', (e) => {
-            if (e.target === settingsModal) {
-                settingsModal.classList.remove('active');
-            }
-        });
-
-        // --- SISTEMA DE TOASTS PERSONALIZADO ---
+        /* ----------------------------------------------------------
+           TOAST
+        ---------------------------------------------------------- */
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            
-            let icon = 'fa-info-circle';
-            if (type === 'success') icon = 'fa-check-circle';
-            if (type === 'error') icon = 'fa-shield-halved';
-            if (type === 'warning') icon = 'fa-bell';
-
-            toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${escapeHTML(message)}</span>`;
+            const icons = { success: 'fa-check-circle', error: 'fa-shield-halved', warning: 'fa-bell', info: 'fa-info-circle' };
+            toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info}"></i> <span>${escapeHTML(message)}</span>`;
             container.appendChild(toast);
-
-            requestAnimationFrame(() => {
-                setTimeout(() => toast.classList.add('show'), 10);
-            });
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 400);
-            }, 5000); 
+            requestAnimationFrame(() => { setTimeout(() => toast.classList.add('show'), 10); });
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 5000);
         }
+        window.showToast = showToast;
 
-        // --- FORMATADORES ---
-        function formatCurrency(value) {
-            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-        }
+        /* ----------------------------------------------------------
+           UI SaaS — MODAIS E MENUS
+        ---------------------------------------------------------- */
+        btnNotifications.addEventListener('click', () => showToast("Nenhum alerta de segurança ou faturamento.", "info"));
+        btnMobileMenu.addEventListener('click', () => mainSidebar.classList.toggle('active'));
 
-        function formatDate(dateString) {
-            const [year, month, day] = dateString.split('-');
-            return `${day}/${month}/${year}`;
-        }
+        btnSettings.addEventListener('click', () => settingsModal.classList.add('active'));
+        btnCloseSettings.addEventListener('click', () => settingsModal.classList.remove('active'));
+        settingsModal.addEventListener('click', e => { if (e.target === settingsModal) settingsModal.classList.remove('active'); });
+        btnSaveSettings.addEventListener('click', () => {
+            showToast("Preferências salvas com sucesso!", "success");
+            setTimeout(() => settingsModal.classList.remove('active'), 500);
+        });
 
-        // --- ANIMADOR DE NÚMEROS (OTIMIZADO) ---
-        function animateValue(id, start, end, duration, frameKey, isCurrency = true) {
-            if (start === end) {
-                document.getElementById(id).innerText = isCurrency ? formatCurrency(end) : end;
+        userDisplay.addEventListener('click', () => profileModal.classList.add('active'));
+        btnCloseProfile.addEventListener('click', () => profileModal.classList.remove('active'));
+        profileModal.addEventListener('click', e => { if (e.target === profileModal) profileModal.classList.remove('active'); });
+
+        /* ----------------------------------------------------------
+           ATALHOS DE TECLADO (NOVO)
+        ---------------------------------------------------------- */
+        document.addEventListener('keydown', e => {
+            const active = document.activeElement;
+            const isInput = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT');
+
+            if (e.key === 'Escape') {
+                profileModal.classList.remove('active');
+                settingsModal.classList.remove('active');
                 return;
             }
-            const obj = document.getElementById(id);
-            let startTimestamp = null;
-            
-            if (animationFrames[frameKey]) cancelAnimationFrame(animationFrames[frameKey]);
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') {
+                e.preventDefault();
+                btnExportCsv.click();
+                return;
+            }
+            if (e.key.toLowerCase() === 'n' && !isInput && appSection.style.display !== 'none') {
+                e.preventDefault();
+                document.getElementById('desc').focus();
+                return;
+            }
+        });
 
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                const easeOut = 1 - Math.pow(1 - progress, 5);
-                const current = (end - start) * easeOut + start;
-                
-                obj.innerText = isCurrency ? formatCurrency(current) : Math.round(current);
-                
-                if (progress < 1) {
-                    animationFrames[frameKey] = window.requestAnimationFrame(step);
-                } else {
-                    obj.innerText = isCurrency ? formatCurrency(end) : end;
-                    animationFrames[frameKey] = null;
-                }
-            };
-            animationFrames[frameKey] = window.requestAnimationFrame(step);
-        }
-
-        // --- NAVEGAÇÃO DE TOPO DE AUTENTICAÇÃO ---
+        /* ----------------------------------------------------------
+           SWITCH DE ABAS DE AUTH
+        ---------------------------------------------------------- */
         window.switchAuthTab = function(mode) {
             currentAuthMode = mode;
-            const tabLogin = document.getElementById('tab-login');
-            const tabRegister = document.getElementById('tab-register');
-            
+            document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+            document.getElementById('tab-register').classList.toggle('active', mode === 'register');
             if (mode === 'login') {
-                tabLogin.classList.add('active');
-                tabRegister.classList.remove('active');
                 authTitle.innerText = "Acesso Seguro";
                 authSubtitle.innerText = "Entre na sua gestão criptografada em nuvem.";
                 btnAuthSubmit.innerHTML = `<i class="fa-solid fa-shield-check"></i> Acessar Painel`;
             } else {
-                tabLogin.classList.remove('active');
-                tabRegister.classList.add('active');
                 authTitle.innerText = "Registrar Identidade";
                 authSubtitle.innerText = "Crie sua credencial segura e comece a controlar.";
                 btnAuthSubmit.innerHTML = `<i class="fa-solid fa-user-shield"></i> Criar e Proteger`;
             }
         };
 
-        // --- AUTENTICAÇÃO (E-mail/Senha) ---
-        authForm.addEventListener('submit', async function(e) {
+        /* ----------------------------------------------------------
+           AUTENTICAÇÃO
+        ---------------------------------------------------------- */
+        authForm.addEventListener('submit', async e => {
             e.preventDefault();
             authLoader.classList.add('active');
-
-            const email = authEmail.value.trim();
-            const password = authPassword.value;
-
             try {
                 if (currentAuthMode === 'login') {
-                    await signInWithEmailAndPassword(auth, email, password);
+                    await signInWithEmailAndPassword(auth, authEmail.value.trim(), authPassword.value);
                     showToast("Identidade confirmada!", "success");
                 } else {
-                    await createUserWithEmailAndPassword(auth, email, password);
+                    await createUserWithEmailAndPassword(auth, authEmail.value.trim(), authPassword.value);
                     showToast("Credenciais geradas e protegidas!", "success");
                 }
-            } catch (error) {
-                console.error("Erro na autenticação:", error);
-                let customErrorMessage = "Erro de validação. Verifique suas credenciais.";
-                if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-                    customErrorMessage = "Credenciais incorretas ou não encontradas.";
-                } else if (error.code === 'auth/email-already-in-use') {
-                    customErrorMessage = "Aviso: E-mail já registado no sistema Corvus.";
-                } else if (error.code === 'auth/weak-password') {
-                    customErrorMessage = "A senha deve conter no mínimo 6 caracteres para segurança.";
-                }
-                showToast(customErrorMessage, "error");
+            } catch (err) {
+                const msgs = {
+                    'auth/wrong-password': "Credenciais incorretas.",
+                    'auth/user-not-found': "Credenciais incorretas.",
+                    'auth/invalid-credential': "Credenciais incorretas.",
+                    'auth/email-already-in-use': "E-mail já registrado no sistema.",
+                    'auth/weak-password': "Senha deve ter no mínimo 6 caracteres."
+                };
+                showToast(msgs[err.code] || "Erro de validação. Verifique suas credenciais.", "error");
             } finally {
                 authLoader.classList.remove('active');
             }
         });
 
-        // --- AUTENTICAÇÃO (GOOGLE - COM PROTEÇÃO ANTI-TRAVAMENTO) ---
-        btnGoogleLogin.addEventListener('click', async function() {
-            authLoader.classList.add('active');
-            
+        btnGoogleLogin.addEventListener('click', async () => {
             if (window.location.protocol === 'file:') {
-                authLoader.classList.remove('active');
-                showToast("Falha técnica: O Google Login não funciona abrindo o arquivo localmente (file://). Você precisa abrir utilizando um servidor web local.", "error");
+                showToast("Google Login requer servidor web. Abra via http://localhost", "error");
                 return;
             }
-
-            const popupTimeout = setTimeout(() => {
-                if (authLoader.classList.contains('active')) {
-                    authLoader.classList.remove('active');
-                    showToast("Tempo limite excedido. O navegador pode ter bloqueado o pop-up ou a conexão falhou.", "warning");
-                }
+            authLoader.classList.add('active');
+            const timeout = setTimeout(() => {
+                authLoader.classList.remove('active');
+                showToast("Tempo limite excedido. Pop-up bloqueado?", "warning");
             }, 15000);
-
             try {
                 await signInWithPopup(auth, googleProvider);
-                clearTimeout(popupTimeout);
-                showToast("Sessão iniciada via Google com sucesso!", "success");
-            } catch (error) {
-                clearTimeout(popupTimeout);
-                console.error("Erro login Google:", error);
-                if(error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
-                    showToast("Falha na comunicação com o provedor Google. Verifique sua conexão.", "error");
+                clearTimeout(timeout);
+                showToast("Sessão Google iniciada!", "success");
+            } catch (err) {
+                clearTimeout(timeout);
+                if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
+                    showToast("Falha na comunicação com o Google.", "error");
                 }
             } finally {
                 authLoader.classList.remove('active');
             }
         });
 
-        // --- AUTENTICAÇÃO CONVIDADO (OFFLINE) ---
-        btnGuestLogin.addEventListener('click', async function() {
+        btnGuestLogin.addEventListener('click', async () => {
             authLoader.classList.add('active');
             try {
                 await signInAnonymously(auth);
-                showToast("Modo fantasma (convidado) ativado.", "info");
-            } catch (error) {
-                console.warn("Autenticação anônima rejeitada. Ativando Sandbox Local.", error);
+                showToast("Modo fantasma ativado.", "info");
+            } catch {
                 useLocalStorageFallback = true;
                 currentUser = { uid: "sandbox_local", email: "Modo Sandbox", displayName: "Convidado Local" };
-                
                 showAuthUI(false);
                 updateUserProfileUI(currentUser);
-                
                 statusSyncDiv.className = "status-sync local";
                 syncText.innerText = "Sandbox Local (Offline)";
-                
                 loadFromLocalStorage();
                 updateUI();
-                showToast("Sandbox local ativado. Seus dados não sairão deste dispositivo.", "warning");
+                showToast("Sandbox local ativado.", "warning");
             } finally {
                 authLoader.classList.remove('active');
             }
         });
 
-        // --- LOGOUT ---
-        btnLogout.addEventListener('click', async function() {
+        btnLogout.addEventListener('click', async () => {
             try {
                 if (useLocalStorageFallback) {
                     useLocalStorageFallback = false;
@@ -1730,166 +1591,121 @@
                     await signOut(auth);
                     showToast("Sessão encerrada com segurança.", "info");
                 }
-            } catch (error) {
-                console.error("Erro ao sair:", error);
+            } catch {
                 showToast("Falha ao encerrar a sessão.", "error");
             }
         });
 
-        // --- ATUALIZAR INFORMAÇÕES VISUAIS DO USUÁRIO ---
+        /* ----------------------------------------------------------
+           PERFIL DE USUÁRIO
+        ---------------------------------------------------------- */
         function updateUserProfileUI(user) {
-            let defaultName = "Agente Anônimo";
-            let displayName = user.displayName || "";
-            let email = user.email || "";
-            let uid = user.uid || "Desconhecido";
-            
-            if (!email && !displayName && uid !== "sandbox_local") {
-                email = "Sessão Oculta";
-            } else if (uid === "sandbox_local") {
-                email = "Modo Offline (Sandbox)";
-            }
+            const displayName = user.displayName || "";
+            const email       = user.uid === "sandbox_local" ? "Modo Offline (Sandbox)" : (user.email || "Sessão Oculta");
+            const nameToShow  = displayName || (email ? email.split('@')[0] : "Agente Anônimo");
+            const avatarUrl   = user.photoURL ||
+                `https://ui-avatars.com/api/?name=${encodeURIComponent(nameToShow.charAt(0).toUpperCase())}&background=4f46e5&color=fff&rounded=true&bold=true`;
 
-            let nameToDisplay = displayName ? displayName : (email ? email.split('@')[0] : defaultName);
-            
-            userEmailText.innerText = escapeHTML(nameToDisplay);
-            headerUserName.innerText = escapeHTML(nameToDisplay);
-            
-            let avatarUrl = user.photoURL;
-            if (!avatarUrl) {
-                let initial = nameToDisplay.charAt(0).toUpperCase();
-                avatarUrl = `https://ui-avatars.com/api/?name=${initial}&background=4f46e5&color=fff&rounded=true&bold=true`;
-            }
-            
+            userEmailText.innerText = escapeHTML(nameToShow);
+            headerUserName.innerText = escapeHTML(nameToShow);
             navbarAvatar.src = avatarUrl;
             navbarAvatar.style.display = 'block';
             modalAvatar.src = avatarUrl;
-            
             modalEmail.innerText = escapeHTML(email);
             profileNameInput.value = escapeHTML(displayName);
-            modalUid.innerText = escapeHTML(uid);
-            
+            modalUid.innerText = escapeHTML(user.uid);
             updateTimeGreeting();
         }
 
-        // Monitor de Estado de Login Ativo
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, user => {
             if (user && !useLocalStorageFallback) {
                 currentUser = user;
                 showAuthUI(false);
-                
                 updateUserProfileUI(user);
-                
                 statusSyncDiv.className = "status-sync connected";
                 syncText.innerText = 'Criptografado em Nuvem';
                 subscribeToDatabase();
             } else if (!useLocalStorageFallback) {
                 currentUser = null;
                 showAuthUI(true);
-                if (unsubscribeOnSnapshot) {
-                    unsubscribeOnSnapshot();
-                    unsubscribeOnSnapshot = null;
-                }
+                if (unsubscribeOnSnapshot) { unsubscribeOnSnapshot(); unsubscribeOnSnapshot = null; }
                 statusSyncDiv.className = "status-sync";
                 syncText.innerText = 'Aguardando Login...';
                 navbarAvatar.style.display = 'none';
             }
         });
 
-        function showAuthUI(showLoginScreen) {
-            if (showLoginScreen) {
+        function showAuthUI(showLogin) {
+            if (showLogin) {
                 authSection.style.display = 'flex';
-                appSection.style.display = 'none';
+                appSection.style.display  = 'none';
                 userDisplay.style.display = 'none';
             } else {
                 authSection.style.display = 'none';
-                appSection.style.display = 'block';
+                appSection.style.display  = 'block';
                 userDisplay.style.display = 'flex';
+                initAnimated(); // inicializa refs de animação ao mostrar o app
             }
         }
 
-        // --- LÓGICA DO MODAL DE PERFIL & ZONA DE PERIGO ---
-        btnOpenProfile.addEventListener('click', () => {
-            profileModal.classList.add('active');
-        });
-
-        btnCloseProfile.addEventListener('click', () => {
-            profileModal.classList.remove('active');
-        });
-
-        profileModal.addEventListener('click', (e) => {
-            if (e.target === profileModal) {
-                profileModal.classList.remove('active');
-            }
-        });
-
+        /* ----------------------------------------------------------
+           SALVAR PERFIL
+        ---------------------------------------------------------- */
         btnSaveProfile.addEventListener('click', async () => {
             if (!currentUser || useLocalStorageFallback) {
-                showToast("Edição de perfil não suportada no modo Sandbox/Offline.", "warning");
+                showToast("Edição de perfil não suportada no modo Offline.", "warning");
                 return;
             }
-
-            const newName = profileNameInput.value.trim();
-            const btnOriginalHtml = btnSaveProfile.innerHTML;
+            const orig = btnSaveProfile.innerHTML;
             btnSaveProfile.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Atualizando...';
             btnSaveProfile.disabled = true;
-
             try {
-                await updateProfile(currentUser, {
-                    displayName: newName
-                });
-                
+                await updateProfile(currentUser, { displayName: profileNameInput.value.trim() });
                 updateUserProfileUI(auth.currentUser);
-                showToast("Identidade atualizada com sucesso!", "success");
-                setTimeout(() => { profileModal.classList.remove('active'); }, 500);
-            } catch (error) {
-                console.error("Erro ao atualizar perfil:", error);
-                showToast("Falha ao salvar as alterações de perfil.", "error");
+                showToast("Identidade atualizada!", "success");
+                setTimeout(() => profileModal.classList.remove('active'), 500);
+            } catch {
+                showToast("Falha ao salvar perfil.", "error");
             } finally {
-                btnSaveProfile.innerHTML = btnOriginalHtml;
+                btnSaveProfile.innerHTML = orig;
                 btnSaveProfile.disabled = false;
             }
         });
 
-        // NOVO: Limpar Todos os Dados (Expurgo)
+        /* ----------------------------------------------------------
+           EXPURGAR DADOS
+        ---------------------------------------------------------- */
         btnWipeData.addEventListener('click', async () => {
-            const confirmed = confirm("ALERTA CRÍTICO: Tem a certeza absoluta que deseja apagar TODOS os seus registos financeiros? Esta ação é permanente e irreversível.");
-            
-            if (!confirmed) return;
-            
-            const btnOriginalHtml = btnWipeData.innerHTML;
+            if (!confirm("ALERTA CRÍTICO: Apagar TODOS os registros? Esta ação é irreversível.")) return;
+            const orig = btnWipeData.innerHTML;
             btnWipeData.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Expurgando...';
             btnWipeData.disabled = true;
-
             try {
                 if (useLocalStorageFallback) {
                     transactions = [];
                     saveToLocalStorage();
                     updateUI();
-                    showToast("Base de dados local expurgada com sucesso.", "success");
                 } else {
                     const colRef = getCollectionRef();
                     if (!colRef) throw new Error("Não conectado.");
-                    
-                    const querySnapshot = await getDocs(colRef);
-                    const deletePromises = [];
-                    querySnapshot.forEach((document) => {
-                        deletePromises.push(deleteDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'transactions', document.id)));
-                    });
-                    
-                    await Promise.all(deletePromises);
-                    showToast("Cofre na nuvem expurgado com sucesso.", "success");
+                    const snap = await getDocs(colRef);
+                    await Promise.all(snap.docs.map(d =>
+                        deleteDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'transactions', d.id))
+                    ));
                 }
+                showToast("Cofre expurgado com sucesso.", "success");
                 profileModal.classList.remove('active');
-            } catch (error) {
-                console.error("Erro ao expurgar dados:", error);
+            } catch {
                 showToast("Falha ao limpar base de dados.", "error");
             } finally {
-                btnWipeData.innerHTML = btnOriginalHtml;
+                btnWipeData.innerHTML = orig;
                 btnWipeData.disabled = false;
             }
         });
 
-        // --- OPERAÇÕES NO BANCO DE DADOS (FIRESTORE) ---
+        /* ----------------------------------------------------------
+           FIRESTORE
+        ---------------------------------------------------------- */
         function getCollectionRef() {
             if (!currentUser) return null;
             return collection(db, 'artifacts', appId, 'users', currentUser.uid, 'transactions');
@@ -1898,431 +1714,457 @@
         function subscribeToDatabase() {
             const colRef = getCollectionRef();
             if (!colRef) return;
-
             tableLoader.classList.add('active');
             if (unsubscribeOnSnapshot) unsubscribeOnSnapshot();
 
-            unsubscribeOnSnapshot = onSnapshot(colRef, (snapshot) => {
-                transactions = [];
-                snapshot.forEach((doc) => {
-                    transactions.push({ id: doc.id, ...doc.data() });
+            unsubscribeOnSnapshot = onSnapshot(colRef, snapshot => {
+                /* FIX #3 — processa só o diff, não recria tudo */
+                snapshot.docChanges().forEach(change => {
+                    const data = { id: change.doc.id, ...change.doc.data() };
+                    if (change.type === 'added') {
+                        if (!transactions.find(t => t.id === data.id)) transactions.push(data);
+                    } else if (change.type === 'modified') {
+                        const idx = transactions.findIndex(t => t.id === data.id);
+                        if (idx !== -1) transactions[idx] = data;
+                    } else if (change.type === 'removed') {
+                        transactions = transactions.filter(t => t.id !== data.id);
+                    }
                 });
+                updateYearFilter();
                 updateUI();
                 tableLoader.classList.remove('active');
-            }, (error) => {
-                console.error("Erro na sincronização:", error);
+            }, err => {
+                console.error(err);
                 tableLoader.classList.remove('active');
-                
                 useLocalStorageFallback = true;
                 statusSyncDiv.className = "status-sync local";
                 syncText.innerText = 'Sandbox Local (Offline)';
                 loadFromLocalStorage();
                 updateUI();
-                showToast("Conexão segura falhou. Sandbox local de contingência ativado.", "warning");
+                showToast("Conexão falhou. Sandbox local ativado.", "warning");
             });
         }
 
-        // --- OPERAÇÕES LOCAL STORAGE (FALLBACK) ---
+        /* ----------------------------------------------------------
+           LOCAL STORAGE
+        ---------------------------------------------------------- */
         function loadFromLocalStorage() {
             transactions = JSON.parse(localStorage.getItem('corvus_local_data')) || [];
+            updateYearFilter();
         }
-
         function saveToLocalStorage() {
             localStorage.setItem('corvus_local_data', JSON.stringify(transactions));
         }
 
-        // --- EXPORTAR PARA CSV ---
-        btnExportCsv.addEventListener('click', () => {
-            if (transactions.length === 0) {
-                showToast("Não há dados para exportar.", "warning");
-                return;
-            }
-            
-            let csvContent = "data:text/csv;charset=utf-8,Data,Descrição,Categoria,Status,Valor (R$)\n";
-            const sortedForExport = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            sortedForExport.forEach(t => {
-                let tipoFormatado = t.type === 'income' ? 'Entrada' : (t.type === 'expense' ? 'Pago' : 'A Pagar');
-                let safeDesc = t.desc.replace(/"/g, '""');
-                if (/^[=+\-@]/.test(safeDesc)) safeDesc = "'" + safeDesc; 
-                let categoria = t.category || 'Geral';
-                
-                csvContent += `${formatDate(t.date)},"${safeDesc}","${categoria}",${tipoFormatado},${t.amount.toFixed(2)}\n`;
+        /* ----------------------------------------------------------
+           FILTRO DE ANO DINÂMICO (NOVO)
+        ---------------------------------------------------------- */
+        function updateYearFilter() {
+            const years = [...new Set(transactions.map(t => t.date ? t.date.split('-')[0] : null).filter(Boolean))].sort().reverse();
+            const current = filterYearSelect.value;
+            filterYearSelect.innerHTML = '<option value="all">Todos os Anos</option>';
+            years.forEach(y => {
+                const opt = document.createElement('option');
+                opt.value = y; opt.textContent = y;
+                if (y === current) opt.selected = true;
+                filterYearSelect.appendChild(opt);
             });
-            
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Corvus_Export_${new Date().toISOString().split('T')[0]}.csv`);
+        }
+
+        /* ----------------------------------------------------------
+           EXPORTAR CSV
+        ---------------------------------------------------------- */
+        btnExportCsv.addEventListener('click', () => {
+            if (!transactions.length) { showToast("Não há dados para exportar.", "warning"); return; }
+            let csv = "data:text/csv;charset=utf-8,Data,Descrição,Categoria,Status,Valor (R$)\n";
+            [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(t => {
+                const tipos = { income: 'Entrada', expense: 'Pago', future: 'A Pagar' };
+                let desc = (t.desc || '').replace(/"/g, '""');
+                if (/^[=+\-@]/.test(desc)) desc = "'" + desc;
+                csv += `${formatDate(t.date)},"${desc}","${t.category || 'Geral'}",${tipos[t.type] || t.type},${t.amount.toFixed(2)}\n`;
+            });
+            const link = document.createElement('a');
+            link.href = encodeURI(csv);
+            link.download = `Corvus_Export_${new Date().toISOString().split('T')[0]}.csv`;
             document.body.appendChild(link);
-            link.click();
-            link.remove();
-            
-            showToast("Dados extraídos com segurança!", "success");
+            link.click(); link.remove();
+            showToast("Dados exportados!", "success");
         });
 
-        // --- ADICIONAR NOVO LANÇAMENTO ---
-        form.addEventListener('submit', async function(e) {
+        /* ----------------------------------------------------------
+           ADICIONAR LANÇAMENTO
+        ---------------------------------------------------------- */
+        form.addEventListener('submit', async e => {
             e.preventDefault();
-            
-            const rawDesc = document.getElementById('desc').value.trim();
-            const desc = escapeHTML(rawDesc).substring(0, 100); 
+            const rawDesc     = document.getElementById('desc').value.trim();
+            const desc        = escapeHTML(rawDesc).substring(0, 100);
             const totalAmount = parseFloat(document.getElementById('amount').value);
             const installments = parseInt(document.getElementById('installments').value);
-            const type = document.getElementById('type').value;
-            const category = document.getElementById('category').value; 
-            const startDate = document.getElementById('date').value;
+            const type        = document.getElementById('type').value;
+            const category    = document.getElementById('category').value;
+            const startDate   = document.getElementById('date').value;
 
             if (!desc || isNaN(totalAmount) || isNaN(installments) || totalAmount <= 0 || installments < 1 || installments > 72) {
-                showToast("Entrada rejeitada: Dados corrompidos ou inválidos.", "error");
+                showToast("Dados inválidos. Verifique os campos.", "error");
                 return;
             }
 
             formLoader.classList.add('active');
-
-            const amountPerInstallment = totalAmount / installments;
-            const newItems = [];
+            const amountPer = totalAmount / installments;
+            const newItems  = [];
 
             for (let i = 0; i < installments; i++) {
-                let dateObj = new Date(startDate);
+                const dateObj = new Date(startDate);
                 dateObj.setMonth(dateObj.getMonth() + i);
-                let formattedDate = dateObj.toISOString().split('T')[0];
-
-                let finalDesc = installments > 1 ? `${desc} (${i + 1}/${installments})` : desc;
-                let finalType = type;
-                if (installments > 1 && type === 'expense' && i > 0) {
-                    finalType = 'future'; 
-                }
-
+                const finalDesc = installments > 1 ? `${desc} (${i + 1}/${installments})` : desc;
+                const finalType = installments > 1 && type === 'expense' && i > 0 ? 'future' : type;
                 newItems.push({
                     desc: finalDesc,
-                    category: escapeHTML(category), 
-                    amount: amountPerInstallment,
+                    category: escapeHTML(category),
+                    amount: amountPer,
                     type: escapeHTML(finalType),
-                    date: escapeHTML(formattedDate),
+                    date: escapeHTML(dateObj.toISOString().split('T')[0]),
                     createdAt: new Date().toISOString()
                 });
             }
 
             try {
                 if (useLocalStorageFallback) {
-                    newItems.forEach(item => {
-                        item.id = 'local_' + Math.random().toString(36).substr(2, 9);
-                        transactions.push(item);
-                    });
+                    newItems.forEach(item => { item.id = 'local_' + Math.random().toString(36).substr(2, 9); transactions.push(item); });
                     saveToLocalStorage();
+                    updateYearFilter();
                     updateUI();
-                    showToast(`Registrado no Sandbox! Parcela (${installments}x)`, "success");
+                    showToast(`Sandbox: ${installments}x registrado!`, "success");
                 } else {
                     const colRef = getCollectionRef();
                     if (!colRef) throw new Error("Não conectado.");
-
-                    for (const item of newItems) {
-                        await addDoc(colRef, item);
-                    }
-                    showToast(`Sincronizado na nuvem Corvus! Parcela (${installments}x)`, "success");
+                    for (const item of newItems) await addDoc(colRef, item);
+                    showToast(`Nuvem Corvus: ${installments}x sincronizado!`, "success");
                 }
-
                 form.reset();
                 dateInput.value = new Date().toISOString().split('T')[0];
                 document.getElementById('installments').value = "1";
-            } catch (error) {
-                console.error("Erro ao salvar:", error);
-                showToast("Violação de regra ao gravar dados.", "error");
+            } catch (err) {
+                console.error(err);
+                showToast("Erro ao gravar dados.", "error");
             } finally {
                 formLoader.classList.remove('active');
             }
         });
 
-        // Marcar uma Despesa Futura como Paga
+        /* ----------------------------------------------------------
+           MARCAR COMO PAGO
+        ---------------------------------------------------------- */
         window.markAsPaid = async function(id) {
             try {
                 if (useLocalStorageFallback) {
-                    const index = transactions.findIndex(t => t.id === id);
-                    if (index !== -1) {
-                        transactions[index].type = 'expense';
-                        saveToLocalStorage();
-                        updateUI();
-                        showToast("Marcado como pago no Sandbox!", "success");
-                    }
+                    const idx = transactions.findIndex(t => t.id === id);
+                    if (idx !== -1) { transactions[idx].type = 'expense'; saveToLocalStorage(); updateUI(); }
+                    showToast("Marcado como pago!", "success");
                 } else {
-                    const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'transactions', id);
-                    await updateDoc(docRef, {
-                        type: 'expense',
-                        paidAt: new Date().toISOString()
-                    });
-                    showToast("Atualização sincronizada!", "success");
+                    await updateDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'transactions', id), { type: 'expense', paidAt: new Date().toISOString() });
+                    showToast("Status atualizado!", "success");
                 }
-            } catch (error) {
-                console.error("Erro ao atualizar status:", error);
-                showToast("Erro de permissão ao atualizar status.", "error");
-            }
+            } catch { showToast("Erro ao atualizar status.", "error"); }
         };
 
-        // Excluir Lançamento
+        /* ----------------------------------------------------------
+           EXCLUIR LANÇAMENTO
+        ---------------------------------------------------------- */
         window.removeTransaction = async function(id) {
             try {
                 if (useLocalStorageFallback) {
                     transactions = transactions.filter(t => t.id !== id);
-                    saveToLocalStorage();
-                    updateUI();
-                    showToast("Registro expurgado localmente!", "success");
+                    saveToLocalStorage(); updateUI();
+                    showToast("Registro removido!", "success");
                 } else {
-                    const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'transactions', id);
-                    await deleteDoc(docRef);
+                    await deleteDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'transactions', id));
                     showToast("Registro expurgado da nuvem!", "success");
                 }
-            } catch (error) {
-                console.error("Erro ao excluir do banco:", error);
-                showToast("Erro ao expurgar registro (permissão negada).", "error");
-            }
+            } catch { showToast("Erro ao remover registro.", "error"); }
         };
 
-        // Filtros e pesquisa dinâmica com Debounce aplicado
-        searchInput.addEventListener('input', debounce(updateUI, 300));
-        filterTypeSelect.addEventListener('change', updateUI);
+        /* ----------------------------------------------------------
+           FIX #5 — DEBOUNCE EM TODOS OS FILTROS
+        ---------------------------------------------------------- */
+        const debouncedUpdateUI = debounce(updateUI, 250);
+        searchInput.addEventListener('input', debouncedUpdateUI);
+        filterTypeSelect.addEventListener('change', debouncedUpdateUI);
+        filterMonthSelect.addEventListener('change', () => { currentPage = 1; updateUI(); });
+        filterYearSelect.addEventListener('change',  () => { currentPage = 1; updateUI(); });
 
-        // --- ATUALIZAÇÃO DA INTERFACE & DASHBOARD (OTIMIZADO COM DOCUMENT FRAGMENT) ---
+        /* ----------------------------------------------------------
+           UPDATE UI PRINCIPAL
+        ---------------------------------------------------------- */
         function updateUI() {
-            tbody.innerHTML = '';
-            const fragment = document.createDocumentFragment();
-            
-            const searchValue = escapeHTML(searchInput.value.toLowerCase().trim());
-            const filterValue = escapeHTML(filterTypeSelect.value);
+            const searchVal  = searchInput.value.toLowerCase().trim();
+            const filterType = filterTypeSelect.value;
+            const filterMonth = filterMonthSelect.value;
+            const filterYear  = filterYearSelect.value;
 
+            /* Filtro */
             let filtered = transactions.filter(t => {
-                const matchesSearch = t.desc.toLowerCase().includes(searchValue);
-                const matchesFilter = filterValue === 'all' || t.type === filterValue;
-                return matchesSearch && matchesFilter;
-            });
+                if (!t.desc.toLowerCase().includes(searchVal)) return false;
+                if (filterType !== 'all' && t.type !== filterType) return false;
+                if (filterMonth !== 'all' && t.date && t.date.split('-')[1] !== filterMonth) return false;
+                if (filterYear  !== 'all' && t.date && t.date.split('-')[0] !== filterYear)  return false;
+                return true;
+            }).sort((a, b) => new Date(b.date) - new Date(a.date));
 
-            filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+            /* Paginação */
+            const totalPages = Math.max(1, Math.ceil(filtered.length / ROWS_PER_PAGE));
+            if (currentPage > totalPages) currentPage = totalPages;
+            const pageData = filtered.slice((currentPage - 1) * ROWS_PER_PAGE, currentPage * ROWS_PER_PAGE);
 
-            if (filtered.length === 0) {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td colspan="6" style="text-align:center; padding: 3rem; color: var(--text-muted);"><i class="fa-solid fa-server" style="display:block; font-size: 2rem; margin-bottom: 1rem; color: rgba(255,255,255,0.05);"></i> Repositório Vazio.</td>`;
-                fragment.appendChild(tr);
-            } else {
-                filtered.forEach(t => {
-                    const tr = document.createElement('tr');
-                    
-                    let badgeClass, statusText, valClass, prefix;
-                    let btnPay = '';
+            /* Renderização da tabela */
+            renderTablePage(pageData, filtered.length);
+            renderPagination(totalPages);
 
-                    if (t.type === 'income') {
-                        badgeClass = 'income'; statusText = 'Entrada'; valClass = 'val-income'; prefix = '+';
-                    } else if (t.type === 'expense') {
-                        badgeClass = 'expense'; statusText = 'Pago'; valClass = 'val-expense'; prefix = '-';
-                    } else {
-                        badgeClass = 'future'; statusText = 'A Pagar'; valClass = 'val-future'; prefix = '';
-                        btnPay = `<button class="action-btn btn-pay" onclick="markAsPaid('${escapeHTML(t.id)}')" title="Marcar como Pago"><i class="fa-solid fa-check"></i></button>`;
-                    }
+            /* Totais (sem filtro de período para os cards) */
+            const incomes  = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+            const expenses = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+            const futures  = transactions.filter(t => t.type === 'future').reduce((s, t) => s + t.amount, 0);
+            const balance  = incomes - expenses;
 
-                    // Previne dados muito antigos que não tenham category
-                    const catName = t.category || 'Geral';
-
-                    tr.innerHTML = `
-                        <td>${formatDate(t.date)}</td>
-                        <td style="font-weight: 500; color: #fff;">${escapeHTML(t.desc)}</td>
-                        <td><span class="badge-category"><i class="fa-solid fa-tag"></i> ${escapeHTML(catName)}</span></td>
-                        <td><span class="badge ${badgeClass}">${statusText}</span></td>
-                        <td class="${valClass}">${prefix} ${formatCurrency(t.amount)}</td>
-                        <td style="text-align: right; display: flex; justify-content: flex-end; gap: 0.5rem;">
-                            ${btnPay}
-                            <button class="action-btn btn-del" onclick="removeTransaction('${escapeHTML(t.id)}')" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
-                        </td>
-                    `;
-                    fragment.appendChild(tr);
-                });
-            }
-            
-            // Injeção de dados em lote no DOM (Extrema performance)
-            tbody.appendChild(fragment);
-
-            const incomes = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
-            const expenses = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
-            const futures = transactions.filter(t => t.type === 'future').reduce((acc, t) => acc + t.amount, 0);
-            const balance = incomes - expenses;
-
-            animateValue('total-balance', prevValues.balance, balance, 800, 'balance');
-            animateValue('total-income', prevValues.income, incomes, 800, 'income');
-            animateValue('total-expense', prevValues.expense, expenses, 800, 'expense');
-            animateValue('total-future', prevValues.future, futures, 800, 'future');
-            
-            prevValues = { balance, income: incomes, expense: expenses, future: futures, score: prevValues.score };
+            /* FIX #4 — atualiza apenas os targets e inicia loop unificado */
+            setAnimTarget('balance', balance);
+            setAnimTarget('income',  incomes);
+            setAnimTarget('expense', expenses);
+            setAnimTarget('future',  futures);
+            startAnimationLoop();
 
             updateInsights(balance, incomes, expenses, futures);
             updateStatsAndGoals(balance, incomes);
             updateChart(incomes, expenses, futures);
         }
 
-        // --- SISTEMA DE METAS, LIMITES SAAS E ESTATÍSTICAS EXTRAS (MELHORADO) ---
-        function updateStatsAndGoals(balance, income) {
-            
-            // Limitador de uso SaaS (Visual)
-            document.getElementById('usage-count').innerText = transactions.length;
-            const usagePercent = Math.min((transactions.length / 1000) * 100, 100);
-            const usageBar = document.getElementById('usage-progress-bar');
-            usageBar.style.width = `${usagePercent}%`;
-            if (usagePercent >= 90) usageBar.style.background = "linear-gradient(90deg, var(--danger), #fca5a5)";
+        /* ----------------------------------------------------------
+           RENDERIZAR PÁGINA DA TABELA
+        ---------------------------------------------------------- */
+        function renderTablePage(pageData, totalCount) {
+            const fragment = document.createDocumentFragment();
 
-            // Atualiza Total Registos
-            document.getElementById('stat-total-items').innerText = transactions.length;
-            
-            // Atualiza Maior Despesa
-            const expensesArray = transactions.filter(t => t.type === 'expense' || t.type === 'future').map(t => t.amount);
-            const maxExpense = expensesArray.length > 0 ? Math.max(...expensesArray) : 0;
-            document.getElementById('stat-max-expense').innerText = formatCurrency(maxExpense);
-
-            // Atualiza Maior Receita
-            const incomesArray = transactions.filter(t => t.type === 'income').map(t => t.amount);
-            const maxIncome = incomesArray.length > 0 ? Math.max(...incomesArray) : 0;
-            document.getElementById('stat-max-income').innerText = formatCurrency(maxIncome);
-
-            // Atualiza Média de Gastos
-            const expenseCount = expensesArray.length;
-            const totalExpenses = expensesArray.reduce((acc, val) => acc + val, 0);
-            const avgExpense = expenseCount > 0 ? totalExpenses / expenseCount : 0;
-            document.getElementById('stat-avg-expense').innerText = formatCurrency(avgExpense);
-
-            // Atualiza a Meta de Economia (Ex: 20% das Receitas)
-            const goalAmount = income * 0.20;
-            let goalPercent = 0;
-            
-            if (goalAmount > 0 && balance > 0) {
-                goalPercent = Math.min((balance / goalAmount) * 100, 100);
-            } else if (balance <= 0) {
-                goalPercent = 0;
-            }
-
-            const progressBar = document.getElementById('goal-progress-bar');
-            const progressText = document.getElementById('goal-percentage');
-            
-            progressBar.style.width = `${goalPercent}%`;
-            progressText.innerText = `${goalPercent.toFixed(1)}%`;
-            
-            if(goalPercent >= 100) {
-                progressBar.style.background = "linear-gradient(90deg, var(--success), #34d399)";
-                progressText.style.color = "var(--success)";
-            } else if (goalPercent > 50) {
-                progressBar.style.background = "linear-gradient(90deg, var(--primary), #818cf8)";
-                progressText.style.color = "#fff";
+            if (!pageData.length) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="6" style="text-align:center; padding: 3rem; color: var(--text-muted);">
+                    <i class="fa-solid fa-server" style="display:block; font-size: 2rem; margin-bottom: 1rem; color: rgba(255,255,255,0.05);"></i>
+                    Repositório vazio ou sem resultados para os filtros aplicados.
+                </td>`;
+                fragment.appendChild(tr);
             } else {
-                progressBar.style.background = "linear-gradient(90deg, var(--warning), #fcd34d)";
-                progressText.style.color = "#fff";
-            }
-        }
-
-        // --- SISTEMA DE INSIGHTS E SCORE FINANCEIRO ---
-        function updateInsights(balance, income, expense, future) {
-            const box = document.getElementById('insight-box');
-            let score = 100;
-            
-            if (transactions.length === 0) {
-                box.innerHTML = "<strong>Módulo analítico offline.</strong> Injete seus primeiros registros para ativar o sistema heurístico financeiro Corvus.";
-                box.style.borderLeftColor = "var(--primary)";
-                animateValue('health-score-val', prevValues.score, 0, 800, 'score', false);
-                prevValues.score = 0;
-                document.getElementById('health-score-val').style.color = "var(--text-muted)";
-                return;
-            }
-
-            if (balance < 0) {
-                box.innerHTML = "<strong>Fenda Detectada!</strong> Saídas ultrapassam as entradas resultando em balanço crítico <strong>(negativo)</strong>. Estanque gastos imediatamente.";
-                box.style.borderLeftColor = "var(--danger)";
-                box.style.backgroundColor = "rgba(239, 68, 68, 0.08)";
-                box.style.color = "#fca5a5";
-                score = 15;
-                document.getElementById('health-score-val').style.color = "var(--danger)";
-            } else if (future > income && income > 0) {
-                box.innerHTML = "<strong>Aviso de Passivo Perigoso!</strong> As dívidas futuras mapeadas são maiores que o total já injetado no sistema. Evite novos bloqueios de crédito.";
-                box.style.borderLeftColor = "var(--warning)";
-                box.style.backgroundColor = "rgba(245, 158, 11, 0.08)";
-                box.style.color = "#fcd34d";
-                score = 45;
-                document.getElementById('health-score-val').style.color = "var(--warning)";
-            } else if (balance > 0 && expense > 0) {
-                let savingRate = ((balance / income) * 100).toFixed(0);
-                box.innerHTML = `<strong>Performance Tática Excelente.</strong> Estrutura de orçamento robusta com poupança aproximada de <strong>${savingRate}%</strong> do capital injetado.`;
-                box.style.borderLeftColor = "var(--success)";
-                box.style.backgroundColor = "rgba(16, 185, 129, 0.08)";
-                box.style.color = "#6ee7b7";
-                score = 95;
-                document.getElementById('health-score-val').style.color = "var(--success)";
-            } else {
-                box.innerHTML = "Sistemas ativos. Dados sendo monitorados. Mantenha os lançamentos consistentes para relatórios precisos do algoritmo.";
-                box.style.borderLeftColor = "var(--primary)";
-                box.style.backgroundColor = "rgba(79, 70, 229, 0.08)";
-                box.style.color = "#a5b4fc";
-                score = 80;
-                document.getElementById('health-score-val').style.color = "var(--primary)";
-            }
-            
-            animateValue('health-score-val', prevValues.score, score, 800, 'score', false);
-            prevValues.score = score;
-        }
-
-        // --- ATUALIZAÇÃO DO GRÁFICO (Chart.js Premium) ---
-        function updateChart(income, expense, future) {
-            const ctx = document.getElementById('financeChart').getContext('2d');
-            
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
-
-            if (income === 0 && expense === 0 && future === 0) {
-                chartInstance = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Aguardando'],
-                        datasets: [{ data: [100], backgroundColor: ['rgba(39, 39, 42, 0.5)'], borderWidth: 0 }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+                pageData.forEach(t => {
+                    const tr = document.createElement('tr');
+                    let badgeClass, statusText, valClass, prefix, btnPay = '';
+                    if (t.type === 'income') {
+                        badgeClass = 'income';  statusText = 'Entrada'; valClass = 'val-income'; prefix = '+';
+                    } else if (t.type === 'expense') {
+                        badgeClass = 'expense'; statusText = 'Pago';    valClass = 'val-expense'; prefix = '-';
+                    } else {
+                        badgeClass = 'future';  statusText = 'A Pagar'; valClass = 'val-future';  prefix = '';
+                        btnPay = `<button class="action-btn btn-pay" onclick="markAsPaid('${escapeHTML(t.id)}')" title="Marcar como Pago"><i class="fa-solid fa-check"></i></button>`;
+                    }
+                    tr.innerHTML = `
+                        <td>${formatDate(t.date)}</td>
+                        <td style="font-weight: 500; color: #fff;">${escapeHTML(t.desc)}</td>
+                        <td><span class="badge-category"><i class="fa-solid fa-tag"></i> ${escapeHTML(t.category || 'Geral')}</span></td>
+                        <td><span class="badge ${badgeClass}">${statusText}</span></td>
+                        <td class="${valClass}">${prefix} ${formatCurrency(t.amount)}</td>
+                        <td style="text-align: right; display: flex; justify-content: flex-end; gap: 0.5rem;">
+                            ${btnPay}
+                            <button class="action-btn btn-del" onclick="removeTransaction('${escapeHTML(t.id)}')" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
+                        </td>`;
+                    fragment.appendChild(tr);
                 });
+            }
+            tbody.innerHTML = '';
+            tbody.appendChild(fragment);
+        }
+
+        /* ----------------------------------------------------------
+           PAGINAÇÃO (NOVO)
+        ---------------------------------------------------------- */
+        function renderPagination(totalPages) {
+            paginationEl.innerHTML = '';
+            if (totalPages <= 1) return;
+
+            const prev = document.createElement('button');
+            prev.className = 'page-btn';
+            prev.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+            prev.disabled = currentPage === 1;
+            prev.onclick = () => { currentPage--; updateUI(); };
+            paginationEl.appendChild(prev);
+
+            // Mostrar até 5 páginas ao redor da atual
+            const range = 2;
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - range && i <= currentPage + range)) {
+                    const btn = document.createElement('button');
+                    btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
+                    btn.textContent = i;
+                    btn.onclick = ((pg) => () => { currentPage = pg; updateUI(); })(i);
+                    paginationEl.appendChild(btn);
+                } else if (i === currentPage - range - 1 || i === currentPage + range + 1) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.className = 'page-info';
+                    ellipsis.textContent = '...';
+                    paginationEl.appendChild(ellipsis);
+                }
+            }
+
+            const next = document.createElement('button');
+            next.className = 'page-btn';
+            next.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+            next.disabled = currentPage === totalPages;
+            next.onclick = () => { currentPage++; updateUI(); };
+            paginationEl.appendChild(next);
+        }
+
+        /* ----------------------------------------------------------
+           ESTATÍSTICAS E METAS
+        ---------------------------------------------------------- */
+        function updateStatsAndGoals(balance, income) {
+            document.getElementById('usage-count').innerText = transactions.length;
+            const usagePct = Math.min((transactions.length / 1000) * 100, 100);
+            const usageBar = document.getElementById('usage-progress-bar');
+            usageBar.style.width = `${usagePct}%`;
+            if (usagePct >= 90) usageBar.style.background = "linear-gradient(90deg, var(--danger), #fca5a5)";
+
+            const expArr  = transactions.filter(t => t.type === 'expense' || t.type === 'future').map(t => t.amount);
+            const incArr  = transactions.filter(t => t.type === 'income').map(t => t.amount);
+            document.getElementById('stat-max-expense').innerText = formatCurrency(expArr.length ? Math.max(...expArr) : 0);
+            document.getElementById('stat-max-income').innerText  = formatCurrency(incArr.length ? Math.max(...incArr) : 0);
+            const totalExp = expArr.reduce((s, v) => s + v, 0);
+            document.getElementById('stat-avg-expense').innerText = formatCurrency(expArr.length ? totalExp / expArr.length : 0);
+
+            const goalAmt  = income * 0.20;
+            const goalPct  = goalAmt > 0 && balance > 0 ? Math.min((balance / goalAmt) * 100, 100) : 0;
+            const progBar  = document.getElementById('goal-progress-bar');
+            const progText = document.getElementById('goal-percentage');
+            progBar.style.width  = `${goalPct}%`;
+            progText.innerText   = `${goalPct.toFixed(1)}%`;
+            if (goalPct >= 100) {
+                progBar.style.background  = "linear-gradient(90deg, var(--success), #34d399)";
+                progText.style.color = "var(--success)";
+            } else if (goalPct > 50) {
+                progBar.style.background  = "linear-gradient(90deg, var(--primary), #818cf8)";
+                progText.style.color = "#fff";
+            } else {
+                progBar.style.background  = "linear-gradient(90deg, var(--warning), #fcd34d)";
+                progText.style.color = "#fff";
+            }
+        }
+
+        /* ----------------------------------------------------------
+           INSIGHTS & SCORE
+        ---------------------------------------------------------- */
+        function updateInsights(balance, income, expense, future) {
+            const box   = document.getElementById('insight-box');
+            const score = document.getElementById('health-score-val');
+            let targetScore = 100;
+
+            if (!transactions.length) {
+                box.innerHTML = "<strong>Módulo analítico offline.</strong> Injete seus primeiros registros para ativar a análise Corvus.";
+                box.style.cssText = "border-left-color: var(--primary); background-color: rgba(79,70,229,0.08); color: #a5b4fc;";
+                setAnimTarget('score', 0); startAnimationLoop();
+                score.style.color = "var(--text-muted)";
                 return;
             }
+            if (balance < 0) {
+                box.innerHTML = "<strong>Fenda Detectada!</strong> Saídas ultrapassam as entradas. Balanço crítico negativo. Estanque gastos imediatamente.";
+                box.style.cssText = "border-left-color: var(--danger); background-color: rgba(239,68,68,0.08); color: #fca5a5;";
+                targetScore = 15;
+                score.style.color = "var(--danger)";
+            } else if (future > income && income > 0) {
+                box.innerHTML = "<strong>Aviso de Passivo Perigoso!</strong> Dívidas futuras maiores que as receitas totais. Evite novos compromissos financeiros.";
+                box.style.cssText = "border-left-color: var(--warning); background-color: rgba(245,158,11,0.08); color: #fcd34d;";
+                targetScore = 45;
+                score.style.color = "var(--warning)";
+            } else if (balance > 0 && expense > 0) {
+                const sr = ((balance / income) * 100).toFixed(0);
+                box.innerHTML = `<strong>Performance Tática Excelente.</strong> Orçamento robusto com poupança aproximada de <strong>${sr}%</strong> do capital injetado.`;
+                box.style.cssText = "border-left-color: var(--success); background-color: rgba(16,185,129,0.08); color: #6ee7b7;";
+                targetScore = 95;
+                score.style.color = "var(--success)";
+            } else {
+                box.innerHTML = "Sistemas ativos. Dados sendo monitorados. Mantenha os lançamentos consistentes para relatórios precisos.";
+                box.style.cssText = "border-left-color: var(--primary); background-color: rgba(79,70,229,0.08); color: #a5b4fc;";
+                targetScore = 80;
+                score.style.color = "var(--primary)";
+            }
+            setAnimTarget('score', targetScore);
+            startAnimationLoop();
+        }
+
+        /* ----------------------------------------------------------
+           GRÁFICO — FIX #2: UPDATE em vez de DESTROY + CREATE
+           + Toggle Donut / Histórico (NOVO)
+        ---------------------------------------------------------- */
+        let lastChartData = { income: -1, expense: -1, future: -1 };
+
+        function updateChart(income, expense, future) {
+            if (currentChartType === 'donut') renderDonutChart(income, expense, future);
+            else renderLineChart();
+        }
+
+        window.switchChart = function(type) {
+            currentChartType = type;
+            document.getElementById('btn-chart-donut').classList.toggle('active', type === 'donut');
+            document.getElementById('btn-chart-line').classList.toggle('active',  type === 'line');
+
+            const incomes  = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+            const expenses = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+            const futures  = transactions.filter(t => t.type === 'future').reduce((s, t) => s + t.amount, 0);
+            updateChart(incomes, expenses, futures);
+        };
+
+        function renderDonutChart(income, expense, future) {
+            const ctx = document.getElementById('financeChart').getContext('2d');
+            const empty = income === 0 && expense === 0 && future === 0;
+
+            /* FIX #2 — atualiza dataset em vez de recriar */
+            if (chartInstance && chartInstance.config.type === 'doughnut') {
+                if (empty) {
+                    chartInstance.data.datasets[0].data = [100];
+                    chartInstance.data.datasets[0].backgroundColor = ['rgba(39,39,42,0.5)'];
+                    chartInstance.data.labels = ['Aguardando'];
+                } else {
+                    chartInstance.data.datasets[0].data = [income, expense, future];
+                    chartInstance.data.datasets[0].backgroundColor = ['#10b981', '#ef4444', '#f59e0b'];
+                    chartInstance.data.labels = ['Receitas', 'Despesas Pagas', 'Contas Futuras'];
+                }
+                chartInstance.update('none'); // 'none' desativa animação desnecessária no update
+                return;
+            }
+
+            if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
 
             chartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Receitas', 'Despesas Pagas', 'Contas Futuras'],
+                    labels: empty ? ['Aguardando'] : ['Receitas', 'Despesas Pagas', 'Contas Futuras'],
                     datasets: [{
-                        data: [income, expense, future],
-                        backgroundColor: ['#10b981', '#ef4444', '#f59e0b'],
-                        borderWidth: 0,
-                        hoverOffset: 6
+                        data: empty ? [100] : [income, expense, future],
+                        backgroundColor: empty ? ['rgba(39,39,42,0.5)'] : ['#10b981', '#ef4444', '#f59e0b'],
+                        borderWidth: 0, hoverOffset: 6
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     animation: { animateScale: true, animateRotate: true },
                     plugins: {
-                        legend: { 
-                            position: 'right', 
-                            labels: { 
-                                boxWidth: 12, 
-                                usePointStyle: true,
-                                color: '#a1a1aa',
-                                padding: 15,
-                                font: { family: 'Inter', size: 12, weight: '500' } 
-                            } 
+                        legend: {
+                            position: 'right',
+                            labels: { boxWidth: 12, usePointStyle: true, color: '#a1a1aa', padding: 15, font: { family: 'Inter', size: 12, weight: '500' } }
                         },
                         tooltip: {
-                            backgroundColor: 'rgba(9, 9, 11, 0.95)',
+                            backgroundColor: 'rgba(9,9,11,0.95)',
                             titleFont: { family: 'Inter', size: 13 },
-                            bodyFont: { family: 'Inter', size: 14, weight: 'bold' },
-                            padding: 12,
-                            cornerRadius: 8,
-                            boxPadding: 6,
+                            bodyFont:  { family: 'Inter', size: 14, weight: 'bold' },
+                            padding: 12, cornerRadius: 8, boxPadding: 6,
                             callbacks: {
-                                label: function(context) {
-                                    let label = context.label || '';
-                                    if (label) { label += ': '; }
-                                    if (context.parsed !== null) {
-                                        label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed);
-                                    }
-                                    return label;
+                                label: ctx => {
+                                    let l = ctx.label ? ctx.label + ': ' : '';
+                                    return l + new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(ctx.parsed);
                                 }
                             }
                         }
@@ -2331,6 +2173,61 @@
                 }
             });
         }
+
+        function renderLineChart() {
+            const ctx = document.getElementById('financeChart').getContext('2d');
+            if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+
+            /* Agrupa por mês */
+            const monthly = {};
+            transactions.forEach(t => {
+                if (!t.date) return;
+                const key = t.date.substring(0, 7); // YYYY-MM
+                if (!monthly[key]) monthly[key] = { income: 0, expense: 0 };
+                if (t.type === 'income') monthly[key].income += t.amount;
+                if (t.type === 'expense') monthly[key].expense += t.amount;
+            });
+
+            const labels  = Object.keys(monthly).sort();
+            const incData = labels.map(k => monthly[k].income);
+            const expData = labels.map(k => monthly[k].expense);
+            const balData = labels.map((_, i) => {
+                return incData.slice(0, i + 1).reduce((s, v) => s + v, 0)
+                     - expData.slice(0, i + 1).reduce((s, v) => s + v, 0);
+            });
+
+            if (!labels.length) {
+                renderDonutChart(0, 0, 0);
+                return;
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels.map(l => { const [y, m] = l.split('-'); return `${m}/${y.slice(2)}`; }),
+                    datasets: [
+                        { label: 'Receitas',  data: incData, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.08)', tension: 0.4, fill: false, pointRadius: 4 },
+                        { label: 'Despesas',  data: expData, borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.08)',  tension: 0.4, fill: false, pointRadius: 4 },
+                        { label: 'Saldo Acum.', data: balData, borderColor: '#818cf8', backgroundColor: 'rgba(129,140,248,0.1)', tension: 0.4, fill: true, pointRadius: 4, borderDash: [4, 2] }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#a1a1aa', font: { family: 'Inter', size: 11 }, usePointStyle: true } },
+                        tooltip: {
+                            backgroundColor: 'rgba(9,9,11,0.95)',
+                            callbacks: { label: ctx => `${ctx.dataset.label}: ${formatCurrency(ctx.parsed.y)}` }
+                        }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#71717a', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.03)' } },
+                        y: { ticks: { color: '#71717a', font: { size: 11 }, callback: v => formatCurrency(v) }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                    }
+                }
+            });
+        }
+
     </script>
 </body>
 </html>
