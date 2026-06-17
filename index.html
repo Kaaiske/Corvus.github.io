@@ -3,65 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Corvus Finance - RPG Edition v3.0</title>
+    <title>Corvus Finance - RPG Edition v4.0</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* ================= VARIÁVEIS E TEMAS ================= */
+        /* ================= VARIÁVEIS E TEMAS (CORRIGIDO PARA RGBA NATIVO) ================= */
         :root {
-            --bg-color: #05080c;
-            --panel-bg: #0d131f;
-            --panel-bg-hover: #151f30;
+            /* Cores base em formato R, G, B para compatibilidade com rgba() */
+            --bg-color: 5, 8, 12;
+            --panel-bg: 13, 19, 31;
+            --panel-bg-hover: 21, 31, 48;
+            
             --text-base: #c5d3e8;
             --text-main: #39ff14;
             --text-muted: #4a6b8c;
-            --accent: #00d2ff;
+            --accent: #00d2ff; /* Customizável pelo usuário */
             --danger: #ff4a4a;
             --gold: #ffd700;
             --sword-glow: #b142ff;
             --warning: #ffaa00;
+            
             --font-stack: 'Consolas', 'Courier New', monospace;
             --border-soft: rgba(74, 107, 140, 0.2);
             --shadow-glow: rgba(0, 210, 255, 0.15);
         }
 
         [data-theme="light"] {
-            --bg-color: #f0f4f8;
-            --panel-bg: #ffffff;
-            --panel-bg-hover: #f1f5f9;
+            --bg-color: 240, 244, 248;
+            --panel-bg: 255, 255, 255;
+            --panel-bg-hover: 241, 245, 249;
             --text-base: #1e293b;
-            --text-main: #059669; /* Verde mais escuro para contraste */
+            --text-main: #059669;
             --text-muted: #64748b;
-            --accent: #0284c7;
             --danger: #dc2626;
             --gold: #d97706;
             --sword-glow: #7c3aed;
             --warning: #d97706;
             --border-soft: rgba(100, 116, 139, 0.2);
-            --shadow-glow: rgba(2, 132, 199, 0.1);
         }
 
         html { scroll-behavior: smooth; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background-color: var(--bg-color);
+            background-color: rgb(var(--bg-color));
             color: var(--text-base);
             font-family: var(--font-stack);
             display: flex;
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
-            padding: 20px;
-            background-image: radial-gradient(circle at 50% 0%, var(--panel-bg) 0%, transparent 70%);
+            padding: 80px 20px 20px 20px; /* Padding top for fixed nav */
+            background-image: radial-gradient(circle at 50% 0%, rgb(var(--panel-bg)) 0%, transparent 70%);
             transition: background-color 0.4s, color 0.4s;
+            overflow-x: hidden;
         }
 
-        .container { display: flex; gap: 30px; width: 100%; max-width: 1400px; flex-wrap: wrap; }
+        .container { display: flex; gap: 30px; width: 100%; max-width: 1400px; flex-wrap: wrap; position: relative;}
 
-        /* ================= PAINÉIS E NAVBAR ================= */
+        /* ================= NAVBAR FIXA E PERSONALIZAÇÃO ================= */
+        .top-nav {
+            display: flex; gap: 10px; background: rgba(var(--panel-bg-hover), 0.95); padding: 12px 20px; 
+            border-bottom: 1px solid var(--border-soft); position: fixed; top: 0; left: 0; right: 0; 
+            z-index: 9999; flex-wrap: wrap; justify-content: center; align-items: center;
+            backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .nav-btn {
+            background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 8px 15px; border-radius: 6px;
+            cursor: pointer; font-weight: bold; transition: 0.3s; font-family: var(--font-stack); text-transform: uppercase; font-size: 13px;
+        }
+        .nav-btn:hover, .nav-btn.active { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: 0 0 10px var(--accent);}
+        
+        .theme-controls { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+        .theme-toggle { background: rgba(0,0,0,0.2); border: 1px solid var(--border-soft); border-radius: 50%; width: 35px; height: 35px; cursor: pointer; color: var(--gold); display: flex; align-items: center; justify-content: center; transition: 0.3s;}
+        .theme-toggle:hover { transform: scale(1.1); }
+        .color-picker-wrapper { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); text-transform: uppercase;}
+        #color-picker { -webkit-appearance: none; border: none; width: 25px; height: 25px; border-radius: 50%; cursor: pointer; background: transparent;}
+        #color-picker::-webkit-color-swatch-wrapper { padding: 0; }
+        #color-picker::-webkit-color-swatch { border: 2px solid var(--border-soft); border-radius: 50%; }
+
+        /* ================= PAINÉIS ================= */
         .panel {
             background-color: rgba(var(--panel-bg), 0.9);
-            background: var(--panel-bg);
             border: 1px solid var(--border-soft);
             border-radius: 12px;
             padding: 30px;
@@ -69,37 +91,33 @@
             transition: all 0.3s;
         }
 
-        .player-profile { width: 300px; display: flex; flex-direction: column; gap: 25px; flex-shrink: 0; height: fit-content; position: sticky; top: 20px;}
+        .player-profile { width: 300px; display: flex; flex-direction: column; gap: 20px; flex-shrink: 0; height: fit-content; position: sticky; top: 90px; z-index: 10;}
         .dashboard { flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 30px;}
 
-        .top-nav {
-            display: flex; gap: 10px; background: var(--panel-bg-hover); padding: 10px; border-radius: 8px; border: 1px solid var(--border-soft);
-            position: sticky; top: 20px; z-index: 100; flex-wrap: wrap; justify-content: center;
-        }
-        .nav-btn {
-            background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 8px 15px; border-radius: 6px;
-            cursor: pointer; font-weight: bold; transition: 0.3s; font-family: var(--font-stack); text-transform: uppercase; font-size: 13px;
-        }
-        .nav-btn:hover, .nav-btn.active { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: 0 0 10px var(--shadow-glow);}
-        
-        .theme-toggle { margin-left: auto; background: rgba(0,0,0,0.2); border: 1px solid var(--border-soft); border-radius: 50%; width: 35px; height: 35px; cursor: pointer; color: var(--gold); display: flex; align-items: center; justify-content: center;}
-
-        /* ================= AVATAR E XP (SISTEMA PROGRESSIVO) ================= */
-        .profile-header { text-align: center; }
+        /* ================= AVATAR (EVOLUÍDO) ================= */
+        .profile-header { text-align: center; position: relative;}
         .avatar-container {
             width: 140px; height: 140px; margin: 0 auto 15px; background-color: #000; 
-            border: 2px solid var(--accent); border-radius: 12px; box-shadow: 0 0 20px var(--shadow-glow); 
+            border: 2px solid var(--accent); border-radius: 12px; box-shadow: 0 0 20px var(--accent); 
             overflow: hidden; transition: all 0.3s ease; position: relative;
         }
         .avatar-container.panic { border-color: var(--danger); box-shadow: 0 0 30px rgba(255, 74, 74, 0.4); animation: shake 0.5s infinite; }
-        .avatar-container img { width: 100%; height: 100%; image-rendering: pixelated; object-fit: cover;}
+        .avatar-container img { width: 100%; height: 100%; image-rendering: pixelated; object-fit: cover; position: relative; z-index: 2;}
         
+        /* Auras (Cosméticos) */
+        .aura { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0; transition: opacity 0.5s; }
+        .aura.aura-gold { opacity: 1; box-shadow: inset 0 0 40px var(--gold); background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 70%); }
+        .aura.aura-purple { opacity: 1; box-shadow: inset 0 0 40px var(--sword-glow); background: radial-gradient(circle, rgba(177,66,255,0.3) 0%, transparent 70%); }
+        .aura.aura-blue { opacity: 1; box-shadow: inset 0 0 40px var(--accent); background: radial-gradient(circle, rgba(0,210,255,0.3) 0%, transparent 70%); }
+        
+        .equipped-weapon { position: absolute; bottom: -10px; right: 20px; font-size: 35px; z-index: 3; filter: drop-shadow(0 0 5px rgba(0,0,0,0.8)); transition: 0.3s;}
+
         .player-title { font-size: 14px; color: var(--accent); margin-bottom: 5px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;}
         .level-badge { font-size: 22px; font-weight: bold; color: var(--gold); letter-spacing: 1px; margin-bottom: 12px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);}
         
-        .xp-bar-container { background: rgba(0,0,0,0.5); border: 1px solid var(--border-soft); height: 12px; border-radius: 10px; margin-bottom: 8px; overflow: hidden; }
+        .xp-bar-container { background: rgba(0,0,0,0.5); border: 1px solid var(--border-soft); height: 12px; border-radius: 10px; margin-bottom: 8px; overflow: hidden; position: relative;}
         .xp-fill { background: linear-gradient(90deg, var(--accent), var(--text-main)); height: 100%; width: 0%; transition: width 0.5s ease-out; box-shadow: 0 0 10px rgba(57, 255, 20, 0.5);}
-        .xp-text { font-size: 13px; color: var(--text-muted); font-weight: bold; }
+        .xp-text { font-size: 12px; color: var(--text-muted); font-weight: bold; }
 
         @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }
 
@@ -112,11 +130,11 @@
         .ego-sword-panel.panic { border-left-color: var(--danger); background: linear-gradient(135deg, rgba(45, 5, 5, 0.2) 0%, rgba(10, 10, 15, 0.3) 100%);}
         .ego-header { color: var(--sword-glow); font-size: 13px; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;}
         .ego-sword-panel.panic .ego-header { color: var(--danger); }
-        .ego-dialogue { color: var(--text-base); font-style: italic; font-size: 14px; line-height: 1.5; min-height: 45px; opacity: 0.9;}
+        .ego-dialogue { color: var(--text-base); font-style: italic; font-size: 13px; line-height: 1.5; min-height: 45px; opacity: 0.9;}
 
         /* ================= BLOCOS LATERAIS ================= */
-        .side-block { background: var(--panel-bg-hover); border: 1px solid var(--border-soft); border-radius: 8px; padding: 15px; }
-        .side-block label { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .side-block { background: rgba(var(--panel-bg-hover), 0.7); border: 1px solid var(--border-soft); border-radius: 8px; padding: 15px; }
+        .side-block label { font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
         .budget-input-group { display: flex; gap: 8px; margin-bottom: 10px; }
         .budget-input-group input { width: 100%; }
         .budget-status { font-size: 12px; font-weight: bold; padding-top: 5px; border-top: 1px dashed var(--border-soft); margin-top: 5px;}
@@ -126,7 +144,7 @@
 
         .tools-panel { display: flex; gap: 8px; flex-wrap: wrap; justify-content: space-between;}
         .tool-btn { 
-            flex: 1; min-width: 110px; text-align: center; background: transparent; border: 1px solid var(--text-muted); color: var(--text-base); 
+            flex: 1; min-width: 100px; text-align: center; background: transparent; border: 1px solid var(--text-muted); color: var(--text-base); 
             font-size: 11px; padding: 8px; border-radius: 6px; cursor: pointer; transition: 0.2s; text-transform: uppercase;
         }
         .tool-btn:hover { background: var(--text-muted); color: #fff; border-color: transparent;}
@@ -140,21 +158,25 @@
         
         .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
         .summary-card { 
-            background: var(--panel-bg-hover); border: 1px solid var(--border-soft); padding: 25px 20px; 
-            border-radius: 10px; position: relative; overflow: hidden;
+            background: rgba(var(--panel-bg-hover), 0.5); border: 1px solid var(--border-soft); padding: 20px; 
+            border-radius: 10px; position: relative; overflow: hidden; display: flex; flex-direction: column;
         }
         .summary-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; }
         .card-income::before { background: var(--text-main); }
         .card-expense::before { background: var(--danger); }
         .card-total::before { background: var(--accent); }
         
-        .summary-card h3 { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;}
-        .summary-card p { font-size: 28px; font-weight: bold; }
-        .monthly-comparison { font-size: 11px; margin-top: 8px; display: flex; align-items: center; gap: 5px; font-weight: bold;}
+        .summary-card h3 { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;}
+        .summary-card p { font-size: 26px; font-weight: bold; }
+        .monthly-comparison { font-size: 11px; margin-top: auto; padding-top: 10px; display: flex; align-items: center; gap: 5px; font-weight: bold;}
         .comp-up { color: var(--danger); }
         .comp-down { color: var(--text-main); }
         .comp-neutral { color: var(--text-muted); }
         
+        /* Nova Carteira Inteligente */
+        .wallet-breakdown { font-size: 12px; border-top: 1px dashed var(--border-soft); margin-top: 10px; padding-top: 10px; display: flex; justify-content: space-between; color: var(--text-muted);}
+        .wallet-breakdown strong { color: var(--text-base); }
+
         #income-display { color: var(--text-main); }
         #expense-display { color: var(--danger); }
         #total-display { color: var(--accent); }
@@ -162,7 +184,7 @@
         @keyframes pulseRed { 0% { text-shadow: 0 0 0 var(--danger); } 50% { text-shadow: 0 0 15px var(--danger); } 100% { text-shadow: 0 0 0 var(--danger); } }
 
         /* ================= FORMULÁRIO ================= */
-        .form-section { background: var(--panel-bg-hover); border: 1px solid var(--border-soft); border-radius: 10px; padding: 25px; }
+        .form-section { background: rgba(var(--panel-bg-hover), 0.5); border: 1px solid var(--border-soft); border-radius: 10px; padding: 25px; }
         .section-title { font-size: 16px; color: var(--accent); text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; font-weight: bold; border-bottom: 1px dashed var(--border-soft); padding-bottom: 10px;}
         
         .form-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 15px; align-items: center; transition: all 0.3s;}
@@ -172,33 +194,33 @@
         #val-input { grid-column: span 3; } #desc-input { grid-column: span 9; }
         .form-actions { grid-column: span 12; display: flex; gap: 15px; justify-content: flex-end; align-items: center; margin-top: 10px; padding-top: 20px; border-top: 1px dashed var(--border-soft); }
         
-        input, select, button { background: var(--bg-color); border: 1px solid var(--border-soft); color: var(--text-base); padding: 12px 15px; font-family: var(--font-stack); font-size: 14px; border-radius: 6px; outline: none; transition: all 0.3s; width: 100%;}
+        input, select, button { background: rgb(var(--bg-color)); border: 1px solid var(--border-soft); color: var(--text-base); padding: 12px 15px; font-family: var(--font-stack); font-size: 14px; border-radius: 6px; outline: none; transition: all 0.3s; width: 100%;}
         input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 8px var(--shadow-glow);}
         
         .checkbox-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: var(--gold); user-select: none;}
         .checkbox-label input { width: 18px; height: 18px; cursor: pointer;}
 
         button.primary { background: var(--accent); color: #000; border: 1px solid var(--accent); cursor: pointer; font-weight: bold; text-transform: uppercase; width: auto; padding: 12px 30px; min-width: 150px;}
-        button.primary:hover { box-shadow: 0 0 15px var(--shadow-glow); filter: brightness(1.2);}
+        button.primary:hover { box-shadow: 0 0 15px var(--accent); filter: brightness(1.2);}
         button.cancel { background: transparent; border: 1px solid var(--warning); color: var(--warning); width: auto;}
         
         /* ================= GRÁFICOS E LISTA ================= */
         .data-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .chart-container { background: var(--panel-bg-hover); border: 1px solid var(--border-soft); border-radius: 10px; padding: 20px; height: 350px; display: flex; flex-direction: column; justify-content: center;}
+        .chart-container { background: rgba(var(--panel-bg-hover), 0.5); border: 1px solid var(--border-soft); border-radius: 10px; padding: 20px; height: 350px; display: flex; flex-direction: column; justify-content: center;}
         
         .list-container { display: flex; flex-direction: column; gap: 15px; grid-column: 1 / -1;}
-        .filter-bar { display: flex; gap: 10px; background: var(--panel-bg-hover); padding: 15px; border-radius: 10px; border: 1px solid var(--border-soft); flex-wrap: wrap;}
-        .log-section { border: 1px solid var(--border-soft); height: 400px; overflow-y: auto; background: var(--panel-bg-hover); padding: 15px; border-radius: 10px; position: relative;}
+        .filter-bar { display: flex; gap: 10px; background: rgba(var(--panel-bg-hover), 0.5); padding: 15px; border-radius: 10px; border: 1px solid var(--border-soft); flex-wrap: wrap;}
+        .log-section { border: 1px solid var(--border-soft); height: 400px; overflow-y: auto; background: rgba(var(--panel-bg-hover), 0.3); padding: 15px; border-radius: 10px; position: relative;}
         
         .empty-state { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: var(--text-muted); display: none; width: 100%;}
         .empty-state i { font-size: 48px; margin-bottom: 15px; display: block; opacity: 0.5;}
 
-        .log-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--bg-color); border: 1px solid var(--border-soft); border-radius: 8px; margin-bottom: 8px; font-size: 14px; animation: fadeIn 0.3s ease-out; gap: 15px; transition: all 0.2s;}
+        .log-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgb(var(--bg-color)); border: 1px solid var(--border-soft); border-radius: 8px; margin-bottom: 8px; font-size: 14px; animation: fadeIn 0.3s ease-out; gap: 15px; transition: all 0.2s;}
         .log-item:hover { border-color: var(--accent); transform: translateX(2px); }
         .log-info { display: flex; flex-direction: column; gap: 6px; flex: 1;}
         .log-desc { font-size: 15px; font-weight: bold; letter-spacing: 0.5px;}
         .log-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 15px; align-items: center;}
-        .log-cat { background: rgba(0,0,0,0.1); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border-soft);}
+        .log-cat { background: rgba(0,0,0,0.2); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border-soft);}
         
         .log-actions { display: flex; align-items: center; gap: 15px; }
         .val-display { font-size: 16px; font-weight: bold; text-align: right; min-width: 100px;}
@@ -209,9 +231,9 @@
         .edit-btn { color: var(--warning); } .edit-btn:hover { background: rgba(255, 170, 0, 0.1); border-color: var(--warning); }
         .delete-btn { color: var(--text-muted); } .delete-btn:hover { color: var(--danger); background: rgba(255, 74, 74, 0.1); border-color: var(--danger); }
 
-        /* ================= SISTEMA DE METAS ================= */
+        /* ================= SISTEMA DE METAS (REFORMULADO) ================= */
         .goals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px;}
-        .goal-card { background: var(--panel-bg-hover); border: 1px solid var(--border-soft); padding: 15px; border-radius: 8px; position: relative;}
+        .goal-card { background: rgba(var(--panel-bg-hover), 0.5); border: 1px solid var(--border-soft); padding: 15px; border-radius: 8px; position: relative;}
         .goal-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; font-size: 14px;}
         .goal-progress-bg { background: rgba(0,0,0,0.3); height: 10px; border-radius: 5px; overflow: hidden; margin-bottom: 10px; border: 1px solid var(--border-soft);}
         .goal-progress-fill { background: var(--accent); height: 100%; transition: width 0.5s; }
@@ -219,8 +241,8 @@
         .goal-actions input { padding: 5px; font-size: 12px; }
         .goal-actions button { padding: 5px; font-size: 12px; min-width: auto; width: 60px;}
 
-        /* ================= BATALHA CONTRA O CHEFE ================= */
-        .boss-battle-area { background: linear-gradient(to bottom, #2d0a0a, var(--panel-bg)); border: 1px solid var(--danger); padding: 25px; border-radius: 10px; text-align: center; position: relative; overflow: hidden;}
+        /* ================= BATALHA CONTRA O CHEFE (INTELIGENTE) ================= */
+        .boss-battle-area { background: linear-gradient(to bottom, #2d0a0a, rgb(var(--panel-bg))); border: 1px solid var(--danger); padding: 25px; border-radius: 10px; text-align: center; position: relative; overflow: hidden;}
         .boss-title { color: var(--danger); font-size: 20px; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);}
         .boss-sprite { font-size: 60px; margin: 15px 0; animation: float 3s ease-in-out infinite;}
         .boss-hp-bg { background: #000; border: 2px solid var(--danger); height: 25px; border-radius: 12px; margin: 10px auto; width: 80%; max-width: 400px; overflow: hidden; position: relative;}
@@ -231,21 +253,48 @@
 
         /* ================= CONQUISTAS E CALENDÁRIO ================= */
         .achievements-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;}
-        .achievement-card { background: var(--panel-bg-hover); border: 1px solid var(--border-soft); padding: 15px; border-radius: 8px; text-align: center; opacity: 0.4; filter: grayscale(100%); transition: all 0.3s;}
+        .achievement-card { background: rgba(var(--panel-bg-hover), 0.5); border: 1px solid var(--border-soft); padding: 15px; border-radius: 8px; text-align: center; opacity: 0.4; filter: grayscale(100%); transition: all 0.3s;}
         .achievement-card.unlocked { opacity: 1; filter: grayscale(0%); border-color: var(--gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.15); background: rgba(255, 215, 0, 0.05);}
         .ach-icon { font-size: 30px; margin-bottom: 10px;}
         .ach-title { font-weight: bold; font-size: 13px; color: var(--gold); margin-bottom: 5px;}
         .ach-desc { font-size: 11px; color: var(--text-muted);}
 
         .calendar-list { display: flex; flex-direction: column; gap: 10px;}
-        .cal-day-group { background: var(--panel-bg-hover); border: 1px solid var(--border-soft); border-radius: 8px; overflow: hidden;}
+        .cal-day-group { background: rgba(var(--panel-bg-hover), 0.5); border: 1px solid var(--border-soft); border-radius: 8px; overflow: hidden;}
         .cal-day-header { background: rgba(0,0,0,0.2); padding: 10px 15px; font-weight: bold; font-size: 14px; border-bottom: 1px solid var(--border-soft); color: var(--accent);}
         .cal-item { display: flex; justify-content: space-between; padding: 10px 15px; font-size: 13px; border-bottom: 1px dashed var(--border-soft);}
         .cal-item:last-child { border-bottom: none; }
 
+        /* ================= INTELIGÊNCIA & LOJA ================= */
+        .intelligence-dash { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;}
+        .intel-card { background: rgba(var(--panel-bg-hover), 0.5); border: 1px solid var(--border-soft); padding: 15px; border-radius: 8px; text-align: center;}
+        .intel-card i { font-size: 24px; display: block; margin-bottom: 5px; }
+        .intel-card h4 { font-size: 11px; color: var(--text-muted); text-transform: uppercase;}
+        .intel-card p { font-size: 18px; font-weight: bold; color: var(--accent); margin-top: 5px;}
+
+        .shop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;}
+        .shop-item { background: rgba(var(--panel-bg-hover), 0.5); border: 1px dashed var(--gold); padding: 15px; border-radius: 8px; text-align: center;}
+        .shop-icon { font-size: 40px; margin-bottom: 10px; filter: drop-shadow(0 0 5px var(--gold));}
+        .shop-price { color: var(--text-main); font-weight: bold; margin: 10px 0; font-size: 14px;}
+        .shop-item button { width: 100%; font-size: 12px; }
+        .shop-item.owned { border-color: var(--text-muted); opacity: 0.7;}
+        .shop-item.owned button { background: var(--text-muted); color: #fff; cursor: not-allowed; border-color: transparent;}
+
+        /* ================= OVERLAY DE ONBOARDING ================= */
+        #onboarding-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; transition: opacity 1s;}
+        .onb-content { text-align: center; max-width: 500px; padding: 30px; border: 2px solid var(--accent); border-radius: 12px; background: rgb(var(--panel-bg)); box-shadow: 0 0 30px var(--accent);}
+        .onb-title { font-size: 28px; color: var(--accent); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 3px;}
+        .onb-grid { display: grid; gap: 15px; text-align: left;}
+        .onb-grid label { font-size: 12px; color: var(--text-muted); text-transform: uppercase;}
+        .onb-grid input, .onb-grid select { width: 100%; margin-top: 5px; padding: 10px;}
+        .onb-btn { margin-top: 20px; width: 100%; padding: 15px; background: var(--accent); color: #000; font-weight: bold; cursor: pointer; border: none; border-radius: 6px; font-family: var(--font-stack); text-transform: uppercase;}
+        
+        .intro-cinematic { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 10001; display: none; flex-direction: column; align-items: center; justify-content: center; color: #fff;}
+        .typewriter-text { font-size: 18px; line-height: 1.6; text-align: center; font-style: italic; color: #c5d3e8;}
+
         /* ================= TOAST ================= */
-        #toast-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 1000; }
-        .toast { background: var(--panel-bg); border: 1px solid var(--accent); border-left: 5px solid var(--accent); color: var(--text-base); padding: 18px 25px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6); display: flex; align-items: center; gap: 15px; font-size: 15px; animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), fadeOut 0.4s ease-in 3.5s forwards; }
+        #toast-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 10000; }
+        .toast { background: rgb(var(--panel-bg)); border: 1px solid var(--accent); border-left: 5px solid var(--accent); color: var(--text-base); padding: 18px 25px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6); display: flex; align-items: center; gap: 15px; font-size: 15px; animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), fadeOut 0.4s ease-in 3.5s forwards; }
         .toast.error { border-color: var(--danger); }
         .toast.achievement { border-color: var(--gold); border-left-color: var(--gold); box-shadow: 0 0 20px rgba(255,215,0,0.2);}
         @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
@@ -255,9 +304,9 @@
         /* RESPONSIVIDADE */
         @media (max-width: 1024px) { .data-layout { grid-template-columns: 1fr; } }
         @media (max-width: 768px) {
+            body { padding-top: 120px; }
             .container { flex-direction: column; padding: 10px;}
             .player-profile { width: 100%; position: relative; top: 0;}
-            .top-nav { position: relative; top: 0; margin-bottom: 15px;}
             .form-grid > * { grid-column: span 12 !important; }
             .log-item { flex-direction: column; align-items: flex-start; gap: 10px;}
             .log-actions { width: 100%; justify-content: space-between; border-top: 1px dashed var(--border-soft); padding-top: 15px;}
@@ -273,38 +322,80 @@
 </head>
 <body>
 
-<div class="container">
-    
-    <!-- MENU SUPERIOR FIXO -->
-    <nav class="top-nav" style="width: 100%;">
-        <button class="nav-btn active" onclick="switchTab('visao-geral')">Visão Geral</button>
-        <button class="nav-btn" onclick="switchTab('metas-batalha')">Metas & Chefe</button>
-        <button class="nav-btn" onclick="switchTab('conquistas-calendario')">Calendário & Títulos</button>
-        <button class="theme-toggle" id="btn-theme" title="Alternar Tema">🌙</button>
-    </nav>
+<!-- ONBOARDING MODAL -->
+<div id="onboarding-overlay" style="display: none;">
+    <div class="onb-content" id="onb-form-area">
+        <div class="onb-title">⚔️ Corvus Finance</div>
+        <p style="margin-bottom: 20px; color: var(--text-muted); font-size: 14px;">"Antes de iniciar sua jornada rumo à riqueza, o Corvo Negro precisa conhecer seu novo mestre."</p>
+        <div class="onb-grid">
+            <div>
+                <label>Como será conhecido no Reino?</label>
+                <input type="text" id="char-name" placeholder="Nome do Aventureiro" required autocomplete="off">
+            </div>
+            <div>
+                <label>Sua Vocação Financeira</label>
+                <select id="char-class">
+                    <option value="mago">🧙 Mago Financeiro (Estratégia)</option>
+                    <option value="guerreiro">⚔️ Guerreiro Mercador (Disciplina)</option>
+                    <option value="ladino">🗡️ Ladino Econômico (Corta-Gastos)</option>
+                    <option value="guardiao">🛡️ Guardião do Tesouro (Poupança)</option>
+                </select>
+            </div>
+            <button class="onb-btn" onclick="finishOnboarding()">Iniciar Jornada</button>
+        </div>
+    </div>
+</div>
 
+<div class="intro-cinematic" id="intro-cinematic">
+    <div style="font-size: 50px; margin-bottom: 20px;">⚔️</div>
+    <div class="typewriter-text" id="intro-text"></div>
+    <button class="onb-btn" style="width: 200px; margin-top: 30px; display: none;" id="btn-enter-realm" onclick="enterRealm()">Entrar no Reino</button>
+</div>
+
+<!-- MENU SUPERIOR FIXO -->
+<nav class="top-nav">
+    <button class="nav-btn active" onclick="switchTab('visao-geral')">Visão Geral</button>
+    <button class="nav-btn" onclick="switchTab('metas-batalha')">Metas & Chefe</button>
+    <button class="nav-btn" onclick="switchTab('conquistas-calendario')">Calendário & Títulos</button>
+    <button class="nav-btn" onclick="switchTab('loja-inteligencia')">Loja & Intel</button>
+    
+    <div class="theme-controls">
+        <div class="color-picker-wrapper" title="Cor do Tema">
+            Cor <input type="color" id="color-picker" value="#00d2ff">
+        </div>
+        <button class="theme-toggle" id="btn-theme" title="Alternar Modo Claro/Escuro">🌙</button>
+    </div>
+</nav>
+
+<div class="container" id="main-app-container">
+    
     <!-- ASIDE: PERFIL DO JOGADOR E IA -->
     <aside class="panel player-profile">
         <div class="profile-header">
             <div class="player-title" id="player-title">Aprendiz 🎒</div>
             <div class="avatar-container" id="avatar-box">
+                <div class="aura" id="player-aura"></div>
                 <img id="player-avatar" src="" alt="Avatar">
+                <div class="equipped-weapon" id="player-weapon"></div>
             </div>
             <div class="level-badge">Nível <span id="level-display">1</span></div>
             <div class="xp-bar-container"><div class="xp-fill" id="xp-bar"></div></div>
-            <div class="xp-text"><span id="xp-current">0</span> / <span id="xp-next">100</span> XP</div>
+            <div class="xp-text" style="display: flex; justify-content: space-between;">
+                <span>Progresso: <span id="xp-current">0</span>/<span id="xp-next">100</span></span>
+                <span style="color: var(--accent);" title="Moeda de Troca">🪙 <span id="xp-coins">0</span> XP</span>
+            </div>
         </div>
 
         <div class="ego-sword-panel" id="ego-panel">
-            <div class="ego-header">🗡️ Corvus Neural Link</div>
-            <div class="ego-dialogue" id="ego-text">Inicializando elo neural...</div>
+            <div class="ego-header">🗡️ Ego Sword Link</div>
+            <div class="ego-dialogue" id="ego-text">Aguardando conexão sináptica...</div>
         </div>
 
         <div class="side-block budget-panel">
-            <label>Metas do Mês (R$)</label>
+            <label>Orçamento do Mês (R$)</label>
             <div class="budget-input-group">
                 <input type="number" id="budget-input" placeholder="0.00" step="0.01" min="0">
-                <button class="tool-btn" id="btn-save-budget">Salvar</button>
+                <button class="tool-btn" id="btn-save-budget" style="min-width: 60px;">Salvar</button>
             </div>
             <div class="budget-status" id="budget-status">Defina um limite de gastos.</div>
         </div>
@@ -326,7 +417,7 @@
         <section id="visao-geral" class="section-container active">
             <header>
                 <h1>Painel de Controle</h1>
-                <p>Gerenciamento de Recursos da Guilda (Mês Atual)</p>
+                <p>Gerenciamento de Recursos da Guilda</p>
             </header>
 
             <div class="summary-grid">
@@ -341,9 +432,12 @@
                     <div class="monthly-comparison" id="expense-comp">-</div>
                 </div>
                 <div class="summary-card card-total">
-                    <h3 style="color: var(--accent);">Tesouro Total [==]</h3>
+                    <h3 style="color: var(--accent);">Patrimônio Total [==]</h3>
                     <p id="total-display">R$ 0.00</p>
-                    <div class="monthly-comparison" id="saved-month" style="color: var(--gold);">Economizado no mês: R$ 0.00</div>
+                    <div class="wallet-breakdown">
+                        <span title="Dinheiro livre para uso">Disponível: <strong id="available-display">R$ 0.00</strong></span>
+                        <span title="Dinheiro preso em Missões/Metas">Reservado: <strong id="reserved-display" style="color: var(--warning);">R$ 0.00</strong></span>
+                    </div>
                 </div>
             </div>
 
@@ -359,7 +453,7 @@
                     </select>
                     <select id="cat-input" required></select>
                     <input type="number" id="val-input" placeholder="Valor (Ex: 50.00)" step="0.01" min="0.01" required>
-                    <input type="text" id="desc-input" placeholder="Descrição detalhada (Ex: Poção de Cura Maior...)" required autocomplete="off" maxlength="50">
+                    <input type="text" id="desc-input" placeholder="Descrição detalhada (Ex: Poção de Cura...)" required autocomplete="off" maxlength="50">
                     
                     <div class="form-actions">
                         <label class="checkbox-label" title="Repetir este lançamento todo mês?">
@@ -389,13 +483,12 @@
                         <input type="text" id="search-filter" placeholder="Buscar nos registros..." autocomplete="off">
                         <select id="cat-filter"><option value="all">Todas as Categorias</option></select>
                         <input type="month" id="month-filter">
-                        <button class="tool-btn" id="btn-clear-filters">Limpar</button>
+                        <button class="tool-btn" id="btn-clear-filters" style="flex: none; width: auto;">Limpar</button>
                     </div>
 
                     <div class="log-section" id="log-container">
                         <div class="empty-state" id="empty-state">
                             <i>📜</i><p>O pergaminho das crônicas está vazio.</p>
-                            <p style="font-size: 13px; margin-top: 5px;">Seus registros aparecerão aqui.</p>
                         </div>
                         <div id="log-list"></div>
                     </div>
@@ -407,29 +500,30 @@
         <section id="metas-batalha" class="section-container">
             <header>
                 <h1>Objetivos e Combate</h1>
-                <p>Derrote suas dívidas e alcance seus sonhos.</p>
+                <p>Derrote suas dívidas e guarde ouro com segurança (Carteira Dedicada).</p>
             </header>
 
             <div class="boss-battle-area" id="boss-area">
-                <div class="section-title" style="border:none; margin-bottom: 0;">⚠ AMEAÇA ENCONTRADA ⚠</div>
+                <div class="section-title" style="border:none; margin-bottom: 0;">⚠ AMEAÇA MENSAL ⚠</div>
                 <div class="boss-title">Dragão das Dívidas</div>
                 <div class="boss-sprite" id="boss-sprite">🐉</div>
                 <div class="boss-hp-bg">
                     <div class="boss-hp-fill" id="boss-hp-bar"></div>
                     <div class="boss-hp-text" id="boss-hp-text">1000 / 1000 HP</div>
                 </div>
-                <div class="boss-log" id="boss-log">O Dragão observa seus gastos... Cumpra o orçamento para atacá-lo!</div>
+                <div class="boss-log" id="boss-log">A cada R$100 gastos o Dragão cura +10HP. Economize/Receba para atacar (-10HP)!</div>
             </div>
 
             <div class="form-section">
-                <div class="section-title">Missões (Metas de Economia)</div>
+                <div class="section-title">Missões (Cofres de Reserva)</div>
+                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">Transferir dinheiro para cá retira do seu saldo "Disponível", mas mantém no "Patrimônio Total".</p>
                 <form class="form-grid" id="goal-form" style="margin-bottom: 20px;">
                     <input type="text" id="goal-name" placeholder="Ex: Novo PC Gamer" required style="grid-column: span 6;">
-                    <input type="number" id="goal-target" placeholder="Valor Total Necessário" step="0.01" min="1" required style="grid-column: span 4;">
-                    <button type="submit" class="primary" style="grid-column: span 2; width: 100%;">Criar Missão</button>
+                    <input type="number" id="goal-target" placeholder="Valor Total (R$)" step="0.01" min="1" required style="grid-column: span 4;">
+                    <button type="submit" class="primary" style="grid-column: span 2; width: 100%;">Criar</button>
                 </form>
                 <div class="goals-grid" id="goals-list">
-                    <!-- Goals renderizados aqui -->
+                    <!-- Goals injetados aqui via JS -->
                 </div>
             </div>
         </section>
@@ -444,17 +538,42 @@
             <div class="data-layout">
                 <div class="form-section">
                     <div class="section-title">Calendário Financeiro (Mês Atual)</div>
-                    <div class="calendar-list" id="calendar-list">
-                        <!-- Calendário injetado aqui -->
-                    </div>
+                    <div class="calendar-list" id="calendar-list"></div>
                 </div>
 
                 <div class="form-section">
                     <div class="section-title">Troféus e Títulos</div>
-                    <div class="achievements-grid" id="achievements-list">
-                        <!-- Conquistas injetadas aqui -->
-                    </div>
+                    <div class="achievements-grid" id="achievements-list"></div>
                 </div>
+            </div>
+        </section>
+
+        <!-- ABA 4: LOJA & INTELIGÊNCIA -->
+        <section id="loja-inteligencia" class="section-container">
+            <header>
+                <h1>Inteligência e Cosméticos</h1>
+                <p>Relatórios da Ego Sword e a Loja do Reino.</p>
+            </header>
+
+            <div class="section-title">Relatório de Inteligência</div>
+            <div class="intelligence-dash">
+                <div class="intel-card">
+                    <i>📈</i><h4>Melhor Mês Histórico</h4>
+                    <p id="intel-best-month">-</p>
+                </div>
+                <div class="intel-card">
+                    <i>💀</i><h4>Maior Dreno (Categoria)</h4>
+                    <p id="intel-worst-cat">-</p>
+                </div>
+                <div class="intel-card">
+                    <i>💰</i><h4>Maior Loot Recebido</h4>
+                    <p id="intel-best-loot">-</p>
+                </div>
+            </div>
+
+            <div class="section-title" style="margin-top: 20px;">Loja do Reino (Gaste XP)</div>
+            <div class="shop-grid" id="shop-list">
+                <!-- Loja injetada via JS -->
             </div>
         </section>
 
@@ -466,49 +585,62 @@
 <script>
 /**
  * ==========================================
- * CONFIGURAÇÕES E SISTEMAS RPG
+ * CONFIGURAÇÕES E ESTADO GLOBAL
  * ==========================================
  */
 const CONFIG = {
-    STORAGE_KEY: 'corvus_v3_data',
+    STORAGE_KEY: 'corvus_v4_data',
     BOSS_MAX_HP: 1000,
     CATEGORIES: {
         'loot': { name: 'Loot / Salário', icon: '💰', type: 'income' },
         'sell': { name: 'Venda de Itens', icon: '⚖️', type: 'income' },
-        'food': { name: 'Provisões (Comida)', icon: '🍖', type: 'expense' },
-        'transport': { name: 'Montaria / Transporte', icon: '🐎', type: 'expense' },
+        'food': { name: 'Provisões', icon: '🍖', type: 'expense' },
+        'transport': { name: 'Montaria / Transp.', icon: '🐎', type: 'expense' },
         'equip': { name: 'Equipamentos', icon: '🛡️', type: 'expense' },
         'health': { name: 'Poções / Saúde', icon: '🧪', type: 'expense' },
         'tavern': { name: 'Taverna / Lazer', icon: '🍺', type: 'expense' },
-        'guild': { name: 'Taxa da Guilda (Contas)', icon: '📜', type: 'expense' },
+        'guild': { name: 'Taxas (Contas)', icon: '📜', type: 'expense' },
         'other': { name: 'Outros Misticismos', icon: '✨', type: 'both' }
     },
     ACHIEVEMENTS: [
         { id: 'first_income', name: 'Mercador Iniciante', desc: 'Registre sua primeira receita.', icon: '💰' },
-        { id: 'rich', name: 'Milionário da Guilda', desc: 'Acumule R$ 10.000 em tesouro total.', icon: '💎' },
+        { id: 'rich', name: 'Milionário da Guilda', desc: 'Acumule R$ 10.000 em tesouro.', icon: '💎' },
         { id: 'tavern_enemy', name: 'Inimigo da Taverna', desc: 'Gaste mais de R$ 500 em lazer na vida.', icon: '🍺' },
-        { id: 'survivor', name: 'Sobrevivente', desc: 'Sobreviva a um mês inteiro (registrando gastos) com saldo positivo.', icon: '⚔️' },
-        { id: 'dragon_slayer', name: 'Matador de Dragões', desc: 'Derrote o Dragão das Dívidas.', icon: '🐉' }
+        { id: 'survivor', name: 'Sobrevivente', desc: 'Sobreviva a um mês inteiro positivo.', icon: '⚔️' },
+        { id: 'dragon_slayer', name: 'Matador de Dragões', desc: 'Zere o HP do Dragão das Dívidas mensal.', icon: '🐉' }
+    ],
+    SHOP_ITEMS: [
+        { id: 'wpn_iron', name: 'Espada de Ferro', type: 'weapon', icon: '🗡️', price: 200 },
+        { id: 'wpn_crystal', name: 'Cajado de Cristal', type: 'weapon', icon: '🪄', price: 600 },
+        { id: 'aura_blue', name: 'Aura do Gelo (Azul)', type: 'aura', class: 'aura-blue', icon: '❄️', price: 800 },
+        { id: 'aura_purple', name: 'Aura Arcana (Roxa)', type: 'aura', class: 'aura-purple', icon: '🔮', price: 1200 },
+        { id: 'aura_gold', name: 'Aura do Rei (Ouro)', type: 'aura', class: 'aura-gold', icon: '✨', price: 2500 }
     ]
 };
 
-let appData = {
+const defaultData = {
     transactions: [],
     budget: 0,
     lastProcessedMonth: null,
     achievements: [],
     goals: [],
     bossHP: CONFIG.BOSS_MAX_HP,
-    theme: 'dark'
+    theme: 'dark',
+    customColor: '#00d2ff',
+    avatar: null, // se nulo, pede onboarding
+    xp: 0, // Moeda para loja
+    lifetimeXp: 0, // Usado para Level
+    inventory: [], // IDs da loja
+    equipped: { weapon: '', aura: '' }
 };
 
-let chartInstanceCat = null;
-let chartInstanceEvo = null;
+let appData = { ...defaultData };
+let chartInstanceCat = null, chartInstanceEvo = null;
 let currentFilters = { search: '', category: 'all', month: '' };
 
 /**
  * ==========================================
- * INICIALIZAÇÃO E UTILITÁRIOS
+ * UTILITÁRIOS BASE
  * ==========================================
  */
 const Utils = {
@@ -521,86 +653,151 @@ const Utils = {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
         toast.className = `toast ${isError ? 'error' : ''} ${isAchiev ? 'achievement' : ''}`;
-        let icon = isError ? '⚠️' : '✅';
-        if(isAchiev) icon = '🏆';
-        toast.innerHTML = `<span style="font-size: 24px;">${icon}</span> <span>${Utils.sanitize(msg)}</span>`;
+        toast.innerHTML = `<span style="font-size: 24px;">${isAchiev ? '🏆' : (isError ? '⚠️' : '✅')}</span> <span>${Utils.sanitize(msg)}</span>`;
         container.appendChild(toast);
         setTimeout(() => toast.remove(), 4000);
     }
 };
 
+function saveData() { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(appData)); }
+
 function loadData() {
-    const saved = localStorage.getItem(CONFIG.STORAGE_KEY) || localStorage.getItem('corvus_v2_data'); // Fallback v2
+    const saved = localStorage.getItem(CONFIG.STORAGE_KEY) || localStorage.getItem('corvus_v3_data') || localStorage.getItem('corvus_v2_data');
     if (saved) {
         try {
             const parsed = JSON.parse(saved);
-            appData.transactions = parsed.transactions || [];
-            appData.budget = parsed.budget || 0;
-            appData.lastProcessedMonth = parsed.lastProcessedMonth || parsed.lastProcessedRecurring || null;
-            appData.achievements = parsed.achievements || [];
-            appData.goals = parsed.goals || [];
-            appData.bossHP = parsed.bossHP !== undefined ? parsed.bossHP : CONFIG.BOSS_MAX_HP;
-            appData.theme = parsed.theme || 'dark';
+            // MERGE SEGURO (Impede bugs se vier de versão antiga)
+            appData = { ...defaultData, ...parsed };
+            
+            // Corrige XP legado (v3 para v4)
+            if(appData.lifetimeXp === 0 && appData.transactions.length > 0) {
+                appData.lifetimeXp = appData.transactions.reduce((acc, t) => acc + (t.type === 'income' ? 20 : 10), 0);
+                appData.xp = appData.lifetimeXp; // Moedas iniciais
+            }
         } catch (e) { console.error("Erro no load:", e); }
     }
     applyTheme(appData.theme);
+    document.documentElement.style.setProperty('--accent', appData.customColor);
+    document.getElementById('color-picker').value = appData.customColor;
 }
-
-function saveData() { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(appData)); }
-
-function switchTab(tabId) {
-    document.querySelectorAll('.section-container').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    event.target.classList.add('active');
-    // Atualiza gráficos se aba Visão Geral foi clicada
-    if(tabId === 'visao-geral') { renderCharts(); }
-}
-
-function toggleTheme() {
-    appData.theme = appData.theme === 'dark' ? 'light' : 'dark';
-    applyTheme(appData.theme);
-    saveData();
-    renderCharts(); // Atualiza cores dos gráficos
-}
-
-function applyTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    document.getElementById('btn-theme').innerText = theme === 'dark' ? '🌙' : '☀️';
-}
-document.getElementById('btn-theme').addEventListener('click', toggleTheme);
 
 /**
  * ==========================================
- * SISTEMA RPG: NÍVEL, CHEFE E CONQUISTAS
+ * SISTEMA DE ONBOARDING & CINEMÁTICA
+ * ==========================================
+ */
+function checkOnboarding() {
+    if (!appData.avatar || !appData.avatar.name) {
+        document.getElementById('main-app-container').style.display = 'none';
+        document.querySelector('.top-nav').style.display = 'none';
+        document.getElementById('onboarding-overlay').style.display = 'flex';
+    } else {
+        renderAvatar();
+    }
+}
+
+window.finishOnboarding = function() {
+    const name = document.getElementById('char-name').value.trim();
+    if(!name) { alert("O Reino precisa saber seu nome!"); return; }
+    
+    appData.avatar = {
+        name: name,
+        charClass: document.getElementById('char-class').value
+    };
+    saveData();
+    
+    // Transição Cinemática
+    document.getElementById('onboarding-overlay').style.opacity = '0';
+    setTimeout(() => {
+        document.getElementById('onboarding-overlay').style.display = 'none';
+        playCinematic();
+    }, 1000);
+}
+
+function playCinematic() {
+    const cin = document.getElementById('intro-cinematic');
+    const textEl = document.getElementById('intro-text');
+    const btn = document.getElementById('btn-enter-realm');
+    cin.style.display = 'flex';
+    
+    const lines = [
+        `🦅 Seja bem-vindo(a), ${appData.avatar.name}.`,
+        "Sua jornada para dominar o ouro começa agora.",
+        "A Ego Sword será sua guia e guardiã.",
+        "Que sua disciplina seja sua armadura."
+    ];
+    
+    let lineIdx = 0; let charIdx = 0;
+    
+    function typeLine() {
+        if (lineIdx < lines.length) {
+            if (charIdx < lines[lineIdx].length) {
+                textEl.innerHTML += lines[lineIdx].charAt(charIdx);
+                charIdx++;
+                setTimeout(typeLine, 40);
+            } else {
+                textEl.innerHTML += "<br><br>";
+                lineIdx++; charIdx = 0;
+                setTimeout(typeLine, 800);
+            }
+        } else {
+            btn.style.display = 'block';
+        }
+    }
+    setTimeout(typeLine, 1000);
+}
+
+window.enterRealm = function() {
+    document.getElementById('intro-cinematic').style.display = 'none';
+    document.getElementById('main-app-container').style.display = 'flex';
+    document.querySelector('.top-nav').style.display = 'flex';
+    renderAvatar();
+    updateDashboard();
+    EgoSword.speak(`Saudações, Mestre ${appData.avatar.name}. Nossos sistemas operacionais estão online.`);
+}
+
+function renderAvatar() {
+    if(!appData.avatar) return;
+    const levelObj = calculateRPGStats();
+    document.getElementById('player-avatar').src = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${appData.avatar.name}${appData.avatar.charClass}Lvl${levelObj.level}`;
+    
+    // Equipamentos
+    const wpnEl = document.getElementById('player-weapon');
+    const auraEl = document.getElementById('player-aura');
+    
+    wpnEl.innerText = appData.equipped.weapon ? CONFIG.SHOP_ITEMS.find(i=>i.id===appData.equipped.weapon)?.icon || '' : '';
+    auraEl.className = 'aura ' + (appData.equipped.aura ? CONFIG.SHOP_ITEMS.find(i=>i.id===appData.equipped.aura)?.class || '' : '');
+}
+
+/**
+ * ==========================================
+ * SISTEMA RPG: XP, NÍVEL E CHEFE
  * ==========================================
  */
 function calculateRPGStats() {
-    // 1. XP Progressivo: Nível 1(0-99), Nível 2(100-299), Nível 3(300-699)...
-    const totalXP = appData.transactions.reduce((acc, t) => acc + (t.type === 'income' ? 20 : 10), 0);
+    // XP Exponencial: 100 * Math.pow(1.5, level-1)
     let level = 1;
     let xpNeededForNext = 100;
     let cumulativeXP = 0;
 
-    while (totalXP >= cumulativeXP + xpNeededForNext) {
+    while (appData.lifetimeXp >= cumulativeXP + xpNeededForNext) {
         cumulativeXP += xpNeededForNext;
         level++;
-        xpNeededForNext = 100 * Math.pow(2, level - 1);
+        xpNeededForNext = Math.floor(100 * Math.pow(1.5, level - 1));
     }
     
-    const xpInCurrentLevel = totalXP - cumulativeXP;
+    const xpInCurrentLevel = appData.lifetimeXp - cumulativeXP;
     const progressPercent = (xpInCurrentLevel / xpNeededForNext) * 100;
 
     document.getElementById('level-display').innerText = level;
-    document.getElementById('xp-current').innerText = xpInCurrentLevel;
+    document.getElementById('xp-current').innerText = Math.floor(xpInCurrentLevel);
     document.getElementById('xp-next').innerText = xpNeededForNext;
     document.getElementById('xp-bar').style.width = `${progressPercent}%`;
-    document.getElementById('player-avatar').src = `https://api.dicebear.com/7.x/pixel-art/svg?seed=CorvusV3Lvl${level}`;
+    document.getElementById('xp-coins').innerText = Math.floor(appData.xp);
 
-    // Títulos
     let title = "Aprendiz 🎒";
-    if (level >= 50) title = "Rei da Guilda 👑";
-    else if (level >= 30) title = "Cavaleiro 🛡️";
+    if (level >= 50) title = "Mestre do Tesouro 👑";
+    else if (level >= 25) title = "Cavaleiro do Corvo 🛡️";
     else if (level >= 10) title = "Aventureiro 🗡️";
     document.getElementById('player-title').innerText = title;
 
@@ -613,44 +810,37 @@ function processBossBattle(latestExpense = 0, latestIncome = 0) {
     const bossHpText = document.getElementById('boss-hp-text');
     const log = document.getElementById('boss-log');
     
-    // Calcula o saldo do mês para ver se o chefe acorda
-    const currentMonth = Utils.getCurrentMonthStr();
-    const monthExp = appData.transactions.filter(t => t.type === 'expense' && t.date.startsWith(currentMonth)).reduce((a,b)=>a+b.value,0);
-    
-    // Se estourou orçamento, Dragão cura e ataca
-    if (appData.budget > 0 && monthExp > appData.budget) {
-        if(latestExpense > 0) {
-            const heal = Math.min(CONFIG.BOSS_MAX_HP - appData.bossHP, latestExpense * 0.2); // Cura 20% do gasto que passou
-            appData.bossHP += heal;
-            log.innerText = `O orçamento estourou! O Dragão se alimentou da sua dívida e curou ${heal.toFixed(0)} HP!`;
-            bossArea.style.borderColor = "var(--danger)";
-        }
-    } else if (appData.budget > 0) {
-        // Se está dentro do orçamento, economias/receitas dão dano
-        if (latestIncome > 0) {
-            const damage = latestIncome * 0.15; // 15% da receita em dano
-            appData.bossHP = Math.max(0, appData.bossHP - damage);
-            log.innerText = `Um ataque limpo! Você guardou recursos e causou ${damage.toFixed(0)} de dano!`;
-            bossArea.style.borderColor = "var(--text-main)";
-        } else if (latestExpense > 0 && monthExp < appData.budget) {
-            // Gastos controlados dão daninho pequeno (esquiva)
-            const damage = 15;
-            appData.bossHP = Math.max(0, appData.bossHP - damage);
-            log.innerText = `Esquiva perfeita! Gasto planejado causa 15 de dano.`;
-        }
+    // Dinâmica Refinada: +10 HP por cada R$100 gasto. -10 HP por cada R$100 recebido/economizado.
+    if (latestExpense > 0) {
+        const heal = (latestExpense / 100) * 10;
+        appData.bossHP = Math.min(CONFIG.BOSS_MAX_HP * 2, appData.bossHP + heal); // Pode passar um pouco do max se vacilar muito
+        log.innerText = `O Dragão sentiu seu gasto e curou ${heal.toFixed(0)} HP!`;
+        bossArea.style.borderColor = "var(--danger)";
+    } 
+    if (latestIncome > 0) {
+        const dmg = (latestIncome / 100) * 10;
+        appData.bossHP = Math.max(0, appData.bossHP - dmg);
+        log.innerText = `Golpe certeiro! O depósito causou ${dmg.toFixed(0)} de dano.`;
+        bossArea.style.borderColor = "var(--text-main)";
     }
 
     if (appData.bossHP <= 0) {
-        appData.bossHP = 0;
+        // Boss Derrotado (Mensal)
+        appData.bossHP = CONFIG.BOSS_MAX_HP; // Reseta para o próximo combate
+        appData.xp += 300;
+        appData.lifetimeXp += 300;
         document.getElementById('boss-sprite').innerText = "💀";
-        log.innerText = "VITÓRIA! O Dragão das Dívidas foi derrotado... por enquanto.";
+        log.innerText = "VITÓRIA! O Dragão foi abatido. Você ganhou 300 XP!";
+        Utils.showToast("Chefe Derrotado! +300 XP", false, true);
         checkAchievement('dragon_slayer');
+        calculateRPGStats();
     } else {
         document.getElementById('boss-sprite').innerText = "🐉";
     }
 
-    bossHpBar.style.width = `${(appData.bossHP / CONFIG.BOSS_MAX_HP) * 100}%`;
-    bossHpText.innerText = `${appData.bossHP.toFixed(0)} / ${CONFIG.BOSS_MAX_HP} HP`;
+    const hpPct = Math.min(100, (appData.bossHP / CONFIG.BOSS_MAX_HP) * 100);
+    bossHpBar.style.width = `${hpPct}%`;
+    bossHpText.innerText = `${appData.bossHP.toFixed(0)} HP`;
 }
 
 function checkAchievement(forceId = null) {
@@ -658,8 +848,8 @@ function checkAchievement(forceId = null) {
         if (!appData.achievements.includes(id)) {
             appData.achievements.push(id);
             const ach = CONFIG.ACHIEVEMENTS.find(a => a.id === id);
-            Utils.showToast(`Novo título desbloqueado: ${ach.name}!`, false, true);
-            EgoSword.speak(`Novo título reconhecido pelos deuses: ${ach.name}.`);
+            Utils.showToast(`Novo título: ${ach.name}!`, false, true);
+            EgoSword.speak(`Os deuses reconhecem sua glória: ${ach.name}.`);
             saveData();
         }
     };
@@ -668,13 +858,10 @@ function checkAchievement(forceId = null) {
 
     const totalIncome = appData.transactions.filter(t => t.type === 'income').reduce((a,b)=>a+b.value,0);
     const totalExpense = appData.transactions.filter(t => t.type === 'expense').reduce((a,b)=>a+b.value,0);
-    const total = totalIncome - totalExpense;
     
     if (totalIncome > 0) unlock('first_income');
-    if (total >= 10000) unlock('rich');
-    
-    const tavernTotal = appData.transactions.filter(t => t.category === 'tavern').reduce((a,b)=>a+b.value,0);
-    if (tavernTotal >= 500) unlock('tavern_enemy');
+    if ((totalIncome - totalExpense) >= 10000) unlock('rich');
+    if (appData.transactions.filter(t => t.category === 'tavern').reduce((a,b)=>a+b.value,0) >= 500) unlock('tavern_enemy');
 
     renderAchievements();
 }
@@ -696,20 +883,18 @@ function renderAchievements() {
 
 /**
  * ==========================================
- * INTELIGÊNCIA DA ESPADA (EGO SWORD)
+ * INTELIGÊNCIA DA ESPADA & RELATÓRIOS
  * ==========================================
  */
 const EgoSword = {
     panel: document.getElementById('ego-panel'),
     textEl: document.getElementById('ego-text'),
-    avatarBox: document.getElementById('avatar-box'),
     typingTimer: null,
 
     speak: function(text, panic = false) {
         if(this.typingTimer) clearTimeout(this.typingTimer);
         this.textEl.innerHTML = '';
-        if(panic) { this.panel.classList.add('panic'); this.avatarBox.classList.add('panic'); } 
-        else { this.panel.classList.remove('panic'); this.avatarBox.classList.remove('panic'); }
+        if(panic) { this.panel.classList.add('panic'); } else { this.panel.classList.remove('panic'); }
 
         let i = 0;
         const typeWriter = () => {
@@ -722,7 +907,7 @@ const EgoSword = {
         typeWriter();
     },
 
-    analyzeMonthCompare: function() {
+    analyzeTrends: function() {
         const currentM = Utils.getCurrentMonthStr();
         const d = new Date(); d.setMonth(d.getMonth() - 1);
         const lastM = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
@@ -732,85 +917,238 @@ const EgoSword = {
         
         const totC = expC.reduce((a,b)=>a+b.value,0);
         const totL = expL.reduce((a,b)=>a+b.value,0);
+        const name = appData.avatar ? appData.avatar.name : "Mestre";
 
         if (totL > 0) {
-            if (totC > totL * 1.2) return this.speak("Mestre, seus gastos dispararam mais de 20% em relação ao mês passado. Cuidado!");
-            if (totC < totL * 0.8 && totC > 0) return this.speak("Excelente postura de defesa. Você gastou bem menos este mês.");
-            
             // Analisa Taverna (Lazer)
             const tavC = expC.filter(t=>t.category==='tavern').reduce((a,b)=>a+b.value,0);
             const tavL = expL.filter(t=>t.category==='tavern').reduce((a,b)=>a+b.value,0);
-            if(tavC > tavL * 1.4 && tavL > 0) return this.speak(`Percebi que os gastos na Taverna cresceram drasticamente este mês. Moderação.`);
+            
+            if(tavC > tavL && tavL > 0) {
+                const increase = ((tavC - tavL) / tavL * 100).toFixed(0);
+                if (increase > 20) return this.speak(`${name}, detectei que seus gastos em Taverna cresceram ${increase}% comparado ao último ciclo lunar.`);
+            }
+
+            if (totC > totL * 1.2) return this.speak(`${name}, o sangramento de ouro aumentou. Cuidado com emboscadas comerciais.`);
+            if (totC < totL * 0.8 && totC > 0) return this.speak(`Excelente postura de defesa, ${name}. Você gastou menos este mês.`);
         }
-        this.speak("Avaliando matriz financeira... Tudo parece em ordem.");
+        this.speak(`Matriz financeira estável. Sua lâmina permanece afiada, ${name}.`);
     }
 };
 
+function generateIntelligenceReport() {
+    // 1. Melhor Mês (Maior Saldo Positivo)
+    const monthStats = {};
+    appData.transactions.forEach(t => {
+        const m = t.date.substring(0, 7);
+        if(!monthStats[m]) monthStats[m] = { inc: 0, exp: 0 };
+        if(t.type==='income') monthStats[m].inc += t.value; else monthStats[m].exp += t.value;
+    });
+    
+    let bestMonthStr = '-', bestVal = -Infinity;
+    for (const [m, stat] of Object.entries(monthStats)) {
+        const bal = stat.inc - stat.exp;
+        if(bal > bestVal && bal > 0) { bestVal = bal; bestMonthStr = m.split('-').reverse().join('/'); }
+    }
+    document.getElementById('intel-best-month').innerText = bestVal > -Infinity ? `${bestMonthStr} (+${Utils.formatCurrency(bestVal)})` : 'Sem dados suficientes';
+
+    // 2. Categoria Inimiga (Pior Dreno)
+    const catStats = {};
+    appData.transactions.filter(t=>t.type==='expense').forEach(t => {
+        catStats[t.category] = (catStats[t.category] || 0) + t.value;
+    });
+    let worstCat = '-', worstVal = 0;
+    for (const [c, val] of Object.entries(catStats)) {
+        if(val > worstVal) { worstVal = val; worstCat = CONFIG.CATEGORIES[c].name; }
+    }
+    document.getElementById('intel-worst-cat').innerText = worstVal > 0 ? `${worstCat} (${Utils.formatCurrency(worstVal)})` : 'Nenhum inimigo detectado';
+
+    // 3. Maior Loot
+    const maxLoot = appData.transactions.filter(t=>t.type==='income').reduce((max, t) => t.value > max ? t.value : max, 0);
+    document.getElementById('intel-best-loot').innerText = maxLoot > 0 ? Utils.formatCurrency(maxLoot) : 'Aguardando Loot';
+}
+
 /**
  * ==========================================
- * CORE FINANCEIRO E RENDERS
+ * GERENCIADOR DE METAS (CARTEIRA SEPARADA)
+ * ==========================================
+ * Resolve o problema de "criar despesa falsa". Agora o Patrimônio é absoluto,
+ * e a Meta apenas subtrai visualmente do "Disponível".
+ */
+const GoalManager = {
+    addFund: function(index) {
+        const input = document.getElementById(`goal-add-${index}`);
+        const val = parseFloat(input.value);
+        if(val > 0) {
+            // Verifica se tem "Disponível" suficiente
+            const totalBalance = appData.transactions.filter(t=>t.type==='income').reduce((a,t)=>a+t.value,0) - appData.transactions.filter(t=>t.type==='expense').reduce((a,t)=>a+t.value,0);
+            const reserved = appData.goals.reduce((acc, g) => acc + g.current, 0);
+            
+            if (val > (totalBalance - reserved)) {
+                Utils.showToast("Fundos insuficientes na Carteira Disponível!", true);
+                return;
+            }
+
+            appData.goals[index].current += val;
+            saveData();
+            updateDashboard(); // Reflete na wallet
+            
+            if(appData.goals[index].current >= appData.goals[index].target) {
+                Utils.showToast(`MISSÃO CONCLUÍDA: ${appData.goals[index].name}!!`, false, true);
+            } else {
+                Utils.showToast(`Ouro transferido para Reserva.`);
+            }
+        }
+    },
+    remove: function(index) {
+        if(confirm("Abandonar missão? O ouro reservado voltará ao saldo Disponível.")) {
+            appData.goals.splice(index, 1);
+            saveData();
+            updateDashboard();
+        }
+    },
+    render: function() {
+        const list = document.getElementById('goals-list');
+        list.innerHTML = '';
+        if(appData.goals.length === 0) {
+            list.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Nenhuma missão ativa.</div>`;
+        }
+        appData.goals.forEach((g, index) => {
+            const pct = Math.min(100, (g.current / g.target) * 100);
+            list.innerHTML += `
+                <div class="goal-card">
+                    <button onclick="GoalManager.remove(${index})" class="icon-btn delete-btn" style="position:absolute; top:5px; right:5px;">🗑️</button>
+                    <div class="goal-header"><span>🎯 ${Utils.sanitize(g.name)}</span></div>
+                    <div class="goal-progress-bg"><div class="goal-progress-fill" style="width: ${pct}%;"></div></div>
+                    <div style="font-size:12px; display:flex; justify-content:space-between; color:var(--text-muted);">
+                        <span>${Utils.formatCurrency(g.current)}</span><span>${Utils.formatCurrency(g.target)}</span>
+                    </div>
+                    <div class="goal-actions">
+                        <input type="number" id="goal-add-${index}" placeholder="R$" step="0.01">
+                        <button class="primary" onclick="GoalManager.addFund(${index})">Guardar</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+};
+window.GoalManager = GoalManager;
+
+document.getElementById('goal-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    appData.goals.push({ id: Utils.generateId(), name: document.getElementById('goal-name').value, target: parseFloat(document.getElementById('goal-target').value), current: 0 });
+    saveData(); updateDashboard(); e.target.reset();
+});
+
+/**
+ * ==========================================
+ * GERENCIADOR DA LOJA
+ * ==========================================
+ */
+const ShopManager = {
+    buy: function(itemId) {
+        const item = CONFIG.SHOP_ITEMS.find(i => i.id === itemId);
+        if(!item) return;
+        if(appData.inventory.includes(itemId)) {
+            // Equipar
+            appData.equipped[item.type] = itemId;
+            Utils.showToast(`${item.name} equipado!`);
+        } else {
+            // Comprar
+            if(appData.xp >= item.price) {
+                appData.xp -= item.price;
+                appData.inventory.push(itemId);
+                appData.equipped[item.type] = itemId;
+                Utils.showToast(`Item comprado: ${item.name}!`);
+            } else {
+                Utils.showToast("XP Insuficiente! Derrote chefes e registre fluxos.", true);
+                return;
+            }
+        }
+        saveData();
+        renderAvatar();
+        this.render();
+        calculateRPGStats(); // Update coins visual
+    },
+    render: function() {
+        const list = document.getElementById('shop-list');
+        list.innerHTML = '';
+        CONFIG.SHOP_ITEMS.forEach(item => {
+            const owned = appData.inventory.includes(item.id);
+            const equipped = appData.equipped[item.type] === item.id;
+            const btnText = equipped ? 'Equipado' : (owned ? 'Equipar' : `Comprar`);
+            
+            list.innerHTML += `
+                <div class="shop-item ${owned ? 'owned' : ''}" style="${equipped ? 'border-color: var(--accent); opacity: 1;' : ''}">
+                    <div class="shop-icon">${item.icon}</div>
+                    <div style="font-weight:bold; font-size:13px;">${item.name}</div>
+                    ${!owned ? `<div class="shop-price">🪙 ${item.price} XP</div>` : '<div class="shop-price" style="color:var(--text-muted);">Comprado</div>'}
+                    <button class="primary" onclick="ShopManager.buy('${item.id}')" ${equipped ? 'disabled' : ''}>${btnText}</button>
+                </div>
+            `;
+        });
+    }
+};
+window.ShopManager = ShopManager;
+
+/**
+ * ==========================================
+ * CORE FINANCEIRO E RENDERS GERAIS
  * ==========================================
  */
 function processRecurringExpenses() {
     const currentMonth = Utils.getCurrentMonthStr();
-    if (appData.lastProcessedMonth !== currentMonth) {
-        // Virada de mês detectada
+    if (appData.lastProcessedMonth && appData.lastProcessedMonth !== currentMonth) {
         let addedCount = 0;
+        const lastMonthRecurring = appData.transactions.filter(t => t.isRecurring && t.date.startsWith(appData.lastProcessedMonth));
         
-        // Pega os recorrentes do mês passado
-        if (appData.lastProcessedMonth) {
-            const lastMonthRecurring = appData.transactions.filter(t => t.isRecurring && t.date.startsWith(appData.lastProcessedMonth));
-            
-            lastMonthRecurring.forEach(oldT => {
-                // Checa se já existe um igual no mês atual (pra não duplicar em caso de erro)
-                const exists = appData.transactions.some(t => t.isRecurring && t.description === oldT.description && t.date.startsWith(currentMonth));
-                if (!exists) {
-                    const newDate = `${currentMonth}-${oldT.date.split('-')[2]}`; // Mantém o dia
-                    appData.transactions.push({
-                        ...oldT,
-                        id: Utils.generateId(),
-                        date: newDate
-                    });
-                    addedCount++;
-                }
-            });
-        }
+        lastMonthRecurring.forEach(oldT => {
+            const exists = appData.transactions.some(t => t.isRecurring && t.description === oldT.description && t.date.startsWith(currentMonth));
+            if (!exists) {
+                appData.transactions.push({ ...oldT, id: Utils.generateId(), date: `${currentMonth}-${oldT.date.split('-')[2]}` });
+                addedCount++;
+            }
+        });
         
         appData.lastProcessedMonth = currentMonth;
-        saveData();
-        
         if (addedCount > 0) {
             setTimeout(() => {
-                EgoSword.speak(`O tempo avança. Detectei contratos ativos e ${addedCount} cobranças recorrentes foram adicionadas.`);
+                EgoSword.speak(`O tempo avança. Detectei contratos ativos e ${addedCount} cobranças recorrentes foram deduzidas.`);
                 Utils.showToast(`Mês virou: ${addedCount} assinaturas cobradas!`);
                 updateDashboard();
             }, 2000);
-        }
+        } else { saveData(); }
+    } else if (!appData.lastProcessedMonth) {
+        appData.lastProcessedMonth = currentMonth; saveData();
     }
 }
 
 function updateDashboard(latestTrans = null) {
     calculateRPGStats();
     
-    // 1. Cálculos de TOTAIS (Para a Vida Toda)
+    // 1. Cálculos do Patrimônio e Carteira
     const totalIncomeAll = appData.transactions.filter(t=>t.type==='income').reduce((a,t)=>a+t.value,0);
     const totalExpenseAll = appData.transactions.filter(t=>t.type==='expense').reduce((a,t)=>a+t.value,0);
-    const totalBalance = totalIncomeAll - totalExpenseAll;
+    const patrimony = totalIncomeAll - totalExpenseAll;
     
+    const reserved = appData.goals.reduce((acc, g) => acc + g.current, 0);
+    const available = patrimony - reserved;
+
     const totalEl = document.getElementById('total-display');
-    totalEl.innerText = Utils.formatCurrency(totalBalance);
-    if(totalBalance < 0) { totalEl.classList.add('negative'); EgoSword.speak("ALERTA CRÍTICO! Saldo Negativo!", true); }
+    totalEl.innerText = Utils.formatCurrency(patrimony);
+    if(patrimony < 0) { totalEl.classList.add('negative'); EgoSword.speak("ALERTA CRÍTICO! Sangramento profundo no tesouro!", true); }
     else { totalEl.classList.remove('negative'); }
+
+    document.getElementById('available-display').innerText = Utils.formatCurrency(available);
+    document.getElementById('reserved-display').innerText = Utils.formatCurrency(reserved);
 
     // 2. Cálculos do MÊS ATUAL
     const currentM = Utils.getCurrentMonthStr();
     const currInc = appData.transactions.filter(t=>t.type==='income' && t.date.startsWith(currentM)).reduce((a,t)=>a+t.value,0);
     const currExp = appData.transactions.filter(t=>t.type==='expense' && t.date.startsWith(currentM)).reduce((a,t)=>a+t.value,0);
-    const currSaved = currInc - currExp;
 
     document.getElementById('income-display').innerText = Utils.formatCurrency(currInc);
     document.getElementById('expense-display').innerText = Utils.formatCurrency(currExp);
-    document.getElementById('saved-month').innerText = `Economizado no mês: ${Utils.formatCurrency(currSaved)}`;
 
     // 3. Comparação MÊS ANTERIOR
     const d = new Date(); d.setMonth(d.getMonth() - 1);
@@ -822,93 +1160,73 @@ function updateDashboard(latestTrans = null) {
         const el = document.getElementById(elId);
         if(last === 0) { el.innerText = "Sem dados do mês anterior"; return; }
         const diff = ((curr - last) / last) * 100;
-        const arrow = diff > 0 ? '⬆' : '⬇';
         let colorClass = 'comp-neutral';
-        
         if (diff !== 0) {
-            if (inverseGood) colorClass = diff > 0 ? 'comp-up' : 'comp-down'; // Despesa (subir é ruim/vermelho)
-            else colorClass = diff > 0 ? 'comp-down' : 'comp-up'; // Receita (subir é bom/verde - css var name is inverted contextually)
+            if (inverseGood) colorClass = diff > 0 ? 'comp-up' : 'comp-down'; 
+            else colorClass = diff > 0 ? 'comp-down' : 'comp-up'; 
         }
-        
         el.className = `monthly-comparison ${colorClass}`;
-        el.innerText = `${arrow} ${Math.abs(diff).toFixed(1)}% vs mês passado`;
+        el.innerText = `${diff > 0 ? '⬆' : '⬇'} ${Math.abs(diff).toFixed(1)}% vs mês passado`;
     };
-    
     updateComp('income-comp', currInc, lastInc, false);
     updateComp('expense-comp', currExp, lastExp, true);
 
-    // 4. Orçamento
+    // 4. Orçamento Mensal (Verifica apenas os gastos do mes)
     const budgetStatus = document.getElementById('budget-status');
     if (appData.budget > 0) {
         document.getElementById('budget-input').value = appData.budget;
         const percent = (currExp / appData.budget) * 100;
-        let bClass = 'ok';
-        if (percent > 80) bClass = 'warning';
-        if (percent > 100) bClass = 'danger';
-        
+        let bClass = 'ok'; if (percent > 80) bClass = 'warning'; if (percent > 100) bClass = 'danger';
         budgetStatus.className = `budget-status ${bClass}`;
         budgetStatus.innerText = `Uso mensal: ${percent.toFixed(1)}% de ${Utils.formatCurrency(appData.budget)}`;
     }
 
-    // Processa batalha
-    if(latestTrans) {
-        processBossBattle(latestTrans.type === 'expense' ? latestTrans.value : 0, latestTrans.type === 'income' ? latestTrans.value : 0);
-    } else {
-        processBossBattle(); // Só atualiza UI
-    }
+    if(latestTrans) { processBossBattle(latestTrans.type === 'expense' ? latestTrans.value : 0, latestTrans.type === 'income' ? latestTrans.value : 0); } 
+    else { processBossBattle(); } // Apenas render
 
     checkAchievement();
     renderLog();
     renderCharts();
-    renderGoals();
+    GoalManager.render();
     renderCalendar();
+    generateIntelligenceReport();
+    ShopManager.render();
 }
 
 function renderLog() {
     const list = document.getElementById('log-list');
-    const emptyState = document.getElementById('empty-state');
     list.innerHTML = '';
-
     let filtered = appData.transactions.filter(t => {
-        const matchSearch = t.description.toLowerCase().includes(currentFilters.search.toLowerCase());
-        const matchCat = currentFilters.category === 'all' || t.category === currentFilters.category;
-        const matchMonth = currentFilters.month === '' || t.date.startsWith(currentFilters.month);
-        return matchSearch && matchCat && matchMonth;
-    });
-
-    filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+        return (t.description.toLowerCase().includes(currentFilters.search.toLowerCase())) &&
+               (currentFilters.category === 'all' || t.category === currentFilters.category) &&
+               (currentFilters.month === '' || t.date.startsWith(currentFilters.month));
+    }).sort((a, b) => new Date(b.date) - new Date(a.date));
 
     if (filtered.length === 0) {
-        emptyState.style.display = 'block';
+        document.getElementById('empty-state').style.display = 'block';
     } else {
-        emptyState.style.display = 'none';
-        const fragment = document.createDocumentFragment();
-        
+        document.getElementById('empty-state').style.display = 'none';
+        const frag = document.createDocumentFragment();
         filtered.forEach(t => {
-            const isIncome = t.type === 'income';
+            const isInc = t.type === 'income';
             const catInfo = CONFIG.CATEGORIES[t.category] || CONFIG.CATEGORIES['other'];
-            
             const item = document.createElement('div');
             item.className = 'log-item';
             item.innerHTML = `
                 <div class="log-info">
-                    <div class="log-desc">${Utils.sanitize(t.description)} ${t.isRecurring ? '<span class="log-recurring" title="Despesa Recorrente">🔄</span>' : ''}</div>
-                    <div class="log-meta">
-                        <span>📅 ${Utils.formatDateBR(t.date)}</span>
-                        <span class="log-cat">${catInfo.icon} ${catInfo.name}</span>
-                    </div>
+                    <div class="log-desc">${Utils.sanitize(t.description)} ${t.isRecurring ? '🔄' : ''}</div>
+                    <div class="log-meta"><span>📅 ${Utils.formatDateBR(t.date)}</span><span class="log-cat">${catInfo.icon} ${catInfo.name}</span></div>
                 </div>
                 <div class="log-actions">
-                    <div class="val-display ${isIncome ? 'income-text' : 'expense-text'}">${isIncome ? '+' : '-'} ${Utils.formatCurrency(t.value)}</div>
+                    <div class="val-display ${isInc ? 'income-text' : 'expense-text'}">${isInc ? '+' : '-'} ${Utils.formatCurrency(t.value)}</div>
                     <div class="action-btns">
-                        <button class="icon-btn edit-btn" data-id="${t.id}" title="Editar">✏️</button>
-                        <button class="icon-btn delete-btn" data-id="${t.id}" title="Deletar">🗑️</button>
+                        <button class="icon-btn edit-btn" data-id="${t.id}">✏️</button>
+                        <button class="icon-btn delete-btn" data-id="${t.id}">🗑️</button>
                     </div>
-                </div>
-            `;
-            fragment.appendChild(item);
+                </div>`;
+            frag.appendChild(item);
         });
-        list.appendChild(fragment);
+        list.appendChild(frag);
     }
 }
 
@@ -916,110 +1234,21 @@ function renderCalendar() {
     const list = document.getElementById('calendar-list');
     list.innerHTML = '';
     const currentM = Utils.getCurrentMonthStr();
-    
-    // Filtra e agrupa por dia
     const monthTrans = appData.transactions.filter(t => t.date.startsWith(currentM)).sort((a,b) => new Date(a.date) - new Date(b.date));
     
-    if(monthTrans.length === 0) {
-        list.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-muted);">Sem compromissos este mês.</div>`;
-        return;
-    }
+    if(monthTrans.length === 0) { list.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-muted);">Sem movimentos este mês.</div>`; return; }
 
     const grouped = {};
-    monthTrans.forEach(t => {
-        const day = t.date.split('-')[2];
-        if(!grouped[day]) grouped[day] = [];
-        grouped[day].push(t);
-    });
-
+    monthTrans.forEach(t => { const d = t.date.split('-')[2]; if(!grouped[d]) grouped[d] = []; grouped[d].push(t); });
     for(const [day, items] of Object.entries(grouped)) {
         let html = `<div class="cal-day-group"><div class="cal-day-header">Dia ${day}</div>`;
         items.forEach(t => {
             const isInc = t.type === 'income';
-            const catIcon = (CONFIG.CATEGORIES[t.category] || {}).icon || '';
-            html += `<div class="cal-item">
-                <span>${catIcon} ${Utils.sanitize(t.description)}</span>
-                <span class="${isInc?'income-text':'expense-text'}">${isInc?'+':'-'} ${Utils.formatCurrency(t.value)}</span>
-            </div>`;
+            html += `<div class="cal-item"><span>${(CONFIG.CATEGORIES[t.category]||{}).icon||''} ${Utils.sanitize(t.description)}</span><span class="${isInc?'income-text':'expense-text'}">${isInc?'+':'-'} ${Utils.formatCurrency(t.value)}</span></div>`;
         });
-        html += `</div>`;
-        list.innerHTML += html;
+        list.innerHTML += html + `</div>`;
     }
 }
-
-function renderGoals() {
-    const list = document.getElementById('goals-list');
-    list.innerHTML = '';
-    
-    if(appData.goals.length === 0) {
-        list.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Nenhuma missão ativa. Crie uma acima!</div>`;
-    }
-
-    appData.goals.forEach((g, index) => {
-        const pct = Math.min(100, (g.current / g.target) * 100);
-        list.innerHTML += `
-            <div class="goal-card">
-                <button onclick="removeGoal(${index})" class="icon-btn delete-btn" style="position:absolute; top:5px; right:5px;">🗑️</button>
-                <div class="goal-header"><span>🎯 ${Utils.sanitize(g.name)}</span></div>
-                <div class="goal-progress-bg"><div class="goal-progress-fill" style="width: ${pct}%;"></div></div>
-                <div style="font-size:12px; display:flex; justify-content:space-between; color:var(--text-muted);">
-                    <span>${Utils.formatCurrency(g.current)}</span><span>${Utils.formatCurrency(g.target)}</span>
-                </div>
-                <div class="goal-actions">
-                    <input type="number" id="goal-add-${index}" placeholder="R$" step="0.01">
-                    <button class="primary" onclick="addFundToGoal(${index})">Add</button>
-                </div>
-            </div>
-        `;
-    });
-}
-
-window.addFundToGoal = function(index) {
-    const input = document.getElementById(`goal-add-${index}`);
-    const val = parseFloat(input.value);
-    if(val > 0) {
-        appData.goals[index].current += val;
-        
-        // Deduz do saldo principal criando uma despesa especial "Reserva"
-        appData.transactions.push({
-            id: Utils.generateId(),
-            date: new Date().toISOString().split('T')[0],
-            type: 'expense',
-            category: 'other',
-            value: val,
-            description: `[Meta] ${appData.goals[index].name}`,
-            isRecurring: false
-        });
-        
-        saveData();
-        updateDashboard();
-        if(appData.goals[index].current >= appData.goals[index].target) {
-            Utils.showToast(`MISSÃO CONCLUÍDA: ${appData.goals[index].name}!!`, false, true);
-        } else {
-            Utils.showToast(`Fundos adicionados à missão.`);
-        }
-    }
-}
-window.removeGoal = function(index) {
-    if(confirm("Abandonar esta missão? Os fundos reservados NÃO serão estornados automaticamente.")) {
-        appData.goals.splice(index, 1);
-        saveData();
-        updateDashboard();
-    }
-}
-
-document.getElementById('goal-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    appData.goals.push({
-        id: Utils.generateId(),
-        name: document.getElementById('goal-name').value,
-        target: parseFloat(document.getElementById('goal-target').value),
-        current: 0
-    });
-    saveData();
-    updateDashboard();
-    e.target.reset();
-});
 
 function renderCharts() {
     const ctxCat = document.getElementById('finance-chart').getContext('2d');
@@ -1027,15 +1256,12 @@ function renderCharts() {
     
     const themeColor = appData.theme === 'dark' ? '#c5d3e8' : '#1e293b';
     const gridColor = appData.theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
-    const chartBg = appData.theme === 'dark' ? '#0d131f' : '#ffffff';
-    Chart.defaults.color = themeColor;
-    Chart.defaults.font.family = "'Consolas', monospace";
+    const chartBg = appData.theme === 'dark' ? 'rgb(13, 19, 31)' : '#ffffff';
+    Chart.defaults.color = themeColor; Chart.defaults.font.family = "'Consolas', monospace";
 
-    // --- GRÁFICO 1: CATEGORIAS (Mês Atual) ---
     const expenseData = {};
-    const currentM = Utils.getCurrentMonthStr();
     appData.transactions.forEach(t => {
-        if (t.type === 'expense' && t.date.startsWith(currentM)) {
+        if (t.type === 'expense' && t.date.startsWith(Utils.getCurrentMonthStr())) {
             const catName = (CONFIG.CATEGORIES[t.category] || CONFIG.CATEGORIES['other']).name;
             expenseData[catName] = (expenseData[catName] || 0) + t.value;
         }
@@ -1046,76 +1272,69 @@ function renderCharts() {
         type: 'doughnut',
         data: {
             labels: Object.keys(expenseData).length ? Object.keys(expenseData) : ['Sem dados'],
-            datasets: [{
-                data: Object.keys(expenseData).length ? Object.values(expenseData) : [1],
-                backgroundColor: Object.keys(expenseData).length ? ['#ef4444', '#f59e0b', '#8b5cf6', '#0ea5e9', '#10b981', '#f59e0b'] : ['rgba(128,128,128,0.2)'],
-                borderColor: chartBg, borderWidth: 3
-            }]
+            datasets: [{ data: Object.keys(expenseData).length ? Object.values(expenseData) : [1], backgroundColor: Object.keys(expenseData).length ? ['#ef4444', '#f59e0b', '#8b5cf6', '#0ea5e9', '#10b981', '#f59e0b'] : ['rgba(128,128,128,0.2)'], borderColor: chartBg, borderWidth: 3 }]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } }, cutout: '65%' }
     });
 
-    // --- GRÁFICO 2: EVOLUÇÃO (Últimos 6 meses) ---
     const evData = {};
     appData.transactions.forEach(t => {
-        const m = t.date.substring(0, 7); // YYYY-MM
+        const m = t.date.substring(0, 7);
         if(!evData[m]) evData[m] = { inc: 0, exp: 0 };
-        if(t.type === 'income') evData[m].inc += t.value;
-        else evData[m].exp += t.value;
+        if(t.type === 'income') evData[m].inc += t.value; else evData[m].exp += t.value;
     });
-
-    // Pega os ultimos 6 meses ordenados
     const sortedMonths = Object.keys(evData).sort().slice(-6);
-    const labelsEvo = sortedMonths.map(m => m.split('-').reverse().join('/')); // MM/YYYY
-    const dataInc = sortedMonths.map(m => evData[m].inc);
-    const dataExp = sortedMonths.map(m => evData[m].exp);
 
     if (chartInstanceEvo) chartInstanceEvo.destroy();
     chartInstanceEvo = new Chart(ctxEvo, {
         type: 'bar',
         data: {
-            labels: labelsEvo,
+            labels: sortedMonths.map(m => m.split('-').reverse().join('/')),
             datasets: [
-                { label: 'Receitas', data: dataInc, backgroundColor: '#10b981', borderRadius: 4 },
-                { label: 'Despesas', data: dataExp, backgroundColor: '#ef4444', borderRadius: 4 }
+                { label: 'Receitas', data: sortedMonths.map(m => evData[m].inc), backgroundColor: '#10b981', borderRadius: 4 },
+                { label: 'Despesas', data: sortedMonths.map(m => evData[m].exp), backgroundColor: '#ef4444', borderRadius: 4 }
             ]
         },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            scales: {
-                y: { grid: { color: gridColor }, beginAtZero: true },
-                x: { grid: { display: false } }
-            },
-            plugins: { legend: { position: 'top' } }
-        }
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid: { color: gridColor }, beginAtZero: true }, x: { grid: { display: false } } } }
     });
 }
 
 /**
  * ==========================================
- * LISTENERS DE FORMULÁRIOS E AÇÕES
+ * LISTENERS & INTEGRAÇÃO GERAL
  * ==========================================
  */
-function populateCategories() {
-    const catSelect = document.getElementById('cat-input');
-    const filterSelect = document.getElementById('cat-filter');
-    const typeSelect = document.getElementById('type-input');
-    
-    catSelect.innerHTML = '';
-    Object.entries(CONFIG.CATEGORIES).forEach(([key, val]) => {
-        if (val.type === typeSelect.value || val.type === 'both') {
-            catSelect.innerHTML += `<option value="${key}">${val.icon} ${val.name}</option>`;
-        }
-    });
-
-    if (filterSelect.options.length === 1) {
-        Object.entries(CONFIG.CATEGORIES).forEach(([key, val]) => {
-            filterSelect.innerHTML += `<option value="${key}">${val.name}</option>`;
-        });
-    }
+function switchTab(tabId) {
+    document.querySelectorAll('.section-container').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    event.target.classList.add('active');
+    if(tabId === 'visao-geral') { renderCharts(); }
 }
 
-document.getElementById('type-input').addEventListener('change', populateCategories);
+function toggleTheme() {
+    appData.theme = appData.theme === 'dark' ? 'light' : 'dark';
+    applyTheme(appData.theme); saveData(); renderCharts();
+}
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.getElementById('btn-theme').innerText = theme === 'dark' ? '🌙' : '☀️';
+}
+document.getElementById('btn-theme').addEventListener('click', toggleTheme);
+document.getElementById('color-picker').addEventListener('change', (e) => {
+    appData.customColor = e.target.value;
+    document.documentElement.style.setProperty('--accent', appData.customColor);
+    saveData();
+});
+
+document.getElementById('type-input').addEventListener('change', () => {
+    const type = document.getElementById('type-input').value;
+    const cat = document.getElementById('cat-input');
+    cat.innerHTML = '';
+    Object.entries(CONFIG.CATEGORIES).forEach(([key, val]) => {
+        if (val.type === type || val.type === 'both') cat.innerHTML += `<option value="${key}">${val.icon} ${val.name}</option>`;
+    });
+});
 
 const form = document.getElementById('transaction-form');
 form.addEventListener('submit', (e) => {
@@ -1125,87 +1344,60 @@ form.addEventListener('submit', (e) => {
     
     if (isNaN(val) || val <= 0) { Utils.showToast("O valor deve ser maior que zero!", true); return; }
 
-    const transaction = {
-        id: idInput ? idInput : Utils.generateId(),
-        date: document.getElementById('date-input').value,
-        type: document.getElementById('type-input').value,
-        category: document.getElementById('cat-input').value,
-        value: val,
-        description: document.getElementById('desc-input').value.trim(),
-        isRecurring: document.getElementById('recurring-input').checked
+    const t = {
+        id: idInput || Utils.generateId(), date: document.getElementById('date-input').value,
+        type: document.getElementById('type-input').value, category: document.getElementById('cat-input').value,
+        value: val, description: document.getElementById('desc-input').value.trim(), isRecurring: document.getElementById('recurring-input').checked
     };
 
     if (idInput) {
-        const index = appData.transactions.findIndex(t => t.id === idInput);
-        if(index !== -1) appData.transactions[index] = transaction;
-        cancelEdit();
-        Utils.showToast("Histórico reescrito com sucesso.");
+        const idx = appData.transactions.findIndex(x => x.id === idInput);
+        if(idx !== -1) appData.transactions[idx] = t;
+        cancelEdit(); Utils.showToast("Histórico reescrito com sucesso.");
     } else {
-        appData.transactions.push(transaction);
-        Utils.showToast("Nova entrada gravada.");
+        appData.transactions.push(t);
+        // Ganho de XP e Coins (20 pra inc, 10 pra exp)
+        const gXP = t.type === 'income' ? 20 : 10;
+        appData.xp += gXP; appData.lifetimeXp += gXP;
+        Utils.showToast(`Nova entrada. +${gXP} XP`);
     }
 
-    saveData();
-    updateDashboard(transaction);
-    form.reset();
-    document.getElementById('date-input').valueAsDate = new Date();
-    populateCategories();
+    saveData(); updateDashboard(t); form.reset();
+    document.getElementById('date-input').valueAsDate = new Date(); document.getElementById('type-input').dispatchEvent(new Event('change'));
 });
 
 document.getElementById('log-list').addEventListener('click', (e) => {
     const target = e.target;
     if (target.classList.contains('delete-btn')) {
-        const id = target.dataset.id;
-        if (confirm("Deseja apagar este registro das crônicas? Ação irreversível.")) {
-            appData.transactions = appData.transactions.filter(t => t.id !== id);
-            saveData(); updateDashboard();
-            Utils.showToast("Registro deletado.");
+        if (confirm("Deseja apagar este registro das crônicas?")) {
+            appData.transactions = appData.transactions.filter(t => t.id !== target.dataset.id);
+            saveData(); updateDashboard(); Utils.showToast("Registro deletado.");
         }
     }
-    
     if (target.classList.contains('edit-btn')) {
-        const id = target.dataset.id;
-        const transaction = appData.transactions.find(t => t.id === id);
-        if (transaction) {
+        const t = appData.transactions.find(x => x.id === target.dataset.id);
+        if (t) {
             form.classList.add('is-editing');
-            document.getElementById('edit-id').value = transaction.id;
-            document.getElementById('date-input').value = transaction.date;
-            document.getElementById('type-input').value = transaction.type;
-            populateCategories(); 
-            document.getElementById('cat-input').value = transaction.category;
-            document.getElementById('val-input').value = transaction.value;
-            document.getElementById('desc-input').value = transaction.description;
-            document.getElementById('recurring-input').checked = transaction.isRecurring;
-            
-            document.getElementById('btn-cancel-edit').style.display = 'inline-block';
-            document.getElementById('btn-submit').innerText = 'Salvar Alterações';
-            
-            // Scroll to form smoothly
-            switchTab('visao-geral');
-            form.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            EgoSword.speak("Alterando o tecido do tempo? Prossiga com cuidado, Mestre.");
+            document.getElementById('edit-id').value = t.id; document.getElementById('date-input').value = t.date;
+            document.getElementById('type-input').value = t.type; document.getElementById('type-input').dispatchEvent(new Event('change'));
+            document.getElementById('cat-input').value = t.category; document.getElementById('val-input').value = t.value;
+            document.getElementById('desc-input').value = t.description; document.getElementById('recurring-input').checked = t.isRecurring;
+            document.getElementById('btn-cancel-edit').style.display = 'inline-block'; document.getElementById('btn-submit').innerText = 'Salvar Alterações';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
 });
 
 function cancelEdit() {
-    form.reset();
-    form.classList.remove('is-editing');
-    document.getElementById('edit-id').value = '';
-    document.getElementById('btn-cancel-edit').style.display = 'none';
-    document.getElementById('btn-submit').innerText = 'Registrar Fluxo';
-    document.getElementById('date-input').valueAsDate = new Date();
-    populateCategories();
+    form.reset(); form.classList.remove('is-editing'); document.getElementById('edit-id').value = '';
+    document.getElementById('btn-cancel-edit').style.display = 'none'; document.getElementById('btn-submit').innerText = 'Registrar Fluxo';
+    document.getElementById('date-input').valueAsDate = new Date(); document.getElementById('type-input').dispatchEvent(new Event('change'));
 }
 document.getElementById('btn-cancel-edit').addEventListener('click', cancelEdit);
 
 document.getElementById('btn-save-budget').addEventListener('click', () => {
     const val = parseFloat(document.getElementById('budget-input').value);
-    if (!isNaN(val) && val >= 0) {
-        appData.budget = val;
-        saveData(); updateDashboard();
-        Utils.showToast("Novo limite financeiro estabelecido.");
-    }
+    if (!isNaN(val) && val >= 0) { appData.budget = val; saveData(); updateDashboard(); Utils.showToast("Limite financeiro estabelecido."); }
 });
 
 function applyFilters() {
@@ -1218,61 +1410,49 @@ document.getElementById('search-filter').addEventListener('input', applyFilters)
 document.getElementById('cat-filter').addEventListener('change', applyFilters);
 document.getElementById('month-filter').addEventListener('change', applyFilters);
 document.getElementById('btn-clear-filters').addEventListener('click', () => {
-    document.getElementById('search-filter').value = '';
-    document.getElementById('cat-filter').value = 'all';
-    document.getElementById('month-filter').value = '';
+    document.getElementById('search-filter').value = ''; document.getElementById('cat-filter').value = 'all'; document.getElementById('month-filter').value = '';
     applyFilters();
 });
 
 // Import / Export
 document.getElementById('btn-export').addEventListener('click', () => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
-    const dlAnchorElem = document.createElement('a');
-    dlAnchorElem.setAttribute("href", dataStr);
-    dlAnchorElem.setAttribute("download", `corvus_backup_${new Date().toISOString().split('T')[0]}.json`);
-    dlAnchorElem.click();
-    Utils.showToast("Pergaminhos guardados localmente com sucesso.");
+    const dl = document.createElement('a');
+    dl.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
+    dl.download = `corvus_master_${new Date().toISOString().split('T')[0]}.json`; dl.click();
 });
 
 document.getElementById('file-import').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    if (!confirm("Isso apagará e substituirá completamente seus dados atuais. Deseja continuar?")) {
-        e.target.value = ''; return;
-    }
-
+    const file = e.target.files[0]; if (!file) return;
+    if (!confirm("Isso apagará seus dados atuais. Deseja substituir tudo pelo backup?")) { e.target.value = ''; return; }
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function(evt) {
         try {
-            const contents = JSON.parse(e.target.result);
-            if (contents && contents.transactions) {
-                appData = contents;
-                if(!appData.achievements) appData.achievements = [];
-                if(!appData.goals) appData.goals = [];
-                saveData();
-                updateDashboard();
-                Utils.showToast("Backup Restaurado com Sucesso.");
-                EgoSword.speak("Memórias de uma linha do tempo alternativa foram assimiladas.");
-            } else { Utils.showToast("Estrutura do arquivo inválida.", true); }
-        } catch(err) { Utils.showToast("Falha crítica ao ler o artefato.", true); }
+            appData = { ...defaultData, ...JSON.parse(evt.target.result) };
+            saveData(); checkOnboarding(); updateDashboard();
+            Utils.showToast("Backup Restaurado!");
+        } catch(err) { Utils.showToast("Arquivo inválido.", true); }
     };
-    reader.readAsText(file);
-    e.target.value = ''; 
+    reader.readAsText(file); e.target.value = ''; 
 });
 
 window.addEventListener('DOMContentLoaded', () => {
     loadData();
     document.getElementById('date-input').valueAsDate = new Date();
-    populateCategories();
+    document.getElementById('type-input').dispatchEvent(new Event('change'));
     
-    // Processamento Crítico de Inicialização
-    processRecurringExpenses();
-    updateDashboard();
+    // Popula filtro de categorias global
+    const fCat = document.getElementById('cat-filter');
+    if(fCat.options.length === 1) {
+        Object.entries(CONFIG.CATEGORIES).forEach(([k, v]) => fCat.innerHTML += `<option value="${k}">${v.name}</option>`);
+    }
+
+    checkOnboarding();
     
-    setTimeout(() => {
-        EgoSword.analyzeMonthCompare(); // Fala inicial baseada em performance
-    }, 1200);
+    if(appData.avatar) {
+        processRecurringExpenses();
+        updateDashboard();
+        setTimeout(() => { EgoSword.analyzeTrends(); }, 1500);
+    }
 });
 </script>
 </body>
