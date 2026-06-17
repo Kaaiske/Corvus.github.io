@@ -8,9 +8,13 @@
     <style>
         /* ================= VARIÁVEIS E TEMAS (RGBA NATIVO) ================= */
         :root {
-            --bg-color: 5, 8, 12;
-            --panel-bg: 13, 19, 31;
-            --panel-bg-hover: 21, 31, 48;
+            --bg-color-rgb: 5, 8, 12;
+            --panel-bg-rgb: 13, 19, 31;
+            --panel-bg-hover-rgb: 21, 31, 48;
+            
+            --bg-color: rgb(var(--bg-color-rgb));
+            --panel-bg: rgb(var(--panel-bg-rgb));
+            --panel-bg-hover: rgb(var(--panel-bg-hover-rgb));
             
             --text-base: #c5d3e8;
             --text-main: #39ff14;
@@ -27,9 +31,10 @@
         }
 
         [data-theme="light"] {
-            --bg-color: 240, 244, 248;
-            --panel-bg: 255, 255, 255;
-            --panel-bg-hover: 241, 245, 249;
+            --bg-color-rgb: 240, 244, 248;
+            --panel-bg-rgb: 255, 255, 255;
+            --panel-bg-hover-rgb: 241, 245, 249;
+            
             --text-base: #1e293b;
             --text-main: #059669;
             --text-muted: #64748b;
@@ -44,7 +49,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background-color: rgb(var(--bg-color));
+            background-color: var(--bg-color);
             color: var(--text-base);
             font-family: var(--font-stack);
             display: flex;
@@ -52,18 +57,18 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px; 
-            background-image: radial-gradient(circle at 50% 0%, rgb(var(--panel-bg)) 0%, transparent 70%);
+            background-image: radial-gradient(circle at 50% 0%, var(--panel-bg) 0%, transparent 70%);
             transition: background-color 0.4s, color 0.4s;
             overflow-x: hidden;
         }
 
         .container { display: flex; gap: 30px; width: 100%; max-width: 1400px; flex-wrap: wrap; position: relative;}
 
-        /* ================= NAVBAR NÃO-FIXA E ADAPTÁVEL (MELHORADA) ================= */
+        /* ================= NAVBAR NÃO-FIXA E ADAPTÁVEL ================= */
         .top-nav {
             display: flex; 
             gap: 12px; 
-            background: rgba(var(--panel-bg-hover), 0.95); 
+            background: rgba(var(--panel-bg-hover-rgb), 0.95); 
             padding: 12px 20px; 
             border: 1px solid var(--border-soft); 
             border-radius: 12px; 
@@ -79,7 +84,7 @@
         }
         
         .nav-btn {
-            background: rgba(var(--panel-bg), 0.6); 
+            background: rgba(var(--panel-bg-rgb), 0.6); 
             border: 1px solid var(--border-soft); 
             color: var(--text-base); 
             padding: 10px 16px; 
@@ -93,11 +98,11 @@
             flex: 1 1 auto; 
             text-align: center; 
             white-space: nowrap;
-            max-width: 220px;
+            max-width: 180px;
             box-shadow: inset 0 1px 3px rgba(255,255,255,0.05);
         }
         .nav-btn:hover {
-            background: rgba(var(--panel-bg-hover), 0.9);
+            background: rgba(var(--panel-bg-hover-rgb), 0.9);
             border-color: var(--accent);
             color: var(--accent);
         }
@@ -128,7 +133,7 @@
 
         /* ================= PAINÉIS ================= */
         .panel {
-            background-color: rgba(var(--panel-bg), 0.9);
+            background-color: rgba(var(--panel-bg-rgb), 0.9);
             border: 1px solid var(--border-soft);
             border-radius: 12px;
             padding: 30px;
@@ -178,7 +183,7 @@
         .ego-dialogue { color: var(--text-base); font-style: italic; font-size: 13px; line-height: 1.5; min-height: 45px; opacity: 0.9;}
 
         /* ================= BLOCOS LATERAIS ================= */
-        .side-block { background: rgba(var(--panel-bg-hover), 0.7); border: 1px solid var(--border-soft); border-radius: 8px; padding: 15px; }
+        .side-block { background: rgba(var(--panel-bg-hover-rgb), 0.7); border: 1px solid var(--border-soft); border-radius: 8px; padding: 15px; }
         .side-block label { font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
         .budget-input-group { display: flex; gap: 8px; margin-bottom: 10px; }
         .budget-input-group input { width: 100%; }
@@ -194,6 +199,21 @@
         }
         .tool-btn:hover { background: var(--text-muted); color: #fff; border-color: transparent;}
 
+        /* ================= ALERTAS DE CONTAS NO TOPO ================= */
+        .alert-banner {
+            background: rgba(255, 170, 0, 0.1);
+            border: 1px solid var(--warning);
+            border-radius: 8px;
+            padding: 12px 18px;
+            font-size: 13px;
+            color: var(--warning);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            animation: fadeIn 0.4s ease;
+        }
+
         /* ================= DASHBOARD FINANCEIRO & CARDS ================= */
         .section-container { display: none; flex-direction: column; gap: 30px; animation: fadeIn 0.4s ease;}
         .section-container.active { display: flex; }
@@ -203,7 +223,7 @@
         
         .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
         .summary-card { 
-            background: rgba(var(--panel-bg-hover), 0.5); border: 1px solid var(--border-soft); padding: 20px; 
+            background: rgba(var(--panel-bg-hover-rgb), 0.5); border: 1px solid var(--border-soft); padding: 20px; 
             border-radius: 10px; position: relative; overflow: hidden; display: flex; flex-direction: column;
         }
         .summary-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; }
@@ -230,7 +250,7 @@
         @keyframes pulseRed { 0% { text-shadow: 0 0 0 var(--danger); } 50% { text-shadow: 0 0 15px var(--danger); } 100% { text-shadow: 0 0 0 var(--danger); } }
 
         /* ================= FORMULÁRIO ================= */
-        .form-section { background: rgba(var(--panel-bg-hover), 0.5); border: 1px solid var(--border-soft); border-radius: 10px; padding: 25px; }
+        .form-section { background: rgba(var(--panel-bg-hover-rgb), 0.5); border: 1px solid var(--border-soft); border-radius: 10px; padding: 25px; }
         .section-title { font-size: 16px; color: var(--accent); text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; font-weight: bold; border-bottom: 1px dashed var(--border-soft); padding-bottom: 10px;}
         
         .form-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 15px; align-items: center; transition: all 0.3s;}
@@ -238,9 +258,12 @@
         
         #date-input { grid-column: span 3; } #type-input { grid-column: span 3; } #cat-input { grid-column: span 3; } #essential-wrapper { grid-column: span 3; text-align: right; display: flex; justify-content: flex-end;}
         #val-input { grid-column: span 3; } #desc-input { grid-column: span 9; }
+        .recurrence-fields { grid-column: span 12; display: flex; gap: 15px; flex-wrap: wrap; background: rgba(0,0,0,0.15); padding: 12px; border-radius: 6px; border: 1px solid var(--border-soft);}
+        .recurrence-fields > div { flex: 1; min-width: 150px; }
+        .recurrence-fields label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
         .form-actions { grid-column: span 12; display: flex; gap: 15px; justify-content: flex-end; align-items: center; margin-top: 10px; padding-top: 20px; border-top: 1px dashed var(--border-soft); }
         
-        input, select, button { background: rgb(var(--bg-color)); border: 1px solid var(--border-soft); color: var(--text-base); padding: 12px 15px; font-family: var(--font-stack); font-size: 14px; border-radius: 6px; outline: none; transition: all 0.3s; width: 100%;}
+        input, select, button { background: rgb(var(--bg-color-rgb)); border: 1px solid var(--border-soft); color: var(--text-base); padding: 12px 15px; font-family: var(--font-stack); font-size: 14px; border-radius: 6px; outline: none; transition: all 0.3s; width: 100%;}
         input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 8px var(--shadow-glow);}
         
         .checkbox-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: var(--gold); user-select: none;}
@@ -252,19 +275,19 @@
         
         /* ================= GRÁFICOS E LISTA ================= */
         .data-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .chart-container { background: rgba(var(--panel-bg-hover), 0.5); border: 1px solid var(--border-soft); border-radius: 10px; padding: 20px; height: 350px; display: flex; flex-direction: column; justify-content: center;}
+        .chart-container { background: rgba(var(--panel-bg-hover-rgb), 0.5); border: 1px solid var(--border-soft); border-radius: 10px; padding: 20px; height: 350px; display: flex; flex-direction: column; justify-content: center;}
         
         .list-container { display: flex; flex-direction: column; gap: 15px; grid-column: 1 / -1;}
-        .filter-bar { display: flex; gap: 10px; background: rgba(var(--panel-bg-hover), 0.5); padding: 15px; border-radius: 10px; border: 1px solid var(--border-soft); flex-wrap: wrap;}
-        .log-section { border: 1px solid var(--border-soft); height: 400px; overflow-y: auto; background: rgba(var(--panel-bg-hover), 0.3); padding: 15px; border-radius: 10px; position: relative;}
+        .filter-bar { display: flex; gap: 10px; background: rgba(var(--panel-bg-hover-rgb), 0.5); padding: 15px; border-radius: 10px; border: 1px solid var(--border-soft); flex-wrap: wrap; align-items: center;}
+        .log-section { border: 1px solid var(--border-soft); height: 400px; overflow-y: auto; background: rgba(var(--panel-bg-hover-rgb), 0.3); padding: 15px; border-radius: 10px; position: relative;}
         
         .empty-state { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: var(--text-muted); display: none; width: 100%;}
         .empty-state i { font-size: 48px; margin-bottom: 15px; display: block; opacity: 0.5;}
 
-        .log-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgb(var(--bg-color)); border: 1px solid var(--border-soft); border-radius: 8px; margin-bottom: 8px; font-size: 14px; animation: fadeIn 0.3s ease-out; gap: 15px; transition: all 0.2s;}
+        .log-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgb(var(--bg-color-rgb)); border: 1px solid var(--border-soft); border-radius: 8px; margin-bottom: 8px; font-size: 14px; animation: fadeIn 0.3s ease-out; gap: 15px; transition: all 0.2s;}
         .log-item:hover { border-color: var(--accent); transform: translateX(2px); }
         .log-info { display: flex; flex-direction: column; gap: 6px; flex: 1;}
-        .log-desc { font-size: 15px; font-weight: bold; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px;}
+        .log-desc { font-size: 15px; font-weight: bold; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;}
         .log-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 15px; align-items: center;}
         .log-cat { background: rgba(0,0,0,0.2); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border-soft);}
         .badge { font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: bold; text-transform: uppercase;}
@@ -280,18 +303,19 @@
         .edit-btn { color: var(--warning); } .edit-btn:hover { background: rgba(255, 170, 0, 0.1); border-color: var(--warning); }
         .delete-btn { color: var(--text-muted); } .delete-btn:hover { color: var(--danger); background: rgba(255, 74, 74, 0.1); border-color: var(--danger); }
 
-        /* ================= SISTEMA DE METAS ================= */
+        /* ================= SISTEMA DE METAS (COM PRAZO) ================= */
         .goals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px;}
-        .goal-card { background: rgba(var(--panel-bg-hover), 0.5); border: 1px solid var(--border-soft); padding: 15px; border-radius: 8px; position: relative;}
+        .goal-card { background: rgba(var(--panel-bg-hover-rgb), 0.5); border: 1px solid var(--border-soft); padding: 15px; border-radius: 8px; position: relative;}
         .goal-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; font-size: 14px;}
         .goal-progress-bg { background: rgba(0,0,0,0.3); height: 10px; border-radius: 5px; overflow: hidden; margin-bottom: 10px; border: 1px solid var(--border-soft);}
         .goal-progress-fill { background: var(--accent); height: 100%; transition: width 0.5s; }
+        .goal-projection { font-size: 11px; color: var(--warning); margin-bottom: 10px; font-weight: bold; text-transform: uppercase;}
         .goal-actions { display: flex; gap: 5px; margin-top: 10px;}
         .goal-actions input { padding: 5px; font-size: 12px; }
         .goal-actions button { padding: 5px; font-size: 12px; min-width: auto; width: 60px;}
 
         /* ================= BATALHA CONTRA O CHEFE ================= */
-        .boss-battle-area { background: linear-gradient(to bottom, #2d0a0a, rgb(var(--panel-bg))); border: 1px solid var(--danger); padding: 25px; border-radius: 10px; text-align: center; position: relative; overflow: hidden;}
+        .boss-battle-area { background: linear-gradient(to bottom, #2d0a0a, var(--panel-bg)); border: 1px solid var(--danger); padding: 25px; border-radius: 10px; text-align: center; position: relative; overflow: hidden;}
         .boss-title { color: var(--danger); font-size: 20px; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);}
         .boss-sprite { font-size: 60px; margin: 15px 0; animation: float 3s ease-in-out infinite;}
         .boss-hp-bg { background: #000; border: 2px solid var(--danger); height: 25px; border-radius: 12px; margin: 10px auto; width: 80%; max-width: 400px; overflow: hidden; position: relative;}
@@ -302,27 +326,27 @@
 
         /* ================= CONQUISTAS E CALENDÁRIO ================= */
         .achievements-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;}
-        .achievement-card { background: rgba(var(--panel-bg-hover), 0.5); border: 1px solid var(--border-soft); padding: 15px; border-radius: 8px; text-align: center; opacity: 0.4; filter: grayscale(100%); transition: all 0.3s;}
+        .achievement-card { background: rgba(var(--panel-bg-hover-rgb), 0.5); border: 1px solid var(--border-soft); padding: 15px; border-radius: 8px; text-align: center; opacity: 0.4; filter: grayscale(100%); transition: all 0.3s;}
         .achievement-card.unlocked { opacity: 1; filter: grayscale(0%); border-color: var(--gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.15); background: rgba(255, 215, 0, 0.05);}
         .ach-icon { font-size: 30px; margin-bottom: 10px;}
         .ach-title { font-weight: bold; font-size: 13px; color: var(--gold); margin-bottom: 5px;}
         .ach-desc { font-size: 11px; color: var(--text-muted);}
 
         .calendar-list { display: flex; flex-direction: column; gap: 10px;}
-        .cal-day-group { background: rgba(var(--panel-bg-hover), 0.5); border: 1px solid var(--border-soft); border-radius: 8px; overflow: hidden;}
+        .cal-day-group { background: rgba(var(--panel-bg-hover-rgb), 0.5); border: 1px solid var(--border-soft); border-radius: 8px; overflow: hidden;}
         .cal-day-header { background: rgba(0,0,0,0.2); padding: 10px 15px; font-weight: bold; font-size: 14px; border-bottom: 1px solid var(--border-soft); color: var(--accent);}
         .cal-item { display: flex; justify-content: space-between; padding: 10px 15px; font-size: 13px; border-bottom: 1px dashed var(--border-soft);}
         .cal-item:last-child { border-bottom: none; }
 
         /* ================= INTELIGÊNCIA & LOJA ================= */
         .intelligence-dash { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;}
-        .intel-card { background: rgba(var(--panel-bg-hover), 0.5); border: 1px solid var(--border-soft); padding: 15px; border-radius: 8px; text-align: center;}
+        .intel-card { background: rgba(var(--panel-bg-hover-rgb), 0.5); border: 1px solid var(--border-soft); padding: 15px; border-radius: 8px; text-align: center;}
         .intel-card i { font-size: 24px; display: block; margin-bottom: 5px; }
         .intel-card h4 { font-size: 11px; color: var(--text-muted); text-transform: uppercase;}
-        .intel-card p { font-size: 18px; font-weight: bold; color: var(--accent); margin-top: 5px;}
+        .intel-card p { font-size: 16px; font-weight: bold; color: var(--accent); margin-top: 5px;}
 
         .shop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;}
-        .shop-item { background: rgba(var(--panel-bg-hover), 0.5); border: 1px dashed var(--gold); padding: 15px; border-radius: 8px; text-align: center;}
+        .shop-item { background: rgba(var(--panel-bg-hover-rgb), 0.5); border: 1px dashed var(--gold); padding: 15px; border-radius: 8px; text-align: center;}
         .shop-icon { font-size: 40px; margin-bottom: 10px; filter: drop-shadow(0 0 5px var(--gold));}
         .shop-price { color: var(--text-main); font-weight: bold; margin: 10px 0; font-size: 14px;}
         .shop-item button { width: 100%; font-size: 12px; }
@@ -331,12 +355,12 @@
 
         /* ================= RETRÔ ONBOARDING CHARACTER CREATOR ================= */
         #onboarding-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #05080c; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; transition: opacity 1s;}
-        .onb-content { text-align: center; width: 100%; max-width: 650px; padding: 30px; border: 2px solid var(--accent); border-radius: 12px; background: rgb(var(--panel-bg)); box-shadow: 0 0 30px var(--accent);}
+        .onb-content { text-align: center; width: 100%; max-width: 650px; padding: 30px; border: 2px solid var(--accent); border-radius: 12px; background: var(--panel-bg); box-shadow: 0 0 30px var(--accent);}
         .onb-title { font-size: 28px; color: var(--accent); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 3px; text-shadow: 0 0 10px var(--accent);}
         
         .creator-layout { display: flex; gap: 25px; text-align: left; margin-top: 20px;}
         .creator-portrait { width: 180px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 15px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid var(--border-soft); }
-        .creator-img-frame { width: 120px; height: 120px; border: 3px solid var(--accent); border-radius: 8px; overflow: hidden; background: #000; box-shadow: 0 0 15px var(--accent); }
+        .creator-img-frame { width: 120px; height: 120px; border: 3px solid var(--accent); border-radius: 8px; overflow: hidden; background: #000; box-shadow: 0 0 15px var(--accent); position: relative; }
         .creator-img-frame img { width: 100%; height: 100%; image-rendering: pixelated; object-fit: cover;}
         
         .creator-options { flex: 1; display: flex; flex-direction: column; gap: 15px;}
@@ -366,19 +390,46 @@
         .bill-status-badge.paid { background: rgba(57, 255, 20, 0.15); color: var(--text-main); border: 1px solid var(--text-main); }
         .bill-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 5px;}
 
-        /* RESPONSIVIDADE (REFORMULADA COM COMPORTAMENTO DE BOTÕES DO MENU SUPERIOR) */
+        /* ================= FILA DE TOAST (SISTEMA DE EMPILHAMENTO) ================= */
+        #toast-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 10px; z-index: 10000; pointer-events: none;}
+        .toast { 
+            background: var(--panel-bg); 
+            border: 1px solid var(--accent); 
+            border-left: 5px solid var(--accent); 
+            color: var(--text-base); 
+            padding: 16px 22px; 
+            border-radius: 8px; 
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6); 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            font-size: 14px; 
+            animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: auto;
+        }
+        .toast.error { border-color: var(--danger); border-left-color: var(--danger); }
+        .toast.achievement { border-color: var(--gold); border-left-color: var(--gold); box-shadow: 0 0 20px rgba(255,215,0,0.2);}
+        @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* IMPRESSÃO DO RELATÓRIO DO BALANÇO */
+        @media print {
+            body { background: #fff !important; color: #000 !important; padding: 0 !important; }
+            .top-nav, .player-profile, .form-section, .filter-bar, .tools-panel, .budget-panel, #toast-container { display: none !important; }
+            .container { max-width: 100% !important; width: 100% !important; display: block !important; }
+            .dashboard { width: 100% !important; background: #fff !important; border: none !important; box-shadow: none !important; color: #000 !important; }
+            .summary-card { border: 1px solid #ccc !important; color: #000 !important; background: #fff !important; }
+            .log-item { background: #fff !important; border: 1px solid #ccc !important; color: #000 !important; }
+            .action-btns { display: none !important; }
+        }
+
+        /* RESPONSIVIDADE */
         @media (max-width: 1024px) { 
             .data-layout, .bills-invest-layout { grid-template-columns: 1fr; } 
         }
         @media (max-width: 900px) {
-            .top-nav {
-                justify-content: center;
-                gap: 8px;
-            }
-            .nav-btn {
-                font-size: 11px;
-                padding: 6px 12px;
-            }
+            .top-nav { justify-content: center; gap: 8px; }
+            .nav-btn { font-size: 11px; padding: 6px 12px; }
         }
         @media (max-width: 768px) {
             body { padding-top: 20px; }
@@ -392,29 +443,12 @@
             .creator-layout { flex-direction: column; align-items: center;}
             .creator-portrait { width: 100%;}
             
-            /* Ajuste completo de flexibilidade dos botões no mobile */
-            .top-nav {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 8px;
-                padding: 10px;
-            }
-            .nav-btn {
-                flex: 1 1 calc(33.33% - 8px);
-                max-width: none;
-                font-size: 11px;
-                padding: 8px;
-            }
-            .theme-controls {
-                margin: 5px auto 0 auto;
-                width: 100%;
-                justify-content: center;
-            }
+            .top-nav { flex-wrap: wrap; justify-content: center; gap: 8px; padding: 10px; }
+            .nav-btn { flex: 1 1 calc(33.33% - 8px); max-width: none; font-size: 11px; padding: 8px; }
+            .theme-controls { margin: 5px auto 0 auto; width: 100%; justify-content: center; }
         }
         @media (max-width: 480px) {
-            .nav-btn {
-                flex: 1 1 calc(50% - 8px); /* 2 por linha em telas minúsculas para manter legibilidade completa */
-            }
+            .nav-btn { flex: 1 1 calc(50% - 8px); }
         }
 
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -434,7 +468,7 @@
         <div class="creator-layout">
             <div class="creator-portrait">
                 <div class="creator-img-frame">
-                    <img id="creator-avatar-preview" src="" alt="Avatar Preview">
+                    <img id="creator-avatar-preview" src="" alt="Avatar Preview" onerror="generateOfflineAvatar('creator-avatar-preview')">
                 </div>
                 <div style="font-weight: bold; font-size: 12px; color: var(--gold);">RETRATO RETRÔ</div>
             </div>
@@ -481,16 +515,19 @@
 <div class="intro-cinematic" id="intro-cinematic">
     <div style="font-size: 50px; margin-bottom: 20px;">⚔️</div>
     <div class="typewriter-text" id="intro-text"></div>
-    <button class="onb-btn" style="width: 250px; margin-top: 30px; display: none;" id="btn-enter-realm" onclick="enterRealm()">Entrar no Reino [ Avançar ]</button>
+    <div style="display:flex; gap:10px; margin-top:20px;">
+        <button class="onb-btn" style="width: 250px; display: none;" id="btn-enter-realm" onclick="enterRealm()">Entrar no Reino [ Avançar ]</button>
+        <button class="tool-btn" id="btn-skip-intro" onclick="enterRealm()" style="padding:15px; border-radius:6px; color:#fff;">Pular Introdução ⏭️</button>
+    </div>
 </div>
 
-<!-- MENU SUPERIOR FIXO (NÃO-ROLA COM A PÁGINA - REFORMULADO VISUALMENTE) -->
+<!-- MENU SUPERIOR FIXO -->
 <nav class="top-nav">
-    <button class="nav-btn active" onclick="switchTab('visao-geral')">Visão Geral</button>
-    <button class="nav-btn" onclick="switchTab('metas-batalha')">Metas & Chefe</button>
-    <button class="nav-btn" onclick="switchTab('contas-reservas')">Contas & Reservas</button>
-    <button class="nav-btn" onclick="switchTab('conquistas-calendario')">Calendário & Títulos</button>
-    <button class="nav-btn" onclick="switchTab('loja-inteligencia')">Loja & Intel</button>
+    <button class="nav-btn active" onclick="switchTab('visao-geral', this)">Visão Geral</button>
+    <button class="nav-btn" onclick="switchTab('metas-batalha', this)">Metas & Chefe</button>
+    <button class="nav-btn" onclick="switchTab('contas-reservas', this)">Contas & Reservas</button>
+    <button class="nav-btn" onclick="switchTab('conquistas-calendario', this)">Calendário & Títulos</button>
+    <button class="nav-btn" onclick="switchTab('loja-inteligencia', this)">Loja & Intel</button>
     
     <div class="theme-controls">
         <div class="color-picker-wrapper" title="Cor do Tema">
@@ -508,7 +545,7 @@
             <div class="player-title" id="player-title">Aprendiz 🎒</div>
             <div class="avatar-container" id="avatar-box">
                 <div class="aura" id="player-aura"></div>
-                <img id="player-avatar" src="" alt="Avatar">
+                <img id="player-avatar" src="" alt="Avatar" onerror="generateOfflineAvatar('player-avatar')">
                 <div class="equipped-weapon" id="player-weapon"></div>
             </div>
             <div class="level-badge">Nível <span id="level-display">1</span></div>
@@ -546,6 +583,9 @@
     <!-- MAIN: CONTEÚDO (ABAS) -->
     <main class="dashboard">
         
+        <!-- ALERTAS DE VENCIMENTO DE CONTAS -->
+        <div id="alert-banner-container" style="display:none;"></div>
+
         <!-- ABA 1: VISÃO GERAL -->
         <section id="visao-geral" class="section-container active">
             <header>
@@ -580,7 +620,6 @@
                 <div class="section-title">Novo Registro de Operação</div>
                 <form class="form-grid" id="transaction-form">
                     <input type="hidden" id="edit-id">
-                    
                     <input type="date" id="date-input" required title="Data da Operação">
                     
                     <select id="type-input" required onchange="toggleEssentialCheckbox()">
@@ -600,12 +639,25 @@
                     <input type="number" id="val-input" placeholder="Valor (Ex: 50.00)" step="0.01" min="0.01" required>
                     <input type="text" id="desc-input" placeholder="Descrição detalhada (Ex: Supermercado...)" required autocomplete="off" maxlength="50">
                     
+                    <!-- Configurações de recorrência avançadas -->
+                    <div class="recurrence-fields">
+                        <div>
+                            <label>Periodicidade</label>
+                            <select id="recurring-freq" onchange="toggleRecurrenceEnd()">
+                                <option value="none">Lançamento Único</option>
+                                <option value="weekly">Semanal</option>
+                                <option value="biweekly">Quinzenal</option>
+                                <option value="monthly">Mensal</option>
+                                <option value="yearly">Anual</option>
+                            </select>
+                        </div>
+                        <div id="recurrence-end-wrapper" style="display:none;">
+                            <label>Termina em (Opcional)</label>
+                            <input type="date" id="recurring-end-date" title="Opcional">
+                        </div>
+                    </div>
+
                     <div class="form-actions">
-                        <label class="checkbox-label" title="Repetir este lançamento todo mês?">
-                            <input type="checkbox" id="recurring-input">
-                            Assinatura Mensal Fixa
-                        </label>
-                        <div style="flex-grow: 1;"></div>
                         <button type="button" class="cancel" id="btn-cancel-edit" style="display: none;">Cancelar Edição</button>
                         <button type="submit" class="primary" id="btn-submit">Registrar Fluxo</button>
                     </div>
@@ -629,6 +681,13 @@
                         <select id="cat-filter"><option value="all">Todas as Categorias</option></select>
                         <input type="month" id="month-filter">
                         <button class="tool-btn" id="btn-clear-filters" style="flex: none; width: auto;">Limpar</button>
+                        <button class="tool-btn" onclick="exportToCSV()" style="flex: none; width: auto; background: rgba(57,255,20,0.15); border-color: var(--text-main); color: var(--text-main);">📊 CSV</button>
+                        <button class="tool-btn" onclick="window.print()" style="flex: none; width: auto; background: rgba(0,210,255,0.15); border-color: var(--accent); color: var(--accent);">🖨️ PDF/Print</button>
+                    </div>
+
+                    <!-- Botão Desfazer (Undo) -->
+                    <div id="undo-container" style="display:none; text-align:right;">
+                        <button class="tool-btn" onclick="UndoManager.undo()" style="border-color: var(--warning); color:var(--warning); padding:8px 12px; font-size:11px; margin-bottom:10px;">↩️ Desfazer Última Deleção</button>
                     </div>
 
                     <div class="log-section" id="log-container">
@@ -663,17 +722,16 @@
                 <div class="section-title">Missões (Cofres de Reserva)</div>
                 <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">Transferir dinheiro para cá retira do seu saldo "Disponível", mas mantém no "Patrimônio Total".</p>
                 <form class="form-grid" id="goal-form" style="margin-bottom: 20px;">
-                    <input type="text" id="goal-name" placeholder="Ex: Novo PC Gamer" required style="grid-column: span 6;">
+                    <input type="text" id="goal-name" placeholder="Ex: Novo PC Gamer" required style="grid-column: span 4;">
                     <input type="number" id="goal-target" placeholder="Valor Total (R$)" step="0.01" min="1" required style="grid-column: span 4;">
-                    <button type="submit" class="primary" style="grid-column: span 2; width: 100%;">Criar</button>
+                    <input type="date" id="goal-deadline" title="Alcançar até (Prazo)" style="grid-column: span 4;">
+                    <button type="submit" class="primary form-full-width" style="grid-column: span 12;">Criar Missão de Reserva</button>
                 </form>
-                <div class="goals-grid" id="goals-list">
-                    <!-- Goals injetados aqui via JS -->
-                </div>
+                <div class="goals-grid" id="goals-list"></div>
             </div>
         </section>
 
-        <!-- ABA 3: CONTAS E RESERVAS (NOVA ABA PEDIDA!) -->
+        <!-- ABA 3: CONTAS E RESERVAS -->
         <section id="contas-reservas" class="section-container">
             <header>
                 <h1>Contas & Reservas de Longo Prazo</h1>
@@ -691,30 +749,28 @@
                         <button type="submit" class="primary form-full-width" style="grid-column: span 12;">Agendar Conta Fixa</button>
                     </form>
                     
-                    <div id="bills-list-container" style="display: flex; flex-direction: column; gap: 10px;">
-                        <!-- Contas injetadas via JS -->
-                    </div>
+                    <div id="bills-list-container" style="display: flex; flex-direction: column; gap: 10px;"></div>
                 </div>
 
                 <!-- COLUNA RESERVAS E INVESTIMENTOS -->
                 <div class="form-section">
                     <div class="section-title">💎 Reservas & Investimentos</div>
                     <form class="form-grid" id="invest-form" style="margin-bottom: 20px;">
-                        <input type="text" id="invest-name" placeholder="Ex: Tesouro Selic, Bitcoin..." required style="grid-column: span 5;">
-                        <input type="number" id="invest-value" placeholder="Valor (R$)" step="0.01" min="0.01" required style="grid-column: span 4;">
+                        <input type="text" id="invest-name" placeholder="Ex: Poupança, CDB..." required style="grid-column: span 5;">
+                        <input type="number" id="invest-value" placeholder="Aporte Inicial (R$)" step="0.01" min="0.01" required style="grid-column: span 4;">
                         <select id="invest-type" required style="grid-column: span 3; font-size: 11px;">
                             <option value="emergência">Reserva Emergência</option>
                             <option value="rendafixa">Renda Fixa</option>
                             <option value="rendavariável">Renda Variável</option>
                             <option value="cripto">Criptomoedas</option>
                         </select>
-                        <input type="date" id="invest-date" required style="grid-column: span 12; margin-top: 5px;">
-                        <button type="submit" class="primary form-full-width" style="grid-column: span 12;">Registrar Ativo</button>
+                        <input type="number" id="invest-yield" placeholder="Rentabilidade Estimada (% ao mês)" step="0.01" min="0" required style="grid-column: span 4; margin-top: 5px;">
+                        <input type="date" id="invest-maturity" title="Data Estimada de Resgate (Opcional)" style="grid-column: span 4; margin-top: 5px;">
+                        <input type="date" id="invest-date" required style="grid-column: span 4; margin-top: 5px;">
+                        <button type="submit" class="primary form-full-width" style="grid-column: span 12; margin-top: 10px;">Registrar Ativo</button>
                     </form>
 
-                    <div id="invest-list-container" style="display: flex; flex-direction: column; gap: 10px;">
-                        <!-- Investimentos injetados via JS -->
-                    </div>
+                    <div id="invest-list-container" style="display: flex; flex-direction: column; gap: 10px;"></div>
                 </div>
             </div>
         </section>
@@ -763,14 +819,13 @@
             </div>
 
             <div class="section-title" style="margin-top: 20px;">Loja do Reino (Gaste XP)</div>
-            <div class="shop-grid" id="shop-list">
-                <!-- Loja injetada via JS -->
-            </div>
+            <div class="shop-grid" id="shop-list"></div>
         </section>
 
     </main>
 </div>
 
+<!-- CONTAINER DE TOASTS EM FILA -->
 <div id="toast-container"></div>
 
 <script>
@@ -807,7 +862,6 @@ const CONFIG = {
         { id: 'aura_purple', name: 'Aura Arcana (Roxa)', type: 'aura', class: 'aura-purple', icon: '🔮', price: 1200 },
         { id: 'aura_gold', name: 'Aura do Rei (Ouro)', type: 'aura', class: 'aura-gold', icon: '✨', price: 2500 }
     ],
-    // Avatares Base do Onboarding que combinam gêneros e classes
     AVATAR_PRESETS: {
         male: [
             { seed: "male_mago", class: "mago", title: "Mago Arcano 🔮" },
@@ -833,12 +887,11 @@ const defaultData = {
     bossHP: CONFIG.BOSS_MAX_HP,
     theme: 'dark',
     customColor: '#00d2ff',
-    avatar: null, // Customizar no onboarding
+    avatar: null, 
     xp: 0, 
     lifetimeXp: 0, 
     inventory: [], 
     equipped: { weapon: '', aura: '' },
-    // Novos campos adicionados (v4.0)
     fixedBills: [],
     investments: []
 };
@@ -846,6 +899,137 @@ const defaultData = {
 let appData = { ...defaultData };
 let chartInstanceCat = null, chartInstanceEvo = null;
 let currentFilters = { search: '', category: 'all', month: '' };
+
+/**
+ * ==========================================
+ * SISTEMA DE FILA DE TOAST (CORRIGIDO)
+ * ==========================================
+ */
+const ToastManager = {
+    queue: [],
+    active: 0,
+    MAX_VISIBLE: 3,
+
+    show: function(msg, isError = false, isAchiev = false) {
+        this.queue.push({ msg, isError, isAchiev });
+        this.processQueue();
+    },
+
+    processQueue: function() {
+        if (this.active >= this.MAX_VISIBLE || this.queue.length === 0) return;
+        
+        const { msg, isError, isAchiev } = this.queue.shift();
+        this.active++;
+
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${isError ? 'error' : ''} ${isAchiev ? 'achievement' : ''}`;
+        
+        let icon = isError ? '⚠️' : '✅';
+        if (isAchiev) icon = '🏆';
+
+        toast.innerHTML = `<span style="font-size: 24px;">${icon}</span> <span>${Utils.sanitize(msg)}</span>`;
+        container.appendChild(toast);
+
+        // Remover com transição suave
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                toast.remove();
+                this.active--;
+                this.processQueue();
+            }, 300);
+        }, 3500);
+    }
+};
+
+/**
+ * ==========================================
+ * GERENCIADOR DE UNDO (DESFAZER ÚLTIMA DELEÇÃO)
+ * ==========================================
+ */
+const UndoManager = {
+    stack: [],
+    MAX_SIZE: 5,
+
+    push: function(transaction) {
+        this.stack.push(transaction);
+        if (this.stack.length > this.MAX_SIZE) {
+            this.stack.shift();
+        }
+        this.updateUI();
+    },
+
+    undo: function() {
+        if (this.stack.length === 0) return;
+        const restored = this.stack.pop();
+        appData.transactions.push(restored);
+        saveData();
+        updateDashboard();
+        this.updateUI();
+        ToastManager.show(`Restaurado: "${restored.description}"`);
+        EgoSword.speak("Inconsistência temporal retificada. A transação retornou às crônicas.");
+    },
+
+    updateUI: function() {
+        const undoContainer = document.getElementById('undo-container');
+        if (this.stack.length > 0) {
+            undoContainer.style.display = 'block';
+        } else {
+            undoContainer.style.display = 'none';
+        }
+    }
+};
+
+/**
+ * ==========================================
+ * GERADOR DE AVATAR OFFLINE (FALLBACK CORRIGIDO)
+ * ==========================================
+ */
+function generateOfflineAvatar(elementId) {
+    const avatarImg = document.getElementById(elementId);
+    if (!avatarImg) return;
+
+    const name = (appData.avatar && appData.avatar.name) ? appData.avatar.name : "Corvus";
+    const charClass = (appData.avatar && appData.avatar.charClass) ? appData.avatar.charClass : "guerreiro";
+    const gender = (appData.avatar && appData.avatar.gender) ? appData.avatar.gender : "male";
+    
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    
+    const colors = ["#ef4444", "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899", "#14b8a6"];
+    const mainColor = colors[Math.abs(hash) % colors.length];
+    const secondaryColor = colors[Math.abs(hash >> 3) % colors.length];
+    const eyeColor = hash % 2 === 0 ? "#ffd700" : "#ffffff";
+    
+    let headFeature = '';
+    if (charClass === 'mago') {
+        headFeature = `<polygon points="10,25 64,0 118,25" fill="#8b5cf6" />`;
+    } else if (charClass === 'guerreiro') {
+        headFeature = `<rect x="34" y="5" width="60" height="20" fill="#94a3b8" /><rect x="54" y="0" width="20" height="15" fill="#ef4444" />`;
+    } else {
+        headFeature = `<path d="M24,25 Q64,0 104,25" fill="#334155" />`;
+    }
+
+    const bodyType = gender === 'female' ? 'rx="15"' : 'rx="5"';
+
+    const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="140" height="140" style="background:#0a0f1d;">
+        <rect x="24" y="80" width="80" height="40" fill="${secondaryColor}" ${bodyType} />
+        <rect x="34" y="30" width="60" height="60" fill="#fbcfe8" rx="8" />
+        <rect x="48" y="50" width="10" height="10" fill="${eyeColor}" />
+        <rect x="70" y="50" width="10" height="10" fill="${eyeColor}" />
+        <rect x="54" y="72" width="20" height="6" fill="#111827" />
+        ${headFeature}
+        <rect x="34" y="25" width="60" height="10" fill="${mainColor}" />
+    </svg>`;
+    
+    avatarImg.src = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+}
+window.generateOfflineAvatar = generateOfflineAvatar;
 
 /**
  * ==========================================
@@ -858,14 +1042,6 @@ const Utils = {
     formatDateBR: (isoString) => { if(!isoString) return ''; const [y, m, d] = isoString.split('-'); return `${d}/${m}/${y}`; },
     sanitize: (text) => { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; },
     getCurrentMonthStr: () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; },
-    showToast: (msg, isError = false, isAchiev = false) => {
-        const container = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.className = `toast ${isError ? 'error' : ''} ${isAchiev ? 'achievement' : ''}`;
-        toast.innerHTML = `<span style="font-size: 24px;">${isAchiev ? '🏆' : (isError ? '⚠️' : '✅')}</span> <span>${Utils.sanitize(msg)}</span>`;
-        container.appendChild(toast);
-        setTimeout(() => toast.remove(), 4000);
-    }
 };
 
 function saveData() { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(appData)); }
@@ -875,14 +1051,24 @@ function loadData() {
     if (saved) {
         try {
             const parsed = JSON.parse(saved);
-            // MERGE SEGURO CONTRA VERSÕES FUTURAS (Evita quebra por falta de campos)
+            // MERGE SEGURO COM FALLBACKS (BUG DE VERSÕES CORRIGIDO)
             appData = { ...defaultData, ...parsed };
+            appData.fixedBills ??= [];
+            appData.investments ??= [];
+            appData.goals ??= [];
+            appData.achievements ??= [];
+            appData.transactions ??= [];
             
             if(appData.lifetimeXp === 0 && appData.transactions.length > 0) {
                 appData.lifetimeXp = appData.transactions.reduce((acc, t) => acc + (t.type === 'income' ? 20 : 10), 0);
                 appData.xp = appData.lifetimeXp; 
             }
         } catch (e) { console.error("Erro no load:", e); }
+    } else {
+        // Primeira abertura: tenta detectar preferência de cor do sistema
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            appData.theme = 'light';
+        }
     }
     applyTheme(appData.theme);
     document.documentElement.style.setProperty('--accent', appData.customColor);
@@ -923,12 +1109,14 @@ const OnboardingCreator = {
         
         document.getElementById('preset-label').innerText = `Preset ${this.presetIdx + 1}`;
         const previewUrl = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${seedName}${preset.seed}${avatarClass}`;
-        document.getElementById('creator-avatar-preview').src = previewUrl;
+        
+        const img = document.getElementById('creator-avatar-preview');
+        img.src = previewUrl;
     },
 
     finishOnboarding: function() {
         const name = document.getElementById('char-name').value.trim();
-        if(!name) { Utils.showToast("Informe o nome do seu guerreiro financeiro!", true); return; }
+        if(!name) { ToastManager.show("Informe o nome do seu guerreiro financeiro!", true); return; }
         
         const preset = CONFIG.AVATAR_PRESETS[this.gender][this.presetIdx];
         appData.avatar = {
@@ -948,7 +1136,7 @@ const OnboardingCreator = {
 };
 window.OnboardingCreator = OnboardingCreator;
 
-// Adiciona Listener para o Input de Nome atualizar o Preview em tempo real
+// Atualiza o preview ao alterar o nome
 document.getElementById('char-name').addEventListener('input', () => OnboardingCreator.updatePreview());
 
 function checkOnboarding() {
@@ -978,21 +1166,23 @@ function playCinematic() {
     let lineIdx = 0; let charIdx = 0;
     
     function typeLine() {
+        if (cin.style.display === 'none') return; // Se pulou, cancela
         if (lineIdx < lines.length) {
             if (charIdx < lines[lineIdx].length) {
                 textEl.innerHTML += lines[lineIdx].charAt(charIdx);
                 charIdx++;
-                setTimeout(typeLine, 45);
+                setTimeout(typeLine, 40);
             } else {
                 textEl.innerHTML += "<br><br>";
                 lineIdx++; charIdx = 0;
-                setTimeout(typeLine, 800);
+                setTimeout(typeLine, 600);
             }
         } else {
             btn.style.display = 'block';
+            document.getElementById('btn-skip-intro').style.display = 'none';
         }
     }
-    setTimeout(typeLine, 1000);
+    setTimeout(typeLine, 500);
 }
 
 window.enterRealm = function() {
@@ -1001,6 +1191,7 @@ window.enterRealm = function() {
     document.querySelector('.top-nav').style.display = 'flex';
     renderAvatar();
     updateDashboard();
+    checkReminders();
     EgoSword.speak(`Saudações, Mestre ${appData.avatar.name}. Nossos cofres estão prontos para o seu comando.`);
 }
 
@@ -1008,8 +1199,8 @@ function renderAvatar() {
     if(!appData.avatar) return;
     const levelObj = calculateRPGStats();
     
-    // Dicebear dinâmico cruzando todos os dados de customização
-    document.getElementById('player-avatar').src = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${appData.avatar.name}${appData.avatar.presetSeed}${appData.avatar.charClass}Lvl${levelObj.level}`;
+    const avatarImg = document.getElementById('player-avatar');
+    avatarImg.src = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${appData.avatar.name}${appData.avatar.presetSeed}${appData.avatar.charClass}Lvl${levelObj.level}`;
     
     const wpnEl = document.getElementById('player-weapon');
     const auraEl = document.getElementById('player-aura');
@@ -1020,7 +1211,7 @@ function renderAvatar() {
 
 /**
  * ==========================================
- * SISTEMA RPG: XP PROGRESSIVO & COMBATE
+ * SISTEMA RPG: XP PROGRESSIVO & COMBATE (CORRIGIDO)
  * ==========================================
  */
 function calculateRPGStats() {
@@ -1028,6 +1219,7 @@ function calculateRPGStats() {
     let xpNeededForNext = 100;
     let cumulativeXP = 0;
 
+    // Fórmula exponencial real sugerida (Nível 1 -> 100, Nível 2 -> 250, Nível 3 -> 500...)
     while (appData.lifetimeXp >= cumulativeXP + xpNeededForNext) {
         cumulativeXP += xpNeededForNext;
         level++;
@@ -1058,10 +1250,11 @@ function processBossBattle(latestExpense = 0, latestIncome = 0) {
     const bossHpText = document.getElementById('boss-hp-text');
     const log = document.getElementById('boss-log');
     
+    // TETO DE HP DO CHEFÃO RESTRINGIDO E CORRIGIDO
     if (latestExpense > 0) {
         const heal = (latestExpense / 100) * 10;
-        appData.bossHP = Math.min(CONFIG.BOSS_MAX_HP * 2, appData.bossHP + heal);
-        log.innerText = `O Dragão das Dívidas rugiu e recuperou +${heal.toFixed(0)} de HP com seu gasto.`;
+        appData.bossHP = Math.min(CONFIG.BOSS_MAX_HP, appData.bossHP + heal);
+        log.innerText = `O Dragão sentiu seu gasto e curou ${heal.toFixed(0)} HP!`;
         bossArea.style.borderColor = "var(--danger)";
     } 
     if (latestIncome > 0) {
@@ -1077,7 +1270,7 @@ function processBossBattle(latestExpense = 0, latestIncome = 0) {
         appData.lifetimeXp += 300;
         document.getElementById('boss-sprite').innerText = "💀";
         log.innerText = "DERROTADO! O Dragão das Dívidas foi subjugado. Você coletou +300 de XP!";
-        Utils.showToast("Dragão Derrotado! +300 XP", false, true);
+        ToastManager.show("Dragão Derrotado! +300 XP", false, true);
         checkAchievement('dragon_slayer');
         calculateRPGStats();
     } else {
@@ -1086,7 +1279,7 @@ function processBossBattle(latestExpense = 0, latestIncome = 0) {
 
     const hpPct = Math.min(100, (appData.bossHP / CONFIG.BOSS_MAX_HP) * 100);
     bossHpBar.style.width = `${hpPct}%`;
-    bossHpText.innerText = `${appData.bossHP.toFixed(0)} HP`;
+    bossHpText.innerText = `${appData.bossHP.toFixed(0)} / ${CONFIG.BOSS_MAX_HP} HP`;
 }
 
 function checkAchievement(forceId = null) {
@@ -1094,7 +1287,7 @@ function checkAchievement(forceId = null) {
         if (!appData.achievements.includes(id)) {
             appData.achievements.push(id);
             const ach = CONFIG.ACHIEVEMENTS.find(a => a.id === id);
-            Utils.showToast(`Conquista Desbloqueada: ${ach.name}!`, false, true);
+            ToastManager.show(`Novo título: ${ach.name}!`, false, true);
             EgoSword.speak(`Um novo feito místico foi gravado no Salão: ${ach.name}.`);
             saveData();
         }
@@ -1166,7 +1359,6 @@ const EgoSword = {
         const name = appData.avatar ? appData.avatar.name : "Aventureiro";
 
         if (totL > 0) {
-            // Analisa gastos fúteis (Supérfluos)
             const superfluousC = expC.filter(t => !t.isEssential).reduce((a,b)=>a+b.value,0);
             const ratio = totC > 0 ? (superfluousC / totC) * 100 : 0;
             
@@ -1181,8 +1373,6 @@ const EgoSword = {
                 const increase = ((tavC - tavL) / tavL * 100).toFixed(0);
                 if (increase > 25) return this.speak(`${name}, seus gastos na Taverna subiram ${increase}% comparado ao último mês. Alerta de excesso!`);
             }
-
-            if (totC > totL * 1.25) return this.speak(`O dreno de ouro cresceu muito rápido, ${name}. Prepare barreiras orçamentárias.`);
         }
         this.speak(`Matriz financeira firme. A guarda de ${name} está formidável.`);
     }
@@ -1213,7 +1403,6 @@ function generateIntelligenceReport() {
     }
     document.getElementById('intel-worst-cat').innerText = worstVal > 0 ? `${worstCat} (${Utils.formatCurrency(worstVal)})` : 'Livre de dreno';
 
-    // Relação de Essenciais vs Supérfluos no Mês Atual
     const currentM = Utils.getCurrentMonthStr();
     const currExp = appData.transactions.filter(t => t.type === 'expense' && t.date.startsWith(currentM));
     const essentialVal = currExp.filter(t => t.isEssential).reduce((a,b)=>a+b.value, 0);
@@ -1226,13 +1415,44 @@ function generateIntelligenceReport() {
     } else {
         document.getElementById('intel-essential-ratio').innerText = 'Sem gastos';
     }
-
-    const maxLoot = appData.transactions.filter(t=>t.type==='income').reduce((max, t) => t.value > max ? t.value : max, 0);
 }
 
 /**
  * ==========================================
- * GERENCIADOR DE METAS (COFRES SEPARADOS)
+ * ALERTAS DE CONTAS PENDENTES (VENCIMENTO)
+ * ==========================================
+ */
+function checkReminders() {
+    const banner = document.getElementById('alert-banner-container');
+    banner.innerHTML = '';
+    
+    const today = new Date();
+    const todayDay = today.getDate();
+    let alertCount = 0;
+
+    appData.fixedBills.forEach(bill => {
+        if (!bill.paidThisMonth) {
+            const diff = bill.dueDay - todayDay;
+            if (diff >= 0 && diff <= 3) {
+                alertCount++;
+            } else if (diff < 0) {
+                alertCount++;
+            }
+        }
+    });
+
+    if (alertCount > 0) {
+        banner.style.display = 'block';
+        banner.className = 'alert-banner';
+        banner.innerHTML = `📜 <strong>Lembrete da Guilda:</strong> Você tem ${alertCount} contas planejadas pendentes para pagar ou próximas do vencimento! Acesse Contas & Reservas.`;
+    } else {
+        banner.style.display = 'none';
+    }
+}
+
+/**
+ * ==========================================
+ * GERENCIADOR DE METAS (COM PRAZO & PROJEÇÃO)
  * ==========================================
  */
 const GoalManager = {
@@ -1244,7 +1464,7 @@ const GoalManager = {
             const reserved = appData.goals.reduce((acc, g) => acc + g.current, 0);
             
             if (val > (totalBalance - reserved)) {
-                Utils.showToast("Seu saldo de ouro disponível não é suficiente!", true);
+                ToastManager.show("Seu saldo de ouro disponível não é suficiente!", true);
                 return;
             }
 
@@ -1253,9 +1473,9 @@ const GoalManager = {
             updateDashboard();
             
             if(appData.goals[index].current >= appData.goals[index].target) {
-                Utils.showToast(`META CONCLUÍDA: ${appData.goals[index].name}!`, false, true);
+                ToastManager.show(`META CONCLUÍDA: ${appData.goals[index].name}!`, false, true);
             } else {
-                Utils.showToast(`Reservado: ${Utils.formatCurrency(val)} adicionados.`);
+                ToastManager.show(`Reservado: ${Utils.formatCurrency(val)} adicionados.`);
             }
         }
     },
@@ -1274,11 +1494,35 @@ const GoalManager = {
         }
         appData.goals.forEach((g, index) => {
             const pct = Math.min(100, (g.current / g.target) * 100);
+            
+            // Projeção por prazo
+            let projectionHtml = '';
+            if (g.deadline) {
+                const today = new Date();
+                const deadlineDate = new Date(g.deadline);
+                const diffTime = deadlineDate - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const remainingNeeded = g.target - g.current;
+                
+                if (remainingNeeded > 0) {
+                    if (diffDays > 0) {
+                        const remainingMonths = diffDays / 30.4;
+                        const monthlyNeeded = remainingNeeded / Math.max(1, remainingMonths);
+                        projectionHtml = `<div class="goal-projection">Faltam ${diffDays} dias: Economize ~${Utils.formatCurrency(monthlyNeeded)}/mês</div>`;
+                    } else {
+                        projectionHtml = `<div class="goal-projection" style="color:var(--danger)">Prazo Expirado!</div>`;
+                    }
+                } else {
+                    projectionHtml = `<div class="goal-projection" style="color:var(--text-main)">Alcançada!</div>`;
+                }
+            }
+
             list.innerHTML += `
                 <div class="goal-card">
                     <button onclick="GoalManager.remove(${index})" class="icon-btn delete-btn" style="position:absolute; top:5px; right:5px;">🗑️</button>
                     <div class="goal-header"><span>🎯 ${Utils.sanitize(g.name)}</span></div>
                     <div class="goal-progress-bg"><div class="goal-progress-fill" style="width: ${pct}%;"></div></div>
+                    ${projectionHtml}
                     <div style="font-size:12px; display:flex; justify-content:space-between; color:var(--text-muted);">
                         <span>${Utils.formatCurrency(g.current)}</span><span>${Utils.formatCurrency(g.target)}</span>
                     </div>
@@ -1306,7 +1550,7 @@ const BillsInvestManager = {
         const dueDay = parseInt(document.getElementById('bill-due-day').value);
 
         if(!name || isNaN(value) || value <= 0 || isNaN(dueDay) || dueDay < 1 || dueDay > 31) {
-            Utils.showToast("Dados de agendamento de conta inválidos!", true);
+            ToastManager.show("Dados de agendamento de conta inválidos!", true);
             return;
         }
 
@@ -1321,7 +1565,8 @@ const BillsInvestManager = {
         appData.fixedBills.push(newBill);
         saveData();
         this.renderBills();
-        Utils.showToast("Conta Fixa agendada!");
+        checkReminders();
+        ToastManager.show("Conta Fixa agendada!");
         document.getElementById('bill-form').reset();
     },
 
@@ -1330,7 +1575,6 @@ const BillsInvestManager = {
         if(!bill) return;
 
         if (confirm(`Confirmar o pagamento de ${bill.name} no valor de ${Utils.formatCurrency(bill.value)}?`)) {
-            // Cria transação automática de Despesa marcada como Essencial
             const today = new Date().toISOString().split('T')[0];
             const trans = {
                 id: Utils.generateId(),
@@ -1353,7 +1597,8 @@ const BillsInvestManager = {
             saveData();
             updateDashboard(trans);
             this.renderBills();
-            Utils.showToast(`Conta paga! +${xpGained} XP obtidos.`);
+            checkReminders();
+            ToastManager.show(`Conta paga! +${xpGained} XP obtidos.`);
         }
     },
 
@@ -1362,7 +1607,8 @@ const BillsInvestManager = {
             appData.fixedBills = appData.fixedBills.filter(b => b.id !== id);
             saveData();
             this.renderBills();
-            Utils.showToast("Agendamento de conta fixa removido.");
+            checkReminders();
+            ToastManager.show("Agendamento de conta fixa removido.");
         }
     },
 
@@ -1371,10 +1617,12 @@ const BillsInvestManager = {
         const name = document.getElementById('invest-name').value.trim();
         const value = parseFloat(document.getElementById('invest-value').value);
         const type = document.getElementById('invest-type').value;
+        const yieldRate = parseFloat(document.getElementById('invest-yield').value) || 0;
+        const maturity = document.getElementById('invest-maturity').value;
         const date = document.getElementById('invest-date').value;
 
         if(!name || isNaN(value) || value <= 0 || !date) {
-            Utils.showToast("Insira valores consistentes para seu ativo!", true);
+            ToastManager.show("Insira valores consistentes para seu ativo!", true);
             return;
         }
 
@@ -1383,6 +1631,8 @@ const BillsInvestManager = {
             name: name,
             value: value,
             type: type,
+            yieldRate: yieldRate,
+            maturity: maturity,
             date: date
         };
 
@@ -1390,7 +1640,7 @@ const BillsInvestManager = {
         saveData();
         this.renderInvestments();
         updateDashboard();
-        Utils.showToast("Ativo de Investimento Registrado!");
+        ToastManager.show("Ativo de Investimento Registrado!");
         document.getElementById('invest-form').reset();
         document.getElementById('invest-date').valueAsDate = new Date();
     },
@@ -1444,14 +1694,27 @@ const BillsInvestManager = {
 
         appData.investments.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(inv => {
             const typeLabel = inv.type.toUpperCase();
+            
+            // Rentabilidade estimada acumulada (juros compostos mensais simplificados)
+            const today = new Date();
+            const startDate = new Date(inv.date);
+            const diffMonths = Math.max(0, (today - startDate) / (1000 * 60 * 60 * 24 * 30.4));
+            const calculatedValue = inv.value * Math.pow(1 + (inv.yieldRate / 100), diffMonths);
+            const profit = calculatedValue - inv.value;
+
+            let maturityHtml = '';
+            if (inv.maturity) {
+                maturityHtml = ` • Resgate: ${Utils.formatDateBR(inv.maturity)}`;
+            }
+
             container.innerHTML += `
                 <div class="bills-card">
                     <div class="bill-info">
                         <strong style="color:var(--gold);">${Utils.sanitize(inv.name)}</strong>
-                        <span style="color:var(--text-main); font-weight:bold;">${Utils.formatCurrency(inv.value)}</span>
+                        <span style="color:var(--text-main); font-weight:bold;">${Utils.formatCurrency(calculatedValue)}</span>
                     </div>
                     <div class="bill-actions">
-                        <span style="font-size:11px; color:var(--text-muted);">${typeLabel} • ${Utils.formatDateBR(inv.date)}</span>
+                        <span style="font-size:11px; color:var(--text-muted);">${typeLabel} • ${inv.yieldRate}% am • Lucro: +${Utils.formatCurrency(profit)}${maturityHtml}</span>
                         <button class="icon-btn delete-btn" onclick="BillsInvestManager.deleteInvest('${inv.id}')">🗑️</button>
                     </div>
                 </div>
@@ -1472,15 +1735,15 @@ const ShopManager = {
         if(!item) return;
         if(appData.inventory.includes(itemId)) {
             appData.equipped[item.type] = itemId;
-            Utils.showToast(`${item.name} equipado!`);
+            ToastManager.show(`${item.name} equipado!`);
         } else {
             if(appData.xp >= item.price) {
                 appData.xp -= item.price;
                 appData.inventory.push(itemId);
                 appData.equipped[item.type] = itemId;
-                Utils.showToast(`Item comprado e equipado: ${item.name}!`);
+                ToastManager.show(`Item comprado e equipado: ${item.name}!`);
             } else {
-                Utils.showToast("Seu XP é insuficiente para este item!", true);
+                ToastManager.show("Seu XP é insuficiente para este item!", true);
                 return;
             }
         }
@@ -1512,31 +1775,61 @@ window.ShopManager = ShopManager;
 
 /**
  * ==========================================
- * FLUXOS CORE FINANCEIRO & TABELAS
+ * RECORRÊNCIA E CONTROLE TEMPORAL REAL
  * ==========================================
  */
+function toggleRecurrenceEnd() {
+    const freq = document.getElementById('recurring-freq').value;
+    document.getElementById('recurrence-end-wrapper').style.display = freq !== 'none' ? 'block' : 'none';
+}
+
 function processRecurringExpenses() {
+    const today = new Date();
     const currentMonth = Utils.getCurrentMonthStr();
+    
     if (appData.lastProcessedMonth && appData.lastProcessedMonth !== currentMonth) {
         let addedCount = 0;
-        const lastMonthRecurring = appData.transactions.filter(t => t.isRecurring && t.date.startsWith(appData.lastProcessedMonth));
         
-        lastMonthRecurring.forEach(oldT => {
-            const exists = appData.transactions.some(t => t.isRecurring && t.description === oldT.description && t.date.startsWith(currentMonth));
-            if (!exists) {
-                appData.transactions.push({ ...oldT, id: Utils.generateId(), date: `${currentMonth}-${oldT.date.split('-')[2]}` });
+        // Pega as transações recorrentes habilitadas
+        const recurrences = appData.transactions.filter(t => t.recurrenceFrequency && t.recurrenceFrequency !== 'none');
+        
+        recurrences.forEach(rec => {
+            const transDate = new Date(rec.date);
+            const endDate = rec.recurringEndDate ? new Date(rec.recurringEndDate) : null;
+            
+            if (endDate && today > endDate) return; // Passou do limite
+
+            // Determinar se já adicionou para este ciclo
+            const alreadyProcessed = appData.transactions.some(t => 
+                t.description === `[Recorrente] ${rec.description}` && 
+                t.date.startsWith(currentMonth)
+            );
+
+            if (!alreadyProcessed) {
+                // Criar transação filha
+                const cycleDate = new Date(today.getFullYear(), today.getMonth(), Math.min(today.getDate(), transDate.getDate()));
+                appData.transactions.push({
+                    id: Utils.generateId(),
+                    date: cycleDate.toISOString().split('T')[0],
+                    type: rec.type,
+                    category: rec.category,
+                    value: rec.value,
+                    description: `[Recorrente] ${rec.description}`,
+                    isEssential: rec.isEssential,
+                    recurrenceFrequency: 'none' // Não gera filhas infinitas
+                });
                 addedCount++;
             }
         });
-        
-        // RESET MENSAL DAS CONTAS FIXAS (Vira "Pendente" no novo mês)
+
+        // Resetar Contas Planejadas Mensais
         appData.fixedBills.forEach(b => b.paidThisMonth = false);
-        
         appData.lastProcessedMonth = currentMonth;
+        
         if (addedCount > 0) {
             setTimeout(() => {
-                EgoSword.speak(`Ciclo renovado. Processando contratos recorrentes pendentes...`);
-                Utils.showToast(`Novo mês! ${addedCount} contratos renovados.`);
+                EgoSword.speak(`Ciclo temporal renovado. Detetei novos fluxos recorrentes e apliquei ${addedCount} transações automáticas.`);
+                ToastManager.show(`Novo mês! ${addedCount} lançamentos recorrentes aplicados.`);
                 updateDashboard();
             }, 2000);
         } else { saveData(); }
@@ -1545,21 +1838,29 @@ function processRecurringExpenses() {
     }
 }
 
+/**
+ * ==========================================
+ * FLUXOS CORE FINANCEIRO & TABELAS
+ * ==========================================
+ */
 function updateDashboard(latestTrans = null) {
     calculateRPGStats();
     
     // 1. Cálculos de Patrimônio Dinâmico
     const totalIncomeAll = appData.transactions.filter(t=>t.type==='income').reduce((a,t)=>a+t.value,0);
     const totalExpenseAll = appData.transactions.filter(t=>t.type==='expense').reduce((a,t)=>a+t.value,0);
-    const liquidBalance = totalIncomeAll - totalExpenseAll; // Saldo líquido total (contas)
+    const liquidBalance = totalIncomeAll - totalExpenseAll; 
     
-    // Investimentos totais
-    const totalInvestments = appData.investments.reduce((acc, i) => acc + i.value, 0);
+    // Investimentos calculados com rentabilidade
+    const totalInvestments = appData.investments.reduce((acc, inv) => {
+        const today = new Date();
+        const startDate = new Date(inv.date);
+        const diffMonths = Math.max(0, (today - startDate) / (1000 * 60 * 60 * 24 * 30.4));
+        const currentVal = inv.value * Math.pow(1 + (inv.yieldRate / 100), diffMonths);
+        return acc + currentVal;
+    }, 0);
     
-    // Patrimônio Geral = Dinheiro em Conta + Investimentos
     const patrimony = liquidBalance + totalInvestments;
-    
-    // Reservas de consumo de curto prazo
     const reserved = appData.goals.reduce((acc, g) => acc + g.current, 0);
     const available = liquidBalance - reserved;
 
@@ -1627,6 +1928,7 @@ function updateDashboard(latestTrans = null) {
 
 function renderLog() {
     const list = document.getElementById('log-list');
+    const emptyState = document.getElementById('empty-state');
     list.innerHTML = '';
     let filtered = appData.transactions.filter(t => {
         return (t.description.toLowerCase().includes(currentFilters.search.toLowerCase())) &&
@@ -1645,7 +1947,6 @@ function renderLog() {
             const item = document.createElement('div');
             item.className = 'log-item';
             
-            // Definição de crachá de essencialidade
             let essentialBadge = '';
             if (!isInc) {
                 essentialBadge = t.isEssential 
@@ -1653,11 +1954,16 @@ function renderLog() {
                     : `<span class="badge superfluous">✨ Supérfluo</span>`;
             }
 
+            const freqBadge = t.recurrenceFrequency && t.recurrenceFrequency !== 'none' 
+                ? `<span class="badge" style="background:rgba(255,215,0,0.1); border:1px solid var(--gold); color:var(--gold)">🔄 ${t.recurrenceFrequency}</span>` 
+                : '';
+
             item.innerHTML = `
                 <div class="log-info">
                     <div class="log-desc">
-                        ${Utils.sanitize(t.description)} ${t.isRecurring ? '🔄' : ''}
+                        ${Utils.sanitize(t.description)} 
                         ${essentialBadge}
+                        ${freqBadge}
                     </div>
                     <div class="log-meta"><span>📅 ${Utils.formatDateBR(t.date)}</span><span class="log-cat">${catInfo.icon} ${catInfo.name}</span></div>
                 </div>
@@ -1745,16 +2051,61 @@ function renderCharts() {
 
 /**
  * ==========================================
+ * EXPORTAÇÃO COMPLETA DE DADOS (CSV)
+ * ==========================================
+ */
+function exportToCSV() {
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "ID,Data,Tipo,Categoria,Valor,Descricao,Essencial,Recorrencia\r\n";
+    
+    appData.transactions.forEach(t => {
+        const row = [
+            t.id,
+            t.date,
+            t.type,
+            t.category,
+            t.value,
+            `"${t.description.replace(/"/g, '""')}"`,
+            t.isEssential ? "Sim" : "Nao",
+            t.recurrenceFrequency || "none"
+        ].join(",");
+        csvContent += row + "\r\n";
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `corvus_finance_report_${Utils.getCurrentMonthStr()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    ToastManager.show("Relatório CSV exportado!");
+}
+
+/**
+ * ==========================================
  * LISTENERS & INTEGRAÇÃO GERAL
  * ==========================================
  */
-function switchTab(tabId) {
+function switchTab(tabId, el) {
     document.querySelectorAll('.section-container').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
-    event.target.classList.add('active');
+    
+    if (el) {
+        el.classList.add('active');
+    } else {
+        const btns = document.querySelectorAll('.nav-btn');
+        btns.forEach(btn => {
+            if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`'${tabId}'`)) {
+                btn.classList.add('active');
+            }
+        });
+    }
+    
     if(tabId === 'visao-geral') { renderCharts(); }
 }
+window.switchTab = switchTab;
 
 function toggleTheme() {
     appData.theme = appData.theme === 'dark' ? 'light' : 'dark';
@@ -1771,7 +2122,6 @@ document.getElementById('color-picker').addEventListener('change', (e) => {
     saveData();
 });
 
-// Chaveador inteligente para exibir ou sumir o checkbox essencial somente em despesas
 function toggleEssentialCheckbox() {
     const type = document.getElementById('type-input').value;
     const essWrapper = document.getElementById('essential-wrapper');
@@ -1799,7 +2149,7 @@ form.addEventListener('submit', (e) => {
     const idInput = document.getElementById('edit-id').value;
     const val = parseFloat(document.getElementById('val-input').value);
     
-    if (isNaN(val) || val <= 0) { Utils.showToast("O valor deve ser maior que zero!", true); return; }
+    if (isNaN(val) || val <= 0) { ToastManager.show("O valor deve ser maior que zero!", true); return; }
 
     const isExpense = document.getElementById('type-input').value === 'expense';
     const isEssential = isExpense ? document.getElementById('essential-input').checked : false;
@@ -1811,60 +2161,83 @@ form.addEventListener('submit', (e) => {
         category: document.getElementById('cat-input').value,
         value: val, 
         description: document.getElementById('desc-input').value.trim(), 
-        isRecurring: document.getElementById('recurring-input').checked,
+        recurrenceFrequency: document.getElementById('recurring-freq').value,
+        recurringEndDate: document.getElementById('recurring-end-date').value || null,
         isEssential: isEssential
     };
 
     if (idInput) {
         const idx = appData.transactions.findIndex(x => x.id === idInput);
         if(idx !== -1) appData.transactions[idx] = t;
-        cancelEdit(); Utils.showToast("Histórico reescrito com sucesso.");
+        cancelEdit(); ToastManager.show("Histórico reescrito com sucesso.");
     } else {
         appData.transactions.push(t);
         const gXP = t.type === 'income' ? 20 : 10;
         appData.xp += gXP; appData.lifetimeXp += gXP;
-        Utils.showToast(`Registrado! +${gXP} XP.`);
+        ToastManager.show(`Registrado! +${gXP} XP.`);
     }
 
     saveData(); updateDashboard(t); form.reset();
-    document.getElementById('date-input').valueAsDate = new Date(); document.getElementById('type-input').dispatchEvent(new Event('change'));
+    document.getElementById('date-input').valueAsDate = new Date(); 
+    document.getElementById('type-input').dispatchEvent(new Event('change'));
 });
 
 document.getElementById('log-list').addEventListener('click', (e) => {
     const target = e.target;
     if (target.classList.contains('delete-btn')) {
-        if (confirm("Deseja apagar este registro das crônicas?")) {
-            appData.transactions = appData.transactions.filter(t => t.id !== target.dataset.id);
-            saveData(); updateDashboard(); Utils.showToast("Registro deletado.");
+        const tId = target.dataset.id;
+        const index = appData.transactions.findIndex(x => x.id === tId);
+        if (index !== -1 && confirm("Deseja apagar este registro das crônicas?")) {
+            const deleted = appData.transactions.splice(index, 1)[0];
+            UndoManager.push(deleted); // Adiciona ao Undo Stack
+            saveData(); updateDashboard(); ToastManager.show("Registro deletado.");
         }
     }
     if (target.classList.contains('edit-btn')) {
         const t = appData.transactions.find(x => x.id === target.dataset.id);
         if (t) {
             form.classList.add('is-editing');
-            document.getElementById('edit-id').value = t.id; document.getElementById('date-input').value = t.date;
-            document.getElementById('type-input').value = t.type; document.getElementById('type-input').dispatchEvent(new Event('change'));
-            document.getElementById('cat-input').value = t.category; document.getElementById('val-input').value = t.value;
-            document.getElementById('desc-input').value = t.description; document.getElementById('recurring-input').checked = t.isRecurring;
+            document.getElementById('edit-id').value = t.id; 
+            document.getElementById('date-input').value = t.date;
+            document.getElementById('type-input').value = t.type; 
+            document.getElementById('type-input').dispatchEvent(new Event('change'));
+            
+            // Força a categoria certa síncronamente
+            document.getElementById('cat-input').value = t.category; 
+            document.getElementById('val-input').value = t.value;
+            document.getElementById('desc-input').value = t.description; 
+            
+            document.getElementById('recurring-freq').value = t.recurrenceFrequency || 'none';
+            toggleRecurrenceEnd();
+            document.getElementById('recurring-end-date').value = t.recurringEndDate || '';
+
             if (t.type === 'expense') {
                 document.getElementById('essential-input').checked = t.isEssential || false;
             }
-            document.getElementById('btn-cancel-edit').style.display = 'inline-block'; document.getElementById('btn-submit').innerText = 'Salvar Alterações';
+            document.getElementById('btn-cancel-edit').style.display = 'inline-block'; 
+            document.getElementById('btn-submit').innerText = 'Salvar Alterações';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
 });
 
 function cancelEdit() {
-    form.reset(); form.classList.remove('is-editing'); document.getElementById('edit-id').value = '';
-    document.getElementById('btn-cancel-edit').style.display = 'none'; document.getElementById('btn-submit').innerText = 'Registrar Fluxo';
-    document.getElementById('date-input').valueAsDate = new Date(); document.getElementById('type-input').dispatchEvent(new Event('change'));
+    form.reset(); 
+    form.classList.remove('is-editing'); 
+    document.getElementById('edit-id').value = '';
+    document.getElementById('btn-cancel-edit').style.display = 'none'; 
+    document.getElementById('btn-submit').innerText = 'Registrar Fluxo';
+    document.getElementById('date-input').valueAsDate = new Date(); 
+    // CORREÇÃO: Garante a ordem síncrona
+    document.getElementById('type-input').dispatchEvent(new Event('change'));
+    toggleEssentialCheckbox();
+    toggleRecurrenceEnd();
 }
 document.getElementById('btn-cancel-edit').addEventListener('click', cancelEdit);
 
 document.getElementById('btn-save-budget').addEventListener('click', () => {
     const val = parseFloat(document.getElementById('budget-input').value);
-    if (!isNaN(val) && val >= 0) { appData.budget = val; saveData(); updateDashboard(); Utils.showToast("Limite financeiro estabelecido."); }
+    if (!isNaN(val) && val >= 0) { appData.budget = val; saveData(); updateDashboard(); ToastManager.show("Limite financeiro estabelecido."); }
 });
 
 function applyFilters() {
@@ -1890,14 +2263,33 @@ document.getElementById('btn-export').addEventListener('click', () => {
 
 document.getElementById('file-import').addEventListener('change', (e) => {
     const file = e.target.files[0]; if (!file) return;
-    if (!confirm("Isso apagará seus dados atuais de forma irreversível. Deseja substituir tudo pelo backup?")) { e.target.value = ''; return; }
+    
+    // UX: Oferece exportar/segurança antes de sobrescrever
+    if (!confirm("Isso apagará seus dados atuais de forma irreversível. Certifique-se de ter exportado um backup primeiro se necessário. Deseja substituir tudo pelo backup?")) { 
+        e.target.value = ''; return; 
+    }
+    
     const reader = new FileReader();
     reader.onload = function(evt) {
         try {
-            appData = { ...defaultData, ...JSON.parse(evt.target.result) };
-            saveData(); checkOnboarding(); updateDashboard();
-            Utils.showToast("Backup Restaurado com Sucesso!");
-        } catch(err) { Utils.showToast("Arquivo inválido.", true); }
+            const contents = JSON.parse(evt.target.result);
+            if (contents) {
+                // MERGE SEGURO COM FALLBACKS (BUG DE VERSÕES CORRIGIDO)
+                appData = {
+                    ...defaultData,
+                    ...contents,
+                    fixedBills: contents.fixedBills ?? [],
+                    investments: contents.investments ?? [],
+                    goals: contents.goals ?? [],
+                    achievements: contents.achievements ?? [],
+                    transactions: contents.transactions ?? []
+                };
+                saveData(); 
+                checkOnboarding(); 
+                updateDashboard();
+                ToastManager.show("Backup Restaurado e Atualizado para v4.0!");
+            }
+        } catch(err) { ToastManager.show("Arquivo inválido.", true); }
     };
     reader.readAsText(file); e.target.value = ''; 
 });
@@ -1905,6 +2297,19 @@ document.getElementById('file-import').addEventListener('change', (e) => {
 // Trata os Submit dos Agendamentos de Contas & Investimentos
 document.getElementById('bill-form').addEventListener('submit', (e) => BillsInvestManager.addBill(e));
 document.getElementById('invest-form').addEventListener('submit', (e) => BillsInvestManager.addInvest(e));
+
+// Goals com deadline
+document.getElementById('goal-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    appData.goals.push({ 
+        id: Utils.generateId(), 
+        name: document.getElementById('goal-name').value, 
+        target: parseFloat(document.getElementById('goal-target').value), 
+        deadline: document.getElementById('goal-deadline').value || null,
+        current: 0 
+    });
+    saveData(); updateDashboard(); e.target.reset();
+});
 
 window.addEventListener('DOMContentLoaded', () => {
     loadData();
