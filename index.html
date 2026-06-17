@@ -2,7 +2,7 @@
 <html lang="pt-BR" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0, user-scalable=yes">
     <title>Corvus Finance - RPG Edition v4.0</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -45,7 +45,10 @@
             --border-soft: rgba(100, 116, 139, 0.2);
         }
 
-        html { scroll-behavior: smooth; }
+        html { 
+            scroll-behavior: smooth;
+            -webkit-text-size-adjust: 100%; /* Evita redimensionamentos bizarros de texto no iOS */
+        }
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
@@ -56,13 +59,23 @@
             flex-direction: column; 
             align-items: center;
             min-height: 100vh;
+            min-height: 100dvh; /* Altura dinâmica corrigindo Safari Mobile */
             padding: 20px; 
             background-image: radial-gradient(circle at 50% 0%, var(--panel-bg) 0%, transparent 70%);
             transition: background-color 0.4s, color 0.4s;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        .container { display: flex; gap: 30px; width: 100%; max-width: 1400px; flex-wrap: wrap; position: relative;}
+        .container { 
+            display: flex; 
+            gap: 30px; 
+            width: 100%; 
+            max-width: 1400px; 
+            flex-wrap: wrap; 
+            position: relative;
+        }
 
         /* ================= NAVBAR NÃO-FIXA E ADAPTÁVEL ================= */
         .top-nav {
@@ -76,11 +89,13 @@
             width: 100%; 
             max-width: 1400px; 
             margin-bottom: 30px;
-            z-index: 9999; 
+            z-index: 999; 
             flex-wrap: wrap; 
             justify-content: space-between; 
             align-items: center;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
         
         .nav-btn {
@@ -100,6 +115,8 @@
             white-space: nowrap;
             max-width: 180px;
             box-shadow: inset 0 1px 3px rgba(255,255,255,0.05);
+            touch-action: manipulation;
+            -webkit-appearance: none;
         }
         .nav-btn:hover {
             background: rgba(var(--panel-bg-hover-rgb), 0.9);
@@ -124,12 +141,41 @@
             border-radius: 8px;
             border: 1px solid var(--border-soft);
         }
-        .theme-toggle { background: rgba(0,0,0,0.2); border: 1px solid var(--border-soft); border-radius: 50%; width: 35px; height: 35px; cursor: pointer; color: var(--gold); display: flex; align-items: center; justify-content: center; transition: 0.3s;}
+        .theme-toggle { 
+            background: rgba(0,0,0,0.2); 
+            border: 1px solid var(--border-soft); 
+            border-radius: 50%; 
+            width: 35px; 
+            height: 35px; 
+            cursor: pointer; 
+            color: var(--gold); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            transition: 0.3s;
+            touch-action: manipulation;
+            -webkit-appearance: none;
+        }
         .theme-toggle:hover { transform: scale(1.1); }
         .color-picker-wrapper { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); text-transform: uppercase;}
-        #color-picker { -webkit-appearance: none; border: none; width: 25px; height: 25px; border-radius: 50%; cursor: pointer; background: transparent;}
+        
+        /* Compatibilidade avançada de input color no Safari */
+        #color-picker { 
+            -webkit-appearance: none; 
+            -moz-appearance: none;
+            appearance: none;
+            border: none; 
+            width: 26px; 
+            height: 26px; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            background: transparent;
+            padding: 0;
+            overflow: hidden;
+        }
         #color-picker::-webkit-color-swatch-wrapper { padding: 0; }
         #color-picker::-webkit-color-swatch { border: 2px solid var(--border-soft); border-radius: 50%; }
+        #color-picker::-moz-color-swatch { border: 2px solid var(--border-soft); border-radius: 50%; }
 
         /* ================= PAINÉIS ================= */
         .panel {
@@ -139,9 +185,21 @@
             padding: 30px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             transition: all 0.3s;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden; /* Correções de cintilação Safari */
         }
 
-        .player-profile { width: 300px; display: flex; flex-direction: column; gap: 20px; flex-shrink: 0; height: fit-content; position: sticky; top: 20px; z-index: 10;}
+        .player-profile { 
+            width: 300px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+            flex-shrink: 0; 
+            height: fit-content; 
+            position: sticky; 
+            top: 20px; 
+            z-index: 10;
+        }
         .dashboard { flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 30px;}
 
         /* ================= AVATAR (EVOLUÍDO) ================= */
@@ -196,6 +254,8 @@
         .tool-btn { 
             flex: 1; min-width: 100px; text-align: center; background: transparent; border: 1px solid var(--text-muted); color: var(--text-base); 
             font-size: 11px; padding: 8px; border-radius: 6px; cursor: pointer; transition: 0.2s; text-transform: uppercase;
+            touch-action: manipulation;
+            -webkit-appearance: none;
         }
         .tool-btn:hover { background: var(--text-muted); color: #fff; border-color: transparent;}
 
@@ -249,34 +309,85 @@
         #total-display.negative { color: var(--danger); animation: pulseRed 2s infinite; }
         @keyframes pulseRed { 0% { text-shadow: 0 0 0 var(--danger); } 50% { text-shadow: 0 0 15px var(--danger); } 100% { text-shadow: 0 0 0 var(--danger); } }
 
-        /* ================= FORMULÁRIO ================= */
+        /* ================= FORMULÁRIO (MÁXIMA COMPATIBILIDADE SAFARI) ================= */
         .form-section { background: rgba(var(--panel-bg-hover-rgb), 0.5); border: 1px solid var(--border-soft); border-radius: 10px; padding: 25px; }
         .section-title { font-size: 16px; color: var(--accent); text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; font-weight: bold; border-bottom: 1px dashed var(--border-soft); padding-bottom: 10px;}
         
-        .form-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 15px; align-items: center; transition: all 0.3s;}
+        .form-grid { 
+            display: grid; 
+            grid-template-columns: repeat(12, 1fr); 
+            gap: 15px; 
+            align-items: center; 
+            transition: all 0.3s;
+        }
         .form-grid.is-editing { border: 1px solid var(--warning); box-shadow: 0 0 15px rgba(255, 170, 0, 0.1); padding: 20px; border-radius: 8px; background: rgba(255, 170, 0, 0.05);}
         
-        #date-input { grid-column: span 3; } #type-input { grid-column: span 3; } #cat-input { grid-column: span 3; } #essential-wrapper { grid-column: span 3; text-align: right; display: flex; justify-content: flex-end;}
-        #val-input { grid-column: span 3; } #desc-input { grid-column: span 9; }
+        #date-input { grid-column: span 3; } 
+        #type-input { grid-column: span 3; } 
+        #cat-input { grid-column: span 3; } 
+        #essential-wrapper { grid-column: span 3; text-align: right; display: flex; justify-content: flex-end;}
+        #val-input { grid-column: span 3; } 
+        #desc-input { grid-column: span 9; }
+        
         .recurrence-fields { grid-column: span 12; display: flex; gap: 15px; flex-wrap: wrap; background: rgba(0,0,0,0.15); padding: 12px; border-radius: 6px; border: 1px solid var(--border-soft);}
         .recurrence-fields > div { flex: 1; min-width: 150px; }
         .recurrence-fields label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
         .form-actions { grid-column: span 12; display: flex; gap: 15px; justify-content: flex-end; align-items: center; margin-top: 10px; padding-top: 20px; border-top: 1px dashed var(--border-soft); }
         
-        input, select, button { background: rgb(var(--bg-color-rgb)); border: 1px solid var(--border-soft); color: var(--text-base); padding: 12px 15px; font-family: var(--font-stack); font-size: 14px; border-radius: 6px; outline: none; transition: all 0.3s; width: 100%;}
+        input, select, button { 
+            background: rgb(var(--bg-color-rgb)); 
+            border: 1px solid var(--border-soft); 
+            color: var(--text-base); 
+            padding: 12px 15px; 
+            font-family: var(--font-stack); 
+            font-size: 14px; 
+            border-radius: 6px; 
+            outline: none; 
+            transition: all 0.3s; 
+            width: 100%;
+            -webkit-appearance: none; /* Remove estilo nativo indesejado no iOS Safari */
+            appearance: none;
+        }
         input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 8px var(--shadow-glow);}
         
-        .checkbox-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: var(--gold); user-select: none;}
-        .checkbox-label input { width: 18px; height: 18px; cursor: pointer;}
+        /* Garantindo o drop-down nativo amigável sem quebrar o layout do Safari */
+        select {
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%23c5d3e8'><polygon points='0,0 10,0 5,7'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            padding-right: 35px;
+        }
+
+        .checkbox-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: var(--gold); user-select: none; touch-action: manipulation;}
+        .checkbox-label input { width: 18px; height: 18px; cursor: pointer; -webkit-appearance: checkbox; appearance: checkbox;}
 
         button.primary { background: var(--accent); color: #000; border: 1px solid var(--accent); cursor: pointer; font-weight: bold; text-transform: uppercase; width: auto; padding: 12px 30px; min-width: 150px;}
         button.primary:hover { box-shadow: 0 0 15px var(--accent); filter: brightness(1.2);}
         button.cancel { background: transparent; border: 1px solid var(--warning); color: var(--warning); width: auto;}
         
-        /* ================= GRÁFICOS E LISTA ================= */
+        /* ================= GRÁFICOS E LISTA (SAFARI-COMPATIBLE CANVAS) ================= */
         .data-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .chart-container { background: rgba(var(--panel-bg-hover-rgb), 0.5); border: 1px solid var(--border-soft); border-radius: 10px; padding: 20px; height: 350px; display: flex; flex-direction: column; justify-content: center;}
         
+        /* Contêiner seguro para gráficos não crescerem infinitamente no Safari */
+        .chart-container { 
+            background: rgba(var(--panel-bg-hover-rgb), 0.5); 
+            border: 1px solid var(--border-soft); 
+            border-radius: 10px; 
+            padding: 20px; 
+            height: 350px; 
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .chart-wrapper {
+            position: relative;
+            flex-grow: 1;
+            width: 100%;
+            height: 100%;
+        }
+
         .list-container { display: flex; flex-direction: column; gap: 15px; grid-column: 1 / -1;}
         .filter-bar { display: flex; gap: 10px; background: rgba(var(--panel-bg-hover-rgb), 0.5); padding: 15px; border-radius: 10px; border: 1px solid var(--border-soft); flex-wrap: wrap; align-items: center;}
         .log-section { border: 1px solid var(--border-soft); height: 400px; overflow-y: auto; background: rgba(var(--panel-bg-hover-rgb), 0.3); padding: 15px; border-radius: 10px; position: relative;}
@@ -299,7 +410,7 @@
         .income-text { color: var(--text-main); }
         .expense-text { color: var(--danger); }
         .action-btns { display: flex; gap: 5px; border-left: 1px dashed var(--border-soft); padding-left: 15px;}
-        .icon-btn { background: transparent; border: 1px solid transparent; border-radius: 4px; cursor: pointer; font-size: 14px; padding: 6px 8px; transition: 0.2s;}
+        .icon-btn { background: transparent; border: 1px solid transparent; border-radius: 4px; cursor: pointer; font-size: 14px; padding: 6px 8px; transition: 0.2s; touch-action: manipulation;}
         .edit-btn { color: var(--warning); } .edit-btn:hover { background: rgba(255, 170, 0, 0.1); border-color: var(--warning); }
         .delete-btn { color: var(--text-muted); } .delete-btn:hover { color: var(--danger); background: rgba(255, 74, 74, 0.1); border-color: var(--danger); }
 
@@ -394,7 +505,7 @@
         #toast-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 10px; z-index: 10000; pointer-events: none;}
         .toast { 
             background: var(--panel-bg); 
-            border: 1px solid var(--accent); 
+            border: 1px solid var(--border-soft); 
             border-left: 5px solid var(--accent); 
             color: var(--text-base); 
             padding: 16px 22px; 
@@ -423,19 +534,40 @@
             .action-btns { display: none !important; }
         }
 
-        /* RESPONSIVIDADE */
+        /* RESPONSIVIDADE (REFORMULADA COM COMPORTAMENTO DE BOTÕES DO MENU SUPERIOR) */
         @media (max-width: 1024px) { 
             .data-layout, .bills-invest-layout { grid-template-columns: 1fr; } 
         }
         @media (max-width: 900px) {
-            .top-nav { justify-content: center; gap: 8px; }
-            .nav-btn { font-size: 11px; padding: 6px 12px; }
+            .top-nav {
+                justify-content: center;
+                gap: 8px;
+            }
+            .nav-btn {
+                font-size: 11px;
+                padding: 6px 12px;
+            }
         }
         @media (max-width: 768px) {
             body { padding-top: 20px; }
             .container { flex-direction: column; padding: 10px;}
-            .player-profile { width: 100%; position: relative; top: 0;}
-            .form-grid > * { grid-column: span 12 !important; }
+            
+            /* Remove sticky no mobile para não prender a tela de forma incômoda */
+            .player-profile { 
+                width: 100%; 
+                position: relative; 
+                top: 0;
+            }
+            
+            /* Correções críticas do grid no Safari para inputs móveis */
+            .form-grid > * { 
+                grid-column: span 12 !important; 
+            }
+            #essential-wrapper {
+                justify-content: flex-start;
+                margin-top: -5px;
+            }
+
             .log-item { flex-direction: column; align-items: flex-start; gap: 10px;}
             .log-actions { width: 100%; justify-content: space-between; border-top: 1px dashed var(--border-soft); padding-top: 15px;}
             .action-btns { border-left: none; padding-left: 0;}
@@ -443,12 +575,29 @@
             .creator-layout { flex-direction: column; align-items: center;}
             .creator-portrait { width: 100%;}
             
-            .top-nav { flex-wrap: wrap; justify-content: center; gap: 8px; padding: 10px; }
-            .nav-btn { flex: 1 1 calc(33.33% - 8px); max-width: none; font-size: 11px; padding: 8px; }
-            .theme-controls { margin: 5px auto 0 auto; width: 100%; justify-content: center; }
+            /* Ajuste completo de flexibilidade dos botões no mobile */
+            .top-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px;
+                padding: 10px;
+            }
+            .nav-btn {
+                flex: 1 1 calc(33.33% - 8px);
+                max-width: none;
+                font-size: 11px;
+                padding: 8px;
+            }
+            .theme-controls {
+                margin: 5px auto 0 auto;
+                width: 100%;
+                justify-content: center;
+            }
         }
         @media (max-width: 480px) {
-            .nav-btn { flex: 1 1 calc(50% - 8px); }
+            .nav-btn {
+                flex: 1 1 calc(50% - 8px); /* 2 por linha em telas minúsculas para manter legibilidade completa */
+            }
         }
 
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -668,11 +817,15 @@
             <div class="data-layout">
                 <div class="chart-container">
                     <div class="section-title">Distribuição de Gastos</div>
-                    <div style="position: relative; height: 100%; width: 100%;"><canvas id="finance-chart"></canvas></div>
+                    <div class="chart-wrapper">
+                        <canvas id="finance-chart"></canvas>
+                    </div>
                 </div>
                 <div class="chart-container">
                     <div class="section-title">Evolução Mensal (Receita x Gasto)</div>
-                    <div style="position: relative; height: 100%; width: 100%;"><canvas id="evolution-chart"></canvas></div>
+                    <div class="chart-wrapper">
+                        <canvas id="evolution-chart"></canvas>
+                    </div>
                 </div>
 
                 <div class="list-container">
@@ -2174,7 +2327,7 @@ form.addEventListener('submit', (e) => {
         appData.transactions.push(t);
         const gXP = t.type === 'income' ? 20 : 10;
         appData.xp += gXP; appData.lifetimeXp += gXP;
-        ToastManager.show(`Registrado! +${gXP} XP.`);
+        ToastManager.show("Registrado! +" + gXP + " XP.");
     }
 
     saveData(); updateDashboard(t); form.reset();
@@ -2258,7 +2411,7 @@ document.getElementById('btn-clear-filters').addEventListener('click', () => {
 document.getElementById('btn-export').addEventListener('click', () => {
     const dl = document.createElement('a');
     dl.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
-    dl.download = `corvus_master_${new Date().toISOString().split('T')[0]}.json`; dl.click();
+    dl.download = "corvus_master_" + new Date().toISOString().split('T')[0] + ".json"; dl.click();
 });
 
 document.getElementById('file-import').addEventListener('change', (e) => {
@@ -2320,7 +2473,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const fCat = document.getElementById('cat-filter');
     if(fCat.options.length === 1) {
-        Object.entries(CONFIG.CATEGORIES).forEach(([k, v]) => fCat.innerHTML += `<option value="${k}">${v.name}</option>`);
+        Object.entries(CONFIG.CATEGORIES).forEach(([k, v]) => fCat.innerHTML += "<option value='" + k + "'>" + v.name + "</option>");
     }
 
     checkOnboarding();
