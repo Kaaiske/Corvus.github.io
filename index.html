@@ -932,8 +932,8 @@
                     <input type="text" id="goal-name" placeholder="Ex: Novo PC Gamer" required style="grid-column: span 4;">
                     <input type="number" id="goal-target" placeholder="Valor Total (R$)" step="0.01" min="1" required style="grid-column: span 4;">
                     <input type="date" id="goal-deadline" title="Alcançar até (Prazo)" style="grid-column: span 4;">
-                    <button type="submit" class="primary" style="grid-column: span 12;" id="btn-submit-goal">Criar Missão de Reserva</button>
-                    <button type="button" class="cancel" id="btn-cancel-goal-edit" style="display:none; grid-column: span 12;" onclick="GoalManager.cancelEdit()">Cancelar Edição</button>
+                    <button type="submit" class="primary form-full-width" style="grid-column: span 12;" id="btn-submit-goal">Criar Missão de Reserva</button>
+                    <button type="button" class="cancel form-full-width" id="btn-cancel-goal-edit" style="display:none; grid-column: span 12;" onclick="GoalManager.cancelEdit()">Cancelar Edição</button>
                 </form>
                 <div class="goals-grid" id="goals-list"></div>
             </div>
@@ -955,8 +955,8 @@
                         <input type="text" id="bill-name" placeholder="Ex: Aluguel, Internet..." required style="grid-column: span 5;">
                         <input type="number" id="bill-value" placeholder="Valor (R$)" step="0.01" min="0.01" required style="grid-column: span 4;">
                         <input type="number" id="bill-due-day" placeholder="Vencimento (Dia)" min="1" max="31" required style="grid-column: span 3;">
-                        <button type="submit" class="primary" style="grid-column: span 12;" id="btn-submit-bill">Agendar Conta Fixa</button>
-                        <button type="button" class="cancel" id="btn-cancel-bill-edit" style="display:none; grid-column: span 12;" onclick="BillsInvestManager.cancelBillEdit()">Cancelar Edição</button>
+                        <button type="submit" class="primary form-full-width" style="grid-column: span 12;" id="btn-submit-bill">Agendar Conta Fixa</button>
+                        <button type="button" class="cancel form-full-width" id="btn-cancel-bill-edit" style="display:none; grid-column: span 12;" onclick="BillsInvestManager.cancelBillEdit()">Cancelar Edição</button>
                     </form>
                     
                     <div id="bills-list-container" style="display: flex; flex-direction: column; gap: 10px;"></div>
@@ -978,8 +978,8 @@
                         <input type="number" id="invest-yield" placeholder="Rentabilidade Estimada (% ao mês)" step="0.01" min="0" required style="grid-column: span 4; margin-top: 5px;">
                         <input type="date" id="invest-maturity" title="Data Estimada de Resgate (Opcional)" style="grid-column: span 4; margin-top: 5px;">
                         <input type="date" id="invest-date" required title="Data do Aporte" style="grid-column: span 4; margin-top: 5px;">
-                        <button type="submit" class="primary" style="grid-column: span 12; margin-top: 10px;" id="btn-submit-invest">Registrar Ativo</button>
-                        <button type="button" class="cancel" id="btn-cancel-invest-edit" style="display:none; grid-column: span 12; margin-top: 5px;" onclick="BillsInvestManager.cancelInvestEdit()">Cancelar Edição</button>
+                        <button type="submit" class="primary form-full-width" style="grid-column: span 12; margin-top: 10px;" id="btn-submit-invest">Registrar Ativo</button>
+                        <button type="button" class="cancel form-full-width" id="btn-cancel-invest-edit" style="display:none; grid-column: span 12; margin-top: 5px;" onclick="BillsInvestManager.cancelInvestEdit()">Cancelar Edição</button>
                     </form>
 
                     <div id="invest-list-container" style="display: flex; flex-direction: column; gap: 10px;"></div>
@@ -1215,6 +1215,12 @@ const UndoManager = {
         if (this.stack.length === 0) return;
         const restored = this.stack.pop();
         appData.transactions.push(restored);
+        
+        // Devolve o XP proporcional ao jogador
+        const xpAmount = restored.type === 'income' ? 20 : 10;
+        appData.xp += xpAmount;
+        appData.lifetimeXp += xpAmount;
+
         saveData();
         updateDashboard();
         this.updateUI();
@@ -1819,6 +1825,43 @@ function checkReminders() {
  * ==========================================
  */
 const GoalManager = {
+    addGoal: function(e) {
+        e.preventDefault();
+        const idInput = document.getElementById('goal-edit-id').value;
+        const name = document.getElementById('goal-name').value.trim();
+        const target = parseFloat(document.getElementById('goal-target').value);
+        const deadline = document.getElementById('goal-deadline').value;
+
+        if(!name || isNaN(target) || target <= 0) {
+            ToastManager.show("Dados da missão (meta) inválidos!", true);
+            return;
+        }
+
+        if (idInput) {
+            const idx = appData.goals.findIndex(g => g.id === idInput);
+            if (idx !== -1) {
+                appData.goals[idx].name = name;
+                appData.goals[idx].target = target;
+                appData.goals[idx].deadline = deadline;
+            }
+            this.cancelEdit();
+            ToastManager.show("Missão atualizada com sucesso!");
+        } else {
+            appData.goals.push({
+                id: Utils.generateId(),
+                name: name,
+                target: target,
+                current: 0,
+                deadline: deadline || null
+            });
+            ToastManager.show("Nova Missão de Reserva criada!");
+        }
+        
+        saveData();
+        this.render();
+        updateDashboard();
+        document.getElementById('goal-form').reset();
+    },
     addFund: function(index) {
         const input = document.getElementById(`goal-add-${index}`);
         const val = parseFloat(input.value);
@@ -2056,6 +2099,11 @@ const BillsInvestManager = {
             return;
         }
 
+        if (maturity && new Date(maturity) <= new Date(date)) {
+            ToastManager.show("A data de resgate deve ser posterior ao aporte inicial!", true);
+            return;
+        }
+
         const newInvest = {
             id: idInput || Utils.generateId(),
             name: name,
@@ -2186,7 +2234,7 @@ const BillsInvestManager = {
                         <span style="color:var(--text-main); font-weight:bold;">${Utils.formatCurrency(calculatedValue)}</span>
                     </div>
                     <div class="bill-actions">
-                        <span style="font-size:11px; color:var(--text-muted);">${typeLabel} • ${inv.yieldRate}% am • Lucro: +${Utils.formatCurrency(profit)}${maturityHtml}</span>
+                        <span style="font-size:11px; color:var(--text-muted);">${typeLabel} • ${inv.yieldRate}% am • Lucro: ${Utils.formatCurrency(profit)}${maturityHtml}</span>
                         <div>
                             <button class="icon-btn edit-btn" onclick="BillsInvestManager.editInvest('${inv.id}')">✏️</button>
                             <button class="icon-btn delete-btn" onclick="BillsInvestManager.deleteInvest('${inv.id}')">🗑️</button>
@@ -2208,24 +2256,29 @@ const ShopManager = {
     buy: function(itemId) {
         const item = CONFIG.SHOP_ITEMS.find(i => i.id === itemId);
         if(!item) return;
-        if(appData.inventory.includes(itemId)) {
-            appData.equipped[item.type] = itemId;
-            ToastManager.show(`${item.name} equipado!`);
-        } else {
-            if(appData.xp >= item.price) {
-                appData.xp -= item.price;
-                appData.inventory.push(itemId);
+        
+        const actionText = appData.inventory.includes(itemId) ? "equipar" : "comprar";
+
+        ModalManager.confirm(`Deseja ${actionText} o item ${item.name}?`, () => {
+            if(appData.inventory.includes(itemId)) {
                 appData.equipped[item.type] = itemId;
-                ToastManager.show(`Item comprado e equipado: ${item.name}!`);
+                ToastManager.show(`${item.name} equipado!`);
             } else {
-                ToastManager.show("Seu XP é insuficiente para este item!", true);
-                return;
+                if(appData.xp >= item.price) {
+                    appData.xp -= item.price;
+                    appData.inventory.push(itemId);
+                    appData.equipped[item.type] = itemId;
+                    ToastManager.show(`Item comprado e equipado: ${item.name}!`);
+                } else {
+                    ToastManager.show("Seu XP é insuficiente para este item!", true);
+                    return;
+                }
             }
-        }
-        saveData();
-        renderAvatar();
-        this.render();
-        calculateRPGStats(); 
+            saveData();
+            renderAvatar();
+            this.render();
+            calculateRPGStats(); 
+        });
     },
     render: function() {
         const list = document.getElementById('shop-list');
@@ -2735,8 +2788,10 @@ document.getElementById('log-list').addEventListener('click', (e) => {
         if (index !== -1) {
             ModalManager.confirm("Deseja apagar este registro das crônicas?", () => {
                 const deleted = appData.transactions.splice(index, 1)[0];
+                appData.xp = Math.max(0, appData.xp - (deleted.type === 'income' ? 20 : 10));
+                appData.lifetimeXp = Math.max(0, appData.lifetimeXp - (deleted.type === 'income' ? 20 : 10));
                 UndoManager.push(deleted); 
-                saveData(); updateDashboard(); ToastManager.show("Registro deletado.");
+                saveData(); updateDashboard(); ToastManager.show("Registro deletado e XP reduzido.");
             });
         }
     }
@@ -2838,6 +2893,12 @@ document.getElementById('file-import').addEventListener('change', (e) => {
     });
     e.target.value = ''; 
 });
+
+// Trata os Submit dos Agendamentos de Contas & Investimentos
+document.getElementById('bill-form').addEventListener('submit', (e) => BillsInvestManager.addBill(e));
+document.getElementById('invest-form').addEventListener('submit', (e) => BillsInvestManager.addInvest(e));
+document.getElementById('goal-form').addEventListener('submit', (e) => GoalManager.addGoal(e));
+
 
 window.addEventListener('DOMContentLoaded', () => {
     loadData();
