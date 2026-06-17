@@ -472,9 +472,21 @@
         .creator-layout { display: flex; gap: 25px; text-align: left; margin-top: 20px;}
         .creator-portrait { width: 180px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 15px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid var(--border-soft); }
         .creator-img-frame { width: 120px; height: 120px; border: 3px solid var(--accent); border-radius: 8px; overflow: hidden; background: #000; box-shadow: 0 0 15px var(--accent); position: relative; }
-        .creator-img-frame img { width: 100%; height: 100%; image-rendering: pixelated; object-fit: cover;}
+        .creator-img-frame img { width: 100%; height: 100%; image-rendering: pixelated; object-fit: cover; position: relative; z-index: 2;}
         
-        .creator-options { flex: 1; display: flex; flex-direction: column; gap: 15px;}
+        /* Otimizações responsivas e customizadas de scroll para a barra lateral do Onboarding */
+        .creator-options { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px;
+            max-height: 380px; 
+            overflow-y: auto; 
+            padding-right: 10px;
+        }
+        .creator-options::-webkit-scrollbar { width: 4px; }
+        .creator-options::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+
         .option-group label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 6px; letter-spacing: 1px;}
         
         .gender-selector { display: flex; gap: 10px;}
@@ -642,6 +654,70 @@
                         <button type="button" class="preset-btn" onclick="OnboardingCreator.prevPreset()">&lt;</button>
                         <span id="preset-label" style="font-size: 12px; font-weight: bold;">Preset 1</span>
                         <button type="button" class="preset-btn" onclick="OnboardingCreator.nextPreset()">&gt;</button>
+                    </div>
+                </div>
+
+                <!-- Customização fina de semente do Avatar -->
+                <div class="option-group">
+                    <label>Estilo do Cabelo</label>
+                    <div class="preset-carousel">
+                        <button type="button" class="preset-btn" onclick="OnboardingCreator.prevOption('hair')">&lt;</button>
+                        <span id="hair-label" style="font-size: 11px; font-weight: bold;">Estilo 1</span>
+                        <button type="button" class="preset-btn" onclick="OnboardingCreator.nextOption('hair')">&gt;</button>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <label>Cor do Cabelo</label>
+                    <div class="preset-carousel">
+                        <button type="button" class="preset-btn" onclick="OnboardingCreator.prevOption('hairColor')">&lt;</button>
+                        <span id="hairColor-label" style="font-size: 11px; font-weight: bold;">Preto</span>
+                        <button type="button" class="preset-btn" onclick="OnboardingCreator.nextOption('hairColor')">&gt;</button>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <label>Estilo de Olhos</label>
+                    <div class="preset-carousel">
+                        <button type="button" class="preset-btn" onclick="OnboardingCreator.prevOption('eyes')">&lt;</button>
+                        <span id="eyes-label" style="font-size: 11px; font-weight: bold;">Estilo 1</span>
+                        <button type="button" class="preset-btn" onclick="OnboardingCreator.nextOption('eyes')">&gt;</button>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <label>Cor dos Olhos</label>
+                    <div class="preset-carousel">
+                        <button type="button" class="preset-btn" onclick="OnboardingCreator.prevOption('eyesColor')">&lt;</button>
+                        <span id="eyesColor-label" style="font-size: 11px; font-weight: bold;">Azul</span>
+                        <button type="button" class="preset-btn" onclick="OnboardingCreator.nextOption('eyesColor')">&gt;</button>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <label>Estilo de Roupa</label>
+                    <div class="preset-carousel">
+                        <button type="button" class="preset-btn" onclick="OnboardingCreator.prevOption('clothing')">&lt;</button>
+                        <span id="clothing-label" style="font-size: 11px; font-weight: bold;">Estilo 1</span>
+                        <button type="button" class="preset-btn" onclick="OnboardingCreator.nextOption('clothing')">&gt;</button>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <label>Cor da Roupa</label>
+                    <div class="preset-carousel">
+                        <button type="button" class="preset-btn" onclick="OnboardingCreator.prevOption('clothingColor')">&lt;</button>
+                        <span id="clothingColor-label" style="font-size: 11px; font-weight: bold;">Negro</span>
+                        <button type="button" class="preset-btn" onclick="OnboardingCreator.nextOption('clothingColor')">&gt;</button>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <label>Tom de Pele</label>
+                    <div class="preset-carousel">
+                        <button type="button" class="preset-btn" onclick="OnboardingCreator.prevOption('skin')">&lt;</button>
+                        <span id="skin-label" style="font-size: 11px; font-weight: bold;">Pálido</span>
+                        <button type="button" class="preset-btn" onclick="OnboardingCreator.nextOption('skin')">&gt;</button>
                     </div>
                 </div>
                 
@@ -1031,6 +1107,16 @@ const CONFIG = {
     }
 };
 
+const CUSTOM_OPTIONS = {
+    hair: ["variant01", "variant02", "variant03", "variant04", "variant05", "variant06", "variant07", "variant08", "variant09", "variant10", "variant11", "variant12", "variant13", "variant14", "variant15"],
+    hairColor: ["2c1b18", "a55728", "b58143", "d6b370", "724133", "ff488e", "00d2ff"], 
+    eyes: ["variant01", "variant02", "variant03", "variant04", "variant05", "variant06", "variant07", "variant08"],
+    eyesColor: ["697b94", "588387", "876658", "de0f0d", "ffd700"], 
+    clothing: ["variant01", "variant02", "variant03", "variant04", "variant05", "variant06", "variant07", "variant08", "variant09", "variant10"],
+    clothingColor: ["262e33", "5199e4", "10b981", "ff5c5c", "b142ff", "ffd700"], 
+    skin: ["ffdbb4", "edb98a", "d08b5b", "614335"] 
+};
+
 const defaultData = {
     transactions: [],
     budget: 0,
@@ -1236,6 +1322,21 @@ function loadData() {
 const OnboardingCreator = {
     gender: 'male',
     presetIdx: 0,
+    custom: {
+        hair: 0,
+        hairColor: 0,
+        eyes: 0,
+        eyesColor: 0,
+        clothing: 0,
+        clothingColor: 0,
+        skin: 0
+    },
+    labels: {
+        hairColor: ["Preto", "Castanho", "Castanho Claro", "Loiro", "Ruivo", "Rosa Fantasia", "Azul Fantasia"],
+        eyesColor: ["Azul", "Esmeralda", "Castanho", "Rubi", "Dourado"],
+        clothingColor: ["Negro", "Azul Celeste", "Esmeralda", "Escarlate", "Arcano Roxo", "Dourado"],
+        skin: ["Pálido", "Claro", "Bronzeado", "Escuro"]
+    },
 
     setGender: function(g) {
         this.gender = g;
@@ -1255,13 +1356,60 @@ const OnboardingCreator = {
         this.updatePreview();
     },
 
-    updatePreview: function() {
+    nextOption: function(opt) {
+        const list = CUSTOM_OPTIONS[opt];
+        this.custom[opt] = (this.custom[opt] + 1) % list.length;
+        this.updatePreview(true);
+    },
+
+    prevPreset: function() {
+        this.presetIdx = (this.presetIdx - 1 + CONFIG.AVATAR_PRESETS[this.gender].length) % CONFIG.AVATAR_PRESETS[this.gender].length;
+        this.updatePreview();
+    },
+
+    prevOption: function(opt) {
+        const list = CUSTOM_OPTIONS[opt];
+        this.custom[opt] = (this.custom[opt] - 1 + list.length) % list.length;
+        this.updatePreview(true);
+    },
+
+    updatePreview: function(isCustom = false) {
         const preset = CONFIG.AVATAR_PRESETS[this.gender][this.presetIdx];
         const avatarClass = document.getElementById('char-class').value;
         const seedName = document.getElementById('char-name').value.trim() || "Mestre";
         
         document.getElementById('preset-label').innerText = `Preset ${this.presetIdx + 1}`;
-        const previewUrl = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${seedName}${preset.seed}${avatarClass}`;
+        
+        if (!isCustom) {
+            // Sincroniza indices customizados com base no preset padrão selecionado
+            this.custom.hair = (this.presetIdx * 3) % CUSTOM_OPTIONS.hair.length;
+            this.custom.hairColor = (this.presetIdx * 2) % CUSTOM_OPTIONS.hairColor.length;
+            this.custom.eyes = (this.presetIdx * 2) % CUSTOM_OPTIONS.eyes.length;
+            this.custom.eyesColor = (this.presetIdx * 1) % CUSTOM_OPTIONS.eyesColor.length;
+            this.custom.clothing = (this.presetIdx * 4) % CUSTOM_OPTIONS.clothing.length;
+            this.custom.clothingColor = (this.presetIdx * 3) % CUSTOM_OPTIONS.clothingColor.length;
+            this.custom.skin = this.presetIdx % CUSTOM_OPTIONS.skin.length;
+        }
+
+        // Atualização de rótulos visuais na interface do Onboarding
+        document.getElementById('hair-label').innerText = `Estilo ${this.custom.hair + 1}`;
+        document.getElementById('hairColor-label').innerText = this.labels.hairColor[this.custom.hairColor];
+        document.getElementById('eyes-label').innerText = `Estilo ${this.custom.eyes + 1}`;
+        document.getElementById('eyesColor-label').innerText = this.labels.eyesColor[this.custom.eyesColor];
+        document.getElementById('clothing-label').innerText = `Estilo ${this.custom.clothing + 1}`;
+        document.getElementById('clothingColor-label').innerText = this.labels.clothingColor[this.custom.clothingColor];
+        document.getElementById('skin-label').innerText = this.labels.skin[this.custom.skin];
+
+        const hairV = CUSTOM_OPTIONS.hair[this.custom.hair];
+        const hairC = CUSTOM_OPTIONS.hairColor[this.custom.hairColor];
+        const eyesV = CUSTOM_OPTIONS.eyes[this.custom.eyes];
+        const eyesC = CUSTOM_OPTIONS.eyesColor[this.custom.eyesColor];
+        const clothesV = CUSTOM_OPTIONS.clothing[this.custom.clothing];
+        const clothesC = CUSTOM_OPTIONS.clothingColor[this.custom.clothingColor];
+        const skinC = CUSTOM_OPTIONS.skin[this.custom.skin];
+
+        // API 10.x URL com parâmetros explícitos
+        const previewUrl = `https://api.dicebear.com/10.x/pixel-art/svg?seed=${seedName}&hairVariant=${hairV}&hairColor=${hairC}&eyesVariant=${eyesV}&eyesColor=${eyesC}&clothesVariant=${clothesV}&clothingColor=${clothesC}&skinColor=${skinC}`;
         
         const img = document.getElementById('creator-avatar-preview');
         img.src = previewUrl;
@@ -1276,7 +1424,16 @@ const OnboardingCreator = {
             name: name,
             gender: this.gender,
             presetSeed: preset.seed,
-            charClass: document.getElementById('char-class').value
+            charClass: document.getElementById('char-class').value,
+            custom: {
+                hair: CUSTOM_OPTIONS.hair[this.custom.hair],
+                hairColor: CUSTOM_OPTIONS.hairColor[this.custom.hairColor],
+                eyes: CUSTOM_OPTIONS.eyes[this.custom.eyes],
+                eyesColor: CUSTOM_OPTIONS.eyesColor[this.custom.eyesColor],
+                clothing: CUSTOM_OPTIONS.clothing[this.custom.clothing],
+                clothingColor: CUSTOM_OPTIONS.clothingColor[this.custom.clothingColor],
+                skin: CUSTOM_OPTIONS.skin[this.custom.skin]
+            }
         };
         saveData();
         
@@ -1353,7 +1510,14 @@ function renderAvatar() {
     const levelObj = calculateRPGStats();
     
     const avatarImg = document.getElementById('player-avatar');
-    avatarImg.src = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${appData.avatar.name}${appData.avatar.presetSeed}${appData.avatar.charClass}Lvl${levelObj.level}`;
+    let url = "";
+    if (appData.avatar.custom) {
+        const c = appData.avatar.custom;
+        url = `https://api.dicebear.com/10.x/pixel-art/svg?seed=${appData.avatar.name}&hairVariant=${c.hair}&hairColor=${c.hairColor}&eyesVariant=${c.eyes}&eyesColor=${c.eyesColor}&clothesVariant=${c.clothing}&clothingColor=${c.clothingColor}&skinColor=${c.skin}`;
+    } else {
+        url = `https://api.dicebear.com/10.x/pixel-art/svg?seed=${appData.avatar.name}${appData.avatar.presetSeed}${appData.avatar.charClass}Lvl${levelObj.level}`;
+    }
+    avatarImg.src = url;
     
     const wpnEl = document.getElementById('player-weapon');
     const auraEl = document.getElementById('player-aura');
